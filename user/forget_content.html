@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver uinn-a1 gery" style="padding:3em .8em 0em .8em;font-size: 1.2em;">
+                <div class="uc-a1 c-wh ub ub-ac uba b-gra3" style="padding:0.5em 1em;">
+                    <div  class="ulev-app1 umw4">
+                        账户
+                    </div>
+                    <div class="ub ub-ac  ub-f1 ">
+                        <div class="uin-inputNopadding ub ub-f1">
+                            <input name="telephone" placeholder="请输入11位手机号" type="number" id='tel' class="ub-f1 uinn">
+                        </div>
+                    </div>
+                </div>
+                <div class=" uc-a1 c-wh ub uinn ub-ac umar-at1 uba b-gra3" style="padding:0.5em 1em;">
+                        <div  class="ulev-app1 umw4">
+                        验证码
+                    </div>
+                    <div class="ub uin-inputNopadding ub-ac ub-f1" >
+                        <div class="uin-inputNopadding " style="width: 7.5em;margin-right: .5em;">
+                            <input id='code' name="username" placeholder="输入短信验证码" type="number" class="ub-f1 uinn">
+                        </div>
+                        <input type="button" id='send' value="发送验证码" style="width: 6em;"/>
+                    </div>
+                </div>
+                
+                <div class="uc-a1 c-wh ub uinn-a7 ub-ac umar-at1 uba b-gra3" style="padding:0.5em 1em;">
+                    <div  class="ulev-app1 umw4">
+                        密码
+                    </div>
+                    <div class="ub ub-ac  ub-f1">
+                        <div class="uin-inputNopadding ub ub-f1">
+                            <input id='password' name="password" placeholder="6-20位字母、数字和符号" type="text" class="ub-f1 uinn">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ub ub-ver" style="padding-top: 2em;">
+                    
+                    <div class="uinn-at1">
+                        <div class="btn ub ub-ac bc-text2 ub-pc b-gery uc-a1" id="submit">
+                            设置新密码
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            appcan.initBounce();
+            /*
+             var url=http+"user/register";
+             $("form").attr('action',url);*/
+
+        })
+        function validateForm() {
+            var tel = $("#tel").val();
+            var code = $("#code").val();
+            var nicename = $("#nicename").val();
+            var password = $("#password").val();
+
+            var flag = true;
+
+            if (tel == "") {
+                flag = false;
+            }
+            
+            if (code == "") {
+                flag = false;
+            }
+            
+            if (password == "") {
+                flag = false;
+            }
+
+            if (flag) {
+                $("#submit").css('background', '#E55847')
+            } else {
+                $("#submit").css('background', 'gray')
+            }
+        }
+
+
+        $("#send").click(function() {
+            var tel = $("#tel").val();
+            if (tel.length < 11) {
+                uexWindow.toast("0", "5", "请输入11位手机号码！", "2000");
+                return;
+            }
+            var step = 59;
+            $('#send').val('60秒后重发');
+            var res = setInterval(function() {
+                $("#send").attr("disabled", true);
+                //设置disabled属性
+                $('#send').val(step +'秒后重发');
+                step -= 1;
+                if (step <= 0) {
+                    $("#send").removeAttr("disabled");
+                    //移除disabled属性
+                    $('#send').val('获取验证码');
+                    clearInterval(res);
+                    //清除setInterval
+                }
+            }, 1000);
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "common/SendSms",
+                data : {
+                    mobile : tel
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        uexWindow.toast("0", "5",'短信已发送', "2000");
+                    } else {
+                        uexWindow.toast("0", "5",result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5",result.Message, "2000");
+                },
+                offline : false
+            });
+
+        })
+
+        $("input[type='number']").on("input", function() {
+            validateForm();
+        })
+        
+        $("input[type='text']").on("input", function() {
+            validateForm();
+        })
+        
+        $("input[type='password']").on("input", function() {
+            validateForm();
+        })
+        
+
+        $("#submit").click(function() {
+            var tel = $("#tel").val();
+            var nicename = $("#nicename").val();
+            var code = $("#code").val();
+            if (tel == '') {
+                uexWindow.toast("0", "5", "请输入11位手机号！", "2000");
+                return;
+            }
+            if (code == '') {
+                uexWindow.toast("0", "5", "请输入手机验证码！", "2000");
+                return;
+            }
+            var password = $("#password").val();
+            if (password.length < 6) {
+                uexWindow.toast("0", "5", "请输入6位密码！", "2000");
+                return;
+            }
+
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "user/ForgetPassword",
+                data : {
+                    mobile : tel,
+                    code : code,
+                    password : password
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                      uexWindow.toast("0", "5", result.Message, "2000");
+                      uexWindow.evaluateScript('forget', 0, 'close()');
+                      uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+        })
+        
+
+    </script>
+</html>

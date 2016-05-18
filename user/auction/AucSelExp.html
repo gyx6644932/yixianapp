@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="return nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x"></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">选择专家</h1>
+            <div class="nav-btn nav-bt" id="nav-right"></div>
+        </div>
+        <div class="ub ub-ac"  style="background-color: #FFFFFF;z-index:100;border: 0.1em solid #C9C9C9">
+            <div class="openType ub ub-ac ub-pc" style="margin:0.5em 0em;width:28%;border-right: 0.1em solid #C9C9C9">
+                筛选专家
+                <i class="fa fa-angle-down"></i>
+            </div>
+        </div>
+        <div id="content"  class="ub-f1 tx-l uinn uc-a1" >
+
+            <div class="sc-bg" id="expertList" style="border-radius: 0em 0em 0.3em 0.3em;" id="expertList">
+
+            </div>
+            <div id='openMore' class="openMore gery  bc-bg uinn bc-border ubb" style="text-align: center;display: none">
+                更多专家
+            </div>
+        </div>
+
+        <script src="../../js/appcan.js"></script>
+        <script src="../../js/appcan.control.js"></script>
+        <script src="../../js/appcan.listview.js"></script>
+        <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        var selectItem = {};
+        var expertTypeId = ''
+        appcan.ready(function() {
+            getexpertlist()
+        });
+
+        function getexpertlist(flag) {
+            var data2 = {
+                pageindex : 1,
+                pagesize : 40
+            };
+            if (expertTypeId != '') {
+                 $('#openMore').css('display', 'block');
+            }
+            if (flag == 0) {
+                data2.ExpertTypeId = expertTypeId;
+            }
+
+            if (flag == 1) {
+                data2.SubExpertTypeId = expertTypeId;
+            }
+
+            var token = getToken();
+
+            if (token != null) {
+                data2.userId = token;
+            }
+
+            var getUserUrl = getUrl("user/getexpertlist");
+            var data = data2;
+            function callback(result) {
+                if (result.Success) {
+                    if (result.Data.length > 0) {
+                        var arrData = [];
+                        $.each(result.Data, function(index, row) {
+                            arrData.push({
+                                "Id" : row.Id,
+                                "Nicename" : row.ExpertName,
+                                "Avatar" : imgThumbUrl + row.Avatar,
+                                "Identify" : row.Identify,
+                                "IdentifyTodayCount" : row.IdentifyTodayCount,
+                                "IdentifyCount" : row.IdentifyCount,
+                                "IdentifyPrice" : row.IdentifyPrice,
+                                "ExpertTypeId" : row.ExpertTypeId
+                            });
+                        });
+
+                        var listData = [];
+                        for (var i = 0; i < arrData.length; i++) {
+                            if (arrData[i].Identify === false || arrData[i].IdentifyTodayCount <= 0){
+                              TodayCount = "鉴定已满"   
+                            }else {
+                                 TodayCount = "剩余次数：" + arrData[i].IdentifyTodayCount + "/" + arrData[i].IdentifyCount + ""
+                            }
+                            var list = {
+                                id : arrData[i].Id,
+                                title : arrData[i].Nicename,
+                                icon : arrData[i].Avatar,
+                                price : arrData[i].IdentifyPrice,
+                                Identify : arrData[i].Identify,
+                                count : arrData[i].IdentifyTodayCount,
+                                describe : '<div class="sc-text-warn ">鉴定费用：￥' + arrData[i].IdentifyPrice + '<br/>'+ TodayCount + '</div>'
+                            }
+
+                            listData.push(list);
+                        }
+                        var lv1 = appcan.listview({
+                            selector : "#expertList",
+                            type : "thickLine",
+                            hasIcon : true,
+                            hasAngle : false,
+                            hasSubTitle : false,
+                            multiLine : 1,
+                            hasRadiobox : true,
+                            align : 'left'
+                        });
+                        lv1.set(listData);
+                        lv1.on("radio:change", function(obj, data) {
+                            selectItem = data;
+                        });
+                        lv1.on("click", function(obj, data) {
+                            selectItem = data;
+                            if (selectItem.count <= 0) {
+                                uexWindow.toast("0", "5", '该专家鉴定已满', "2000");
+                                return;
+                            }else if(selectItem.Identify === false){
+                                uexWindow.toast("0", "5", '该专家鉴定已满', "2000");
+                                return;
+                            }
+                                appcan.window.evaluateScript('AucAddAppraisal', "closepop('" + selectItem.icon + "','" + selectItem.title + "'," + selectItem.price + "," + selectItem.count + ",'" + selectItem.id + "')");
+                             appcan.window.close(-1);
+                        });
+                    } else {
+                        str = templateDivEmpty();
+                        $('#expertList').html(str);
+                    }
+                    $(".openMore").click(function() {
+                        fatherId = appcan.locStorage.getVal('fatherId');
+                        expertTypeId = fatherId;
+                        getexpertlist(0);
+                        return;
+                    })
+                } else {
+                    uexWindow.toast("0", "5", result.data, "2000");
+                }
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+
+        $(".openType").click(function() {
+            uexWindow.open("AucSelExpType2", "0", "AucSelExpType2.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+
+        appcan.button(".nav-btn .fa-angle-left", "btn-act", function() {
+            appcan.window.close(-1);
+        });
+        appcan.button(".return", "btn-act", function() {
+            appcan.window.close(-1);
+        });
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div><div class="ub gery uinn">专家正在加入中！</div><div class="openMore ub white uinn btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1">选择更多专家</div></div></div>'
+            return str
+        }
+
+        function closepop(flag, id) {
+            expertTypeId = id;
+            appcan.closePopover("AucSelExpType2");
+            getexpertlist(flag);
+            return;
+
+        }
+    </script>
+</html>

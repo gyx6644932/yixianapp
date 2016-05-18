@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart >
+        <p></p>
+        <div id="identifyRand" class="ubb bc-border uinn-a7 bc-bg c-wh umar-at2" style="margin-top: 18em;">
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <img src="../img/identify/11.png" style="margin-left: .5em;"/>
+                </div>
+                <div class="uinn-a1 ub ub-ac" >
+                    随机鉴定
+                    <div id="RandomIdentifyNEW"  style="display: none;padding-left: 1em;padding-top: .3em;">
+                        <img src="../img/identify/new.png" style="width:2em;"/>
+                    </div>
+                </div>
+                <div id='RandomIdentify' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+
+            </div>
+        </div>
+        <div id="identifyExp" class="ubb bc-border uinn-a7 bc-bg" >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <img src="../img/identify/22.png" style="margin-left: .5em;"/>
+                </div>
+                <div class="uinn-a1 ub ub-ac" >
+                    指定鉴定
+                    <div  id="ExpertIdentifyNEW"  style="display: none;padding-left: 1em;padding-top: .3em;">
+                        <img src="../img/identify/new.png" style="width:2em;"/>
+                    </div>
+                </div>
+                <div id='ExpertIdentify' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+            </div>
+        </div>
+        <div class="c-wh umar-at2">
+            <div id="identifyOld" class="ubb bc-border uinn-a7 bc-bg" >
+                <div class="ub" >
+                    <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                        <img src="../img/identify/33.png" style="margin-left: .5em;"/>
+                    </div>
+                    <div class="ub-f1 uinn-a1 ub ub-ac" >
+                        往期鉴定
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="c-wh">
+            <div id="identifyPass" class="ubb bc-border uinn-a7 bc-bg" >
+                <div class="ub" >
+                    <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                        <img src="../img/identify/44.png" style="margin-left: .5em;"/>
+                    </div>
+                    <div class="ub-f1 uinn-a1 ub ub-ac">
+                        过期鉴定
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/touch.js"></script>
+
+    </body>
+    <script>
+        appcan.ready(function() {
+               $.showimage(function() {
+                });
+            if (getToken != null) {
+                expertCount();
+            }
+        });
+
+        function expertCount() {
+            var getUserUrl = getUrl("user/getuser");
+            var data = {
+                token : getToken()
+            }
+
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    RandomIdentify = data.RandomIdentify;
+                    ExpertIdentify = data.ExpertIdentify;
+                    todayRandomIdentifyOrder = data.TodayRandomIdentifyOrder;
+                    todayExpertIdentifyOrder = data.TodayExpertIdentifyOrder;
+                    todayRandomIdentifyIncome = data.TodayRandomIdentifyIncome;
+                    todayExpertIdentifyIncome = data.TodayExpertIdentifyIncome;
+                    totalRandomIdentifyOrder = data.TotalRandomIdentifyOrder;
+                    totalExpertIdentifyOrder = data.TotalExpertIdentifyOrder;
+                    totalRandomIdentifyIncome = data.TotalRandomIdentifyIncome;
+                    totalExpertIdentifyIncome = data.TotalExpertIdentifyIncome;
+                    todayAll = todayRandomIdentifyIncome + todayExpertIdentifyIncome;
+                    totalAll = totalRandomIdentifyIncome + totalExpertIdentifyIncome;
+                    $("#todayAll").text(todayAll + '元');
+                    $("#todayRandomIdentifyOrder").text(todayRandomIdentifyOrder);
+                    $("#todayExpertIdentifyOrder").text(todayExpertIdentifyOrder);
+                    $("#todayRandomIdentifyIncome").text(todayRandomIdentifyIncome);
+                    $("#todayExpertIdentifyIncome").text(todayExpertIdentifyIncome);
+                    $("#totalAll").text(totalAll + '元');
+                    $("#totalRandomIdentifyOrder").text(totalRandomIdentifyOrder);
+                    $("#totalExpertIdentifyOrder").text(totalExpertIdentifyOrder);
+                    $("#totalRandomIdentifyIncome").text(totalRandomIdentifyIncome);
+                    $("#totalExpertIdentifyIncome").text(totalExpertIdentifyIncome);
+                    NewRandomIdentify = data.NewRandomIdentify;
+                    NewExpertIdentify = data.NewExpertIdentify;
+                    if (NewRandomIdentify) {
+                        $("#RandomIdentifyNEW").css('display', 'block').addClass('ub');
+                    } else {
+                        $("#RandomIdentifyNEW").css('display', 'none').removeClass('ub');
+                    }
+                    if (NewExpertIdentify) {
+                        $("#ExpertIdentifyNEW").css('display', 'block').addClass('ub');
+                    } else {
+                        $("#ExpertIdentifyNEW").css('display', 'none').removeClass('ub');
+                    }
+                    $("#RandomIdentify").text(parseInt(RandomIdentify));
+                    $("#ExpertIdentify").text(parseInt(ExpertIdentify));
+                }
+            }
+
+            getRequestAjax2(getUserUrl, data, callback);
+            setTimeout("expertCount()", 4000);
+        }
+        $("#identifyRand").click(function() {
+            var Token = getToken();
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('identifyIndex', 0);
+            appcan.openWinWithUrl('ident_wait', 'ident_wait.html');
+        })
+        $("#identifyExp").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('identifyIndex', 1);
+            appcan.openWinWithUrl('ident_wait', 'ident_wait.html');
+        })
+        $("#identifyOld").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('identifyIndex', 2);
+            appcan.openWinWithUrl('ident_wait', 'ident_wait.html');
+        })
+        $("#identifyPass").click(function() {
+            var Token = getToken();
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('identifyIndex', 3);
+            appcan.openWinWithUrl('ident_wait', 'ident_wait.html');
+        })
+    </script>
+</html>

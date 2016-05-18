@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="nav-left nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x" ></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3  tx-c" tabindex="0">收货地址</h1>
+           <div class="nav-right nav-btn" id="nav-right">
+                修改
+            </div>
+        </div>
+        <div id="addressSite"></div>
+            <div class="ub ubt bc-border bc-bg  umar-t" >
+
+                <div class="deleteaddress ub  ub-ac uinn red textb" >
+                                                                          删除收货地址
+                </div>
+
+            </div>
+            
+        <div class="ub ub-ac ub-pc markt_fixed ubt bc-border bc-bg2" style="z-index: 1;width: 100%;height: 8%;">
+
+            <div class="UpdateDefaultAddress btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1" >
+                <div class="ub-f1 " >
+                                                                  设成默认收货地址
+                </div>
+                <div id="addressSite">
+                    
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+        appcan.ready(function() {
+            getaddress ();
+        });
+       
+         var Id = appcan.locStorage.getVal('addressId');
+         
+         appcan.button(".deleteaddress", "ani-act", function() {
+                 appcan.locStorage.setVal('pageName','confirm');
+                 uexWindow.openPopover("push", "0", "../common/push.html", "", 0, 0, 0, 0, '', "0", 0);
+         })
+         function getaddress () {
+                 var getUserUrl=getUrl("user/getaddress");
+             
+                     var data = {
+                         id : Id,
+                         token : getToken()
+                         }
+                    function callback(result){
+                      if (result.Success) {
+                  
+                     var str =''
+                     var data=result.Data;
+                
+                        str += "<div class='ub ubt bc-border bc-bg  umar-t ' >";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>收货人</div>";
+                        str += "<div class=' ub ub-f4 ub-ac uinn bold'>" + data.Name + "</div></div>";
+                        str += "<div class='ub ubt bc-border bc-bg'>";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>手机号码</div>";
+                        str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Mobile+"</div> </div>";
+                        str += "<div class='ub ubt bc-border bc-bg  ' >";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'> 邮政编码</div>";
+                        str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.ZipCode+"</div></div>";
+                        str += " <div class='ub ubt bc-border bc-bg  ' >";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>所在地区</div>";
+                        str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Area+"</div></div>";
+                        str += "<div class='ub ubt bc-border bc-bg  ' >";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>街道 </div>";
+                        str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Street+"</div> </div>";
+                        str += "<div class='ub ubt bc-border bc-bg  ' >";
+                        str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>详细地址</div>";
+                        str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Detail+"</div></div>";
+                        
+                        $("#addressSite").html(str);
+                        
+                    }
+         }
+      getRequestAjax(getUserUrl,data,callback);
+}
+
+       $(".nav-right").click(function() {
+           
+              appcan.openWinWithUrl('updataShoppingSite', '../user/updataShoppingSite.html');
+              
+        })
+          
+        appcan.button(".nav-left", "btn-act", function() {
+             
+            appcan.window.close(-1);
+            
+        })
+        
+        $(".UpdateDefaultAddress").click(function(){
+            updateDefaultAddress()
+        })
+        
+        function updateDefaultAddress(){
+            
+            var updateDefaultAddressUrl=getUrl('user/UpdateDefaultAddress');
+            var data = {
+                         id : Id,
+                         token : getToken()
+             }
+             
+             function callback(result){
+                 if(result.Success){
+                     alert(result.Message);
+                     appcan.window.close(-1);
+                 }else{
+                     alert(result.Message);
+                 }
+             }
+             getRequestAjax(updateDefaultAddressUrl,data,callback);
+            
+        }
+        
+        
+    </script>
+</html>

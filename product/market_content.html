@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+
+        <div class="ub ub-ver ub-f1 ">
+
+        </div>
+        <div id="showlist"></div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var flag = false;
+        var Token = getToken();
+        var categoryId = '';
+        appcan.ready(function() {
+            load = true;
+            pageindex = 1;
+            loadData(load);
+            uexWindow.setBounce(1);
+            initBounce(mes1, mes2);
+        });
+        function mes1() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadData(load);
+            return;
+        }
+
+        function mes2() {
+            pageindex = pageindex + 1;
+            if (!flag) {
+                load = false;
+                loadData(load);
+            } else {
+                return;
+            }
+        }
+
+
+        $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'mine-checked ub-f1 ub ub-pc ubr bc-border') {
+                    $(this).removeClass('mine-checked ub-f1 ub ub-pc ubr bc-border').addClass('mine ub-f1 ub ub-pc ubr bc-border');
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'mine ub-f1 ub ub-pc ubr bc-border') {
+                $(TA).removeClass('mine ub-f1 ub ub-pc ubr bc-border').addClass('mine-checked ub-f1 ub ub-pc ubr bc-border');
+            }
+        });
+
+        function loadData(load) {
+            var fatherId = appcan.locStorage.getVal('fatherId');
+            var fatherdata = appcan.locStorage.getVal('fatherdata');
+            var childrenId = appcan.locStorage.getVal('childrenId');
+            var loadDataUrl = getUrl('product/GetProductList');
+            var data;
+            if (fatherdata == 0) {
+                if (Token != null) {
+                    data = {
+                        pageindex : pageindex,
+                        pagesize : 20,
+                        categoryId : fatherId,
+                        token : Token
+                    }
+                } else {
+                    data = {
+                        pageindex : pageindex,
+                        pagesize : 20,
+                        categoryId : fatherId
+                    }
+                }
+            } else if (fatherdata == 1) {
+                if (Token != null) {
+                    data = {
+                        pageindex : pageindex,
+                        pagesize : 20,
+                        categoryId : fatherId,
+                        subcategoryId : childrenId,
+                        token : Token
+                    }
+                } else {
+                    data = {
+                        pageindex : pageindex,
+                        pagesize : 20,
+                        categoryId : fatherId,
+                        subcategoryId : childrenId
+                    }
+                }
+            }
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    if (data.length > 0) {
+                        str = "";
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i]);
+                        }
+                        if (data.length < 20) {
+                            flag = true;
+                            str += templateDivEnd();
+                        }
+                    } else {
+                        flag = true;
+                        str = templateDivEnd2();
+                    }
+                    if (load) {
+                        $('#showlist').html(str);
+                    } else {
+                        $('#showlist').append(str);
+                    }
+                    $(".mgjimg img").on("load", function() {
+                        var parent = $(this).parent();
+                        var imgCount = parent.find("img").length;
+                        var pW = parent.offset().width - 3 * imgCount;
+
+                        if (imgCount <= 4) {
+                            var imgW = Math.ceil(pW / 2) - 1;
+                            $(this).css({
+                                "width" : imgW + "px",
+                                "height" : imgW + "px"
+                            })
+                        } else {
+                            var imgW = Math.ceil(pW / 3) - 1;
+                            $(this).css({
+                                "width" : imgW + "px",
+                                "height" : imgW + "px"
+                            })
+                        }
+                        $(this).show();
+                    });
+
+                    $(".add").click(function() {
+                        var productId = this.id;
+                        appcan.locStorage.setVal('productId', productId);
+                        appcan.locStorage.setVal('Appraisal', 'rand');
+                        appcan.locStorage.setVal('payType', 'payIdentifyProduct');
+                        appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+                    })
+                    $('.addFollow').click(function() {
+                        Token = getToken()
+                        if (Token != null) {
+                            productId = this.id;
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 0,
+                                        foreignId : productId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.' + productId + '').css("color", "red").addClass('p-staring').removeClass('p-star').removeClass('fa-plus');
+                                            $('.' + productId + '').html(" 已关注");
+                                            uexWindow.toast("0", "5", "关注成功", "4000");
+                                            appcan.locStorage.val('loadWay', 'careList');
+                                            uexWindow.evaluateScript("index", 0, "Refresh()");
+                                            uexWindow.evaluateScript("root", 0, "Refresh()");
+                                            uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                                            uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            var selectVal = 'followProduct';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 0,
+                                            foreignId : productId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.' + productId + '').css("color", "#686B6D").removeClass('p-staring').addClass('p-star').addClass('fa-plus');
+                                                $('.' + productId + '').html(" 关注");
+                                                uexWindow.toast("0", "5", "取消成功", "4000");
+                                                appcan.locStorage.val('loadWay', 'careList');
+                                                uexWindow.evaluateScript("index", 0, "Refresh()");
+                                                uexWindow.evaluateScript("root", 0, "Refresh()");
+                                                uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                                                uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+                                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                                return;
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $(".market_details").click(function() {
+                        
+                        appcan.openWinWithUrl('market_details', 'market_details.html');
+                        appcan.locStorage.setVal('userId', $(this).attr('userId'));
+                        appcan.locStorage.setVal('productId', this.id);
+                    })
+                    $(".userinfo_content").click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', '../user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("market", 0, "userinfo()");
+                        }
+                    })
+                    $('.talk').click(function() {
+                        if (getToken() != null) {
+                            var talkProductId = $(this).attr('talkProductId');
+                            var talkUserId = $(this).attr('userId');
+                            getmessage(talkUserId, 'product', talkProductId);
+                            appcan.openWinWithUrl('talk', '../common/talk.html');
+                        } else {
+                            uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                } else {
+                    flag = true;
+                    var str = templateDivError('../img/error.png');
+                    $('#showlist').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    })
+                }
+            };
+            getRequestAjax(loadDataUrl, data, callback);
+        };
+
+        function changeDetail(change) {
+            $("." + change).click(function() {
+                appcan.openWinWithUrl(change, change + '.html');
+            })
+        }
+
+        function templateDiv(data) {
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var thumb = gerImgThumbUrl(data.Thumb);
+            var GreateDate = new Date(formatDate(data.CreateDate));
+            var oldTime = GreateDate.format('M月d日 hh:mm');
+            var str = "";
+            str += "<ul ontouchstart='appcan.touch(\'btn-act\')' class='ubb ub bc-border lis'>";
+            str += "<li  class='userinfo_content uh-app3 uw-app3  ub-img mar-ar1 ub ub-ver'  id=" + data.UserId + " style='background-image:url(" + avatar + ");border-radius:2em;'></li>";
+            str += "  <li class='ub-f1 ub ub-ver' >";
+            str += "    <div  class=' ub ub-f1 ub-ac' >";
+            str += "      <div id=" + data.Id + " userId="+data.UserId+" class='market_details ub-f4 bold'>" + data.Nicename + "</div>";
+
+            str += "    </div>";
+            str += "    <div class='ub umar-t'>";
+            str += "    <div  class='ub ub-f1 textb2 gery ' ><div id=" + data.Id + " userId="+data.UserId+"  class='ub-f4 market_details'><i class='fa fa-clock-o' style='color:#8F8F8F'></i> <a class='textb3'>" + oldTime + "</a></div>";
+
+            str += "    <div class='ub-f1 ub ub-pc'></div> </div> </div> ";
+
+            if (data.Content == '您的宝贝暂无描述') {
+                str += " <div id=" + data.Id + " userId="+data.UserId+" class='market_details t-bla ulev-4 ub-f1 uinn umar-t' style='line-height: .9;'></div>";
+            } else {
+                str += " <div id=" + data.Id + " userId="+data.UserId+" class='market_details t-bla ulev-4 ub-f1 uinn umar-t'  style='line-height: 1.2;'>" + data.Content + "</div>";
+            }
+
+            str += "<div id=" + data.Id + " userId="+data.UserId+" class='market_details mgjimg'>";
+            for (var j = 0; j < data.Icon.length; j++) {
+                str += "<img src='" + imgThumbUrl + data.Icon[j] + "'/>";
+            }
+            str += "</div>";
+            str += "<div class='ub ub-f1'>";
+           
+               str += "<div id=" + data.Id + " userId="+data.UserId+" class='market_details ub-f1 red1 bold  umar-b uinn textb2' >";
+                 if (data.Price != 0) {
+               str += " 价格：￥" + data.Price + "";
+                 } 
+               str += " </div>";
+          
+            str += "<div id=" + data.Id + "  class='gery umar-b umar-rr uinn ub　ub-f1  textb2' ><i class='fa fa-eye'></i> " + data.View + "</div>";
+            if (getToken() != data.UserId) {
+
+                str += "</div><div class='ub  umar-t uinn-1'><div id='" + data.Id + "' class='add ub ub-f1 umar-rr red uinn  ub ub-ac textb4 ub-pc uba bc-border uc-a1'><i class='fa fa-search'></i> 鉴定</div><div class='ub ub-f1 umar-rr ub-pc ub-ac uinn uba bc-border gery talk textb4' talkProductId='" + data.Id + "' userId='" + data.UserId + "'><i class='fa fa-comment-o'></i> 私聊</div>";
+
+            }
+
+            if (getToken() != data.UserId) {
+                if (data.IsFollow == true) {
+                    str += "    <div style='' class='" + data.Id + " addFollow p-staring ub ub-ac ub-f1 ub-pc textb4 uinn uba bc-border5 gery fa red'  userId=" + data.UserId + " id=" + data.Id + "> 已关注</div> ";
+                } else {
+                    str += "    <div style='' class='" + data.Id + " addFollow p-star ub ub-ac ub-f1 ub-pc textb4 uinn uba bc-border5 gery fa fa-plus ' style='color:#686B6D;' userId=" + data.UserId + " id=" + data.Id + "> 关注</div>";
+                }
+            }
+            str += " </div></div></li></ul>";
+            return str;
+        }
+
+        function templateDivEnd() {
+            var strEnd = '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-ac ub-pc" style="color:#d3d3d3;margin:0.5em;">没有更多' + '</div>' + '</div>';
+
+            return strEnd;
+        }
+         function templateDivEnd2() {
+            var strEnd = '<div class="ub ub-ac ub-pc" style="position: absolute;top:3em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/nonthing.png" style="width:4em;height:4em;">' + '</div> ' + '<div class="ub gery uinn textb2">' + '该分类下暂无藏品' + '</div></div>'
+            return strEnd;
+        }
+
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        function openImageGallery() {
+            uexImageBrowser.open(paths);
+        }
+
+        function saveImg() {
+            var pic = document.getElementById('saveImgSrc').value;
+            uexImageBrowser.save(pic);
+        }
+
+        function Refresh() {
+            loadData(load);
+            return;
+        }
+
+        function fatherRefresh() {
+            uexWindow.evaluateScript("market", 0, "Two()");
+            appcan.locStorage.setVal('childrenId', '');
+            appcan.locStorage.setVal('fatherdata', 0);
+            loadData(load);
+            return;
+        }
+
+    </script>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+       
+      
+      <div class="ub ub-ac ub-ver" style="width:100%;" id="contentDiv">
+          
+          
+      </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+      
+      
+      
+        var dayIndex='';
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+        var dateVal='';
+        
+        var auctionStartDay=appcan.locStorage.val('auctionStartDay');
+        appcan.ready(function() {
+            
+           
+            getAlbumList(auctionStartDay,true,1,false);
+            
+            function actionTop(){
+                readyIn=true;
+                var nowPageIndex1=1;
+                var nowEndFlag1=false;  
+                getAlbumList(dateVal,readyIn,nowPageIndex1,nowEndFlag1);
+                return ;
+            }
+           
+            function actionBottom(){
+              
+                var newPageIndex2 = pageIndex + 1;
+                if(!endFlag){
+                     readyIn=false;
+                     getAlbumList(dateVal,readyIn,nowPageIndex2,endFlag);
+                }else{
+                      return ;  
+                } 
+            }
+            
+            initBounce(actionTop,actionBottom);   
+         
+        });
+   
+        
+        function getAlbumList(selectDate,readyIn,nowPageIndex,nowEndFlag){  
+            dateVal=selectDate;
+            pageIndex=nowPageIndex;
+            endFlag=nowEndFlag;
+            if(typeof endFlag !="boolean"){
+                endFlag = (endFlag == "true");
+            }
+            var getAlbumListUrl=getUrl('auction/GetAlbumList');
+            var token=getToken();
+            var data;
+            if(token != null){
+                data={
+                    date : dateVal,
+                    pageindex : pageIndex,
+                    pagesize : '10',
+                    token  : token
+                };
+            }else{
+                data={
+                    date : dateVal,
+                    pageindex : pageIndex,
+                    pagesize : '10'
+                };
+            }
+         
+            
+            function callback(result){
+                var data=result.Data
+                var str='';
+                if(data.length !=0){
+                    for(var i=0;i<data.length;i++){
+                        str+=templateDiv(data[i]);
+                    }
+                    if(data.length < 10){
+                        endFlag=true;
+                        str+=templateDivEnd();
+                    }
+                }else{
+                    
+                    if(endFlag){
+                        endFlag=true;
+                        str=templateDivEnd();
+                    }else{
+                        endFlag=true;
+                        str=templateDivEmpty('暂无专场')
+                    }
+                }
+                
+                if(readyIn){
+                    $('#contentDiv').html(str);
+                }else{
+                    $('#contentDiv').append(str); 
+                }
+                
+                $(".auctionList").click(function(){
+                    var obj=$(this);
+                    appcan.locStorage.val('auctionTitle',obj.attr('title'));
+                    appcan.locStorage.val('auctionDate',obj.attr('date'));
+                    appcan.locStorage.val('auctionIcon',obj.attr('icon'));
+                    appcan.locStorage.val('albumId',this.id);
+                    appcan.openWinWithUrl("auction_list","../auction/auction_list.html");
+                })
+                return ;
+            }
+            
+            getRequestAjax(getAlbumListUrl,data,callback);   
+        }
+        
+        function templateDiv(dataJson){
+            var startDate=formatDate(dataJson.StartDate);
+            var endDate=formatDate(dataJson.EndDate);
+            var data=new Date();
+            var time=data.getTime();
+            var str='';
+            var icon=getImgNormalUrl(dataJson.Icon);
+            
+            //写票据div
+            var ticketDiv='';
+            if(dataJson.HasTicket){
+                   ticketDiv='<div class="ub ub-pc" style="width:100%;">'
+                                +'<div class="ub ub-ac ub-img1 ulev-1" style="width:30%;height:1.5em;color:#ffffff;background-image:url(../img/img1/ticket1.png)">&nbsp;&nbsp;&nbsp;&nbsp;门票已购</div>'    
+                                +'<div class="ub ub-f1"></div>'
+                             +'</div>';
+            } 
+            
+            var nowDayDate=new Date().format('yyyy-MM-dd');
+            var startDayDate=new Date(startDate).format('yyyy-MM-dd');
+            
+            var diffDay=diffDays(startDayDate,nowDayDate);
+            //昨天
+            if(diffDay > 0){
+                       
+                        str='<div class="ub ub-ac ub-ver auctionList" id='+dataJson.Id+' date='+startDate+' title='+dataJson.Title+' icon='+icon+' style="width:95%;padding:1em 0em;border-bottom:0.1em solid #C7C7C7;">'
+                                 +'<div class="ub" style="width:100%;">'
+                                      +'<div class="ulev1 ub-f1" >'+dataJson.Title+'</div>'
+                                      +'<div class="ulev-4" >'
+                                           +'<div class="ub ub-ac ub-pc uc-a ulev1" style="background-color:gray;color:#ffffff;padding:0.8em;">已结束</div>'
+                                          
+                                      +'</div>'
+                                 +'</div>'
+                                 +'<div class="ub" style="width:100%;margin:0.5em 0em;">'
+                                      +'<font color="red">'+dataJson.BidCount+'</font>次出价&nbsp;&nbsp;&nbsp;'
+                                     // +'<font color="#76C044">'+dataJson.View+'</font>次围观&nbsp;&nbsp;&nbsp;'
+                                      +'<font color="red">'+dataJson.AuctionCount+'</font>件拍品'
+                                 +'</div>'
+                                 +' <div class="ub  ub-pc ub-img1"style="width:100%;height:6em;background-image:url('+icon+');">'
+                                 +'</div>'
+                                 
+                            +'</div>';
+                
+            }else if(diffDay == 0){
+                    if(time < startDate){
+                        var start=new Date(startDate).format("hh:mm");
+                        str='<div class="ub ub-ac ub-ver auctionList" id='+dataJson.Id+' date='+startDate+' title='+dataJson.Title+' icon='+icon+' style="width:95%;padding:1em 0em;border-bottom:0.1em solid #C7C7C7;">'
+                                 +'<div class="ub" style="width:100%;">'
+                                      +'<div class="ulev1 ub-f1" >'+dataJson.Title+'</div>'
+                                      +'<div class="ulev-4" style="border:0.1em solid green;">'
+                                           +'<div class="ub ub-ac ub-pc" style="background-color:green;color:#ffffff;padding:0.2em 1em;">开始时间</div>'
+                                           +'<div class="ub ub-ac ub-pc" style="color:green;padding:0.2em 1em;">'+start.toString()+'开始</div>'
+                                      +'</div>'
+                                 +'</div>'
+                                 +'<div class="ub" style="width:100%;;margin:0.5em 0em;">'
+                                      +'<font color="red">'+dataJson.BidCount+'</font>次出价&nbsp;&nbsp;&nbsp;'
+                                     // +'<font color="#76C044">'+dataJson.View+'</font>次围观&nbsp;&nbsp;&nbsp;'
+                                      +'<font color="red">'+dataJson.AuctionCount+'</font>件拍品'
+                                 +'</div>'
+                                 +' <div class="ub  ub-pc ub-img1"style="width:100%;height:6em;background-image:url('+icon+');">'
+                                      +ticketDiv
+                                 +'</div>'
+                                 
+                            +'</div>';
+                   }else if(startDate <= time && time < endDate){//正在竞拍的拍品
+                       var end=new Date(endDate).format("hh:mm");
+                      // var start=new Date(startDate).format("hh:mm");
+                       str='<div class="ub ub-ac ub-ver auctionList" id='+dataJson.Id+' date='+endDate+' title='+dataJson.Title+' icon='+icon+' style="width:95%;padding:1em 0em;border-bottom:0.1em solid #C7C7C7;">'
+                                 +'<div class="ub" style="width:100%">'
+                                      //+'<div class="ulev1 ub-f1" style="overflow:hidden;text-overflow:ellipsis; ">中国爱我 我爱中国中国爱我 我爱中国中国爱我</div>'
+                                      +'<div class="ulev1 ub-f1">'+dataJson.Title+'</div>'
+                                      +'<div class="ulev-4" style="border:0.1em solid red;">'
+                                           +'<div class="ub ub-ac ub-pc" style="background-color:red;color:#ffffff;padding:0.2em 1em;">结束时间</div>'
+                                           +'<div class="ub ub-ac ub-pc" style="color:red;padding:0.2em 1em;">'+end.toString()+'结束</div>'
+                                      +'</div>'
+                                 +'</div>'
+                                 +'<div class="ub" style="width:100%;margin:0.5em 0em;">'
+                                      +'<font color="red">'+dataJson.BidCount+'</font>次出价&nbsp;&nbsp;&nbsp;'
+                                     // +'<font color="#76C044">'+dataJson.View+'</font>次围观&nbsp;&nbsp;&nbsp;'
+                                      +'<font color="red">'+dataJson.AuctionCount+'</font>件拍品'
+                                 +'</div>'
+                                 +' <div class="ub  ub-pc ub-img1" style="width:100%;height:6em;background-image:url('+icon+');">'
+                                      + ticketDiv
+                                 +'</div>'
+                                   
+                            +'</div>';
+                   }
+            }else if( diffDay < 0){
+                 var start=new Date(startDate).format("MM-dd hh:mm");
+                 var arrayStart=start.toString().split(" ");
+                        str='<div class="ub ub-ac ub-ver auctionList" id='+dataJson.Id+' date='+startDate+' title='+dataJson.Title+' icon='+icon+' style="width:95%;padding:1em 0em;border-bottom:0.1em solid #C7C7C7;">'
+                                 +'<div class="ub" style="width:100%;">'
+                                      +'<div class="ulev1 ub-f1" >'+dataJson.Title+'</div>'
+                                      +'<div class="ulev-4" style="border:0.1em solid green;">'
+                                           +'<div class="ub ub-ac ub-pc" style="background-color:green;color:#ffffff;padding:0.2em 1em;">'+arrayStart[0]+'</div>'
+                                           +'<div class="ub ub-ac ub-pc" style="color:green;padding:0.2em 1em;">'+arrayStart[1]+'开始</div>'
+                                      +'</div>'
+                                 +'</div>'
+                                 +'<div class="ub" style="width:100%;;margin:0.5em 0em;">'
+                                      +'<font color="red">'+dataJson.BidCount+'</font>次出价&nbsp;&nbsp;&nbsp;'
+                                     // +'<font color="#76C044">'+dataJson.View+'</font>次围观&nbsp;&nbsp;&nbsp;'
+                                      +'<font color="red">'+dataJson.AuctionCount+'</font>件拍品'
+                                 +'</div>'
+                                 +' <div class="ub  ub-pc ub-img1"style="width:100%;height:6em;background-image:url('+icon+');">'
+                                      +ticketDiv
+                                 +'</div>'
+                                 
+                            +'</div>';
+            }
+          
+             
+            
+           return str; 
+        }
+        
+        //添加尾部预展按钮
+        
+      function diffDays(s1,s2){//计算相差的天数
+             s1 = s1.replace(/-/g, "/");
+             s2 = s2.replace(/-/g, "/");
+             s1 = new Date(s1);
+             s2 = new Date(s2);
+             
+             var days= s2.getTime() - s1.getTime();
+             var time = parseInt(days / (1000 * 60 * 60 * 24));
+             
+             return time;
+       }
+      
+        
+    </script>
+</html>

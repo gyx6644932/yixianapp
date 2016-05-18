@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <style type="text/css">
+      
+    </style>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh">
+                <div class="bc-text-head ub bc-head" style="position:relative;">
+             
+                    <div style="position:relative;left:40%;right:55%;text-align: center;">
+                        <h1 class="ut ub-f1 ulev-3 ut-s tx-c" style="padding:0.75em 0em;"  id="title" tabindex="0">今日拍品</h1>
+                    </div>
+                    <div class="nav-btn ub ub-ac ub-pe" style="position:relative;left:55%;">
+                        <div   style="min-width: 3em;" id="calculator">
+                            <img src="../img/img2/calculator.png" style="height:1.5em;width:1.5em;">  
+                        </div>
+                         <div  style="min-width: 3em;" id="filter" >
+                            <img src="../img/img2/filter.png" style="height:1.5em;width:1.5em;">
+                        </div>
+                    
+                    </div>
+                    
+                    
+                   
+                </div>
+                <div class="ub ub-ac ub-pc" style="width:100%;">
+                    <div class="ub ub-ac ub-pc" style="width:95%;margin:0.5em 0em 0em;" id="dayList">
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+
+            </div>
+            <!--content结束-->
+         <!--
+            <div id="footer" class="uf ub ub-ac ub-pc" style="height:3.5em;opacity:0.8;">
+                <div class="ub ub-ac ub-pc ub-f1 bc-btn" id="publicAucitonBtn" style="height:100%;color:#FFFFFF">
+                    上传拍品
+                </div>
+
+            </div>
+         -->   
+            <div class="ub ubt bc-border1 textb2 gery2" style="background: #F8F7F7;">
+                <div class='index ub-f1 c-org ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/home.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                主页
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='product ub-f1 c-blu2  ub ub-pc nav  umar-t '>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/markt.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                市场
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='identify ub-f1 c-org  ub ub-pc  nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+
+                        <div class="ub ub-pc">
+                            <img src="../img/ident.png"/>
+
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                鉴定
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='auction ub-f1 c-blu2  ub ub-pc nav  umar-t'>
+                    <div class='uinn21  ub ub-ver'>
+                        <div class="ub ub-pc"><img src="../img/auction2.png"/>
+                        </div>
+                        <div class='ub ub-pc  red1'>
+                            <p>
+                                拍卖
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='person ub-f1 c-org  ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/my.png"/>
+                            <div id="redDot2" class="redDot2" style="display: none"></div>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                我的
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var auctionStartDay = appcan.locStorage.val('auctionStartDay');
+        var year = '';
+        var month = '';
+        var day = '';
+        window.uexOnload = function() {
+            var nowDate = new Date().format("yyyy-MM-dd").toString();
+            var nowDateArray = nowDate.split('-');
+            year = nowDateArray[0];
+            month = nowDateArray[1];
+            day = nowDateArray[2];
+
+            //初始化入口
+            writeDay(auctionStartDay);
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "auction_index_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+
+            }
+
+            uexControl.cbOpenDatePicker = function(opCode, dataType, data) {
+                if (dataType == 1) {
+                    var obj = eval('(' + data + ')');
+                    year = obj.year;
+                    month = obj.month;
+                    var month2 = month - 1;
+                    day = obj.day;
+                    var selectDateStr = new Date(year, month2, day).format("yyyy-MM-dd");
+                    // var selectDateStr=year + '-' + month + '-'+ day;
+                    writeDay(selectDateStr)
+                }
+            }
+            if (getToken() != null) {
+                changeNew();
+            }
+        }
+        function changeNew() {
+            function getJsonGuide(jsonGuide){
+                 if(jsonGuide['allFlag']){
+                      $("#redDot2").css('display', 'block !important');
+                 }else{
+                      $("#redDot2").css('display', 'none !important');
+                 }
+           
+            }
+            getGuide(getJsonGuide);
+            setTimeout("changeNew()", 4000);
+        
+        }
+
+        function writeDay(selectDay) {
+            $("#dayList").empty();
+            var selectDayStr = '';
+            var countDay = 3;
+
+            for (var i = -2; i < countDay; i++) {
+                var date = new Date(selectDay);
+                date.setDate(date.getDate() * 1 + i);
+                var dateChange = date.format("yyyy-MM-dd");
+                var dateNow = new Date().format("yyyy-MM-dd");
+                if (dateChange.toString() == dateNow.toString() && i == 0) {
+                    selectDayStr = dateChange.toString();
+                    var child = $('<div class="div-checked" value=' + dateChange + '>今天</div>');
+                } else if (dateChange.toString() == dateNow.toString() && i != 0) {
+
+                    var child = $('<div class="div-noChecked"  value=' + dateChange + '>今天</div>');
+                } else if (dateChange.toString() != dateNow.toString() && i == 0) {
+                    selectDayStr = dateChange.toString();
+                    var child = $('<div class="div-checked"  value=' + dateChange + '>' + date.getDate() + '日</div>');
+                } else {
+                    var child = $('<div class="div-noChecked" value=' + dateChange + '>' + date.getDate() + '日</div>');
+                }
+                $("#dayList").append(child);
+            }
+            openContent(selectDayStr);
+        }
+
+        function tomorrowDate() {
+            var date = new Date();
+            date.setDate(date.getDate() * 1 + 1);
+            var tomorrowDate = date.format("yyyy-MM-dd");
+            writeDay(tomorrowDate.toString())
+        }
+
+
+        $("#dayList").click(function() {
+            var currentObj = event.target;
+            if (currentObj.id != 'dayList') {
+                $(this).children().each(function() {
+                    if (this.className == 'div-checked') {
+                        $(this).removeClass('div-checked').addClass('div-noChecked');
+                    }
+                });
+                $(currentObj).removeClass('div-noChecked').addClass('div-checked');
+                selectDayStr = $(currentObj).attr('value');
+                openContent(selectDayStr);
+            }
+
+        })
+        function openContent(selectDayStr) {
+            changeTitle(selectDayStr);
+            var readyIn = true;
+            var nowPageIndex = 1;
+            var nowEndFlag = false;
+            var albumTypeId=null;
+            
+            uexWindow.evaluatePopoverScript("auction_index", "content", "getAlbumList('" + selectDayStr + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "','"+albumTypeId+"')");
+        }
+
+
+
+        $("#calculator").click(function() {
+
+            uexControl.openDatePicker(year, month, day);
+        })
+        $(".index").click(function() {
+            appcan.window.open({
+                name : 'index',
+                data : '../index.html',
+                dataType : 0
+            });
+        })
+        $(".product").click(function() {
+            appcan.window.open({
+                name : 'searchType',
+                data : '../product/searchType.html',
+                dataType : 0
+            });
+        })
+
+        $(".identify").click(function() {
+            appcan.window.open({
+                name : 'identify-list',
+                data : '../identify/identify-list.html',
+                dataType : 0,
+                type : 256,
+                aniId : 12
+            });
+        })
+
+        $(".auction").click(function() {
+            uexWindow.evaluatePopoverScript('person', 'content', 'openAuction()');
+        })
+        $(".person").click(function() {
+            appcan.window.open({
+                name : 'person',
+                data : '../user/person.html',
+                dataType : 0
+            });
+        })
+        function changeTitle(selectDayStr) {
+            var nowDayDate = new Date().format('yyyy-MM-dd');
+            var selectDayDate = new Date(selectDayStr).format('yyyy-MM-dd');
+            var diffDay = diffDays(selectDayDate, nowDayDate);
+            if (diffDay > 0) {
+                $('#title').html('预展/历史');
+            } else if (diffDay == 0) {
+                $('#title').html('今日拍品');
+            } else if (diffDay < 0) {
+                $('#title').html('预展/历史');
+            }
+        }
+
+        function diffDays(s1, s2) {//计算相差的天数
+            s1 = s1.replace(/-/g, "/");
+            s2 = s2.replace(/-/g, "/");
+            s1 = new Date(s1);
+            s2 = new Date(s2);
+            var days = s2.getTime() - s1.getTime();
+            var time = parseInt(days / (1000 * 60 * 60 * 24));
+            return time;
+        }
+
+
+        $("#filter").click(function() {
+            appcan.window.open({
+                name : 'filter',
+                data : 'filter.html',
+                dataType : 0
+            });
+        })
+
+    </script>
+</html>

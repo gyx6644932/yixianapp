@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main2.css">
+    </head>
+    <style type="text/css">
+        .checkBox{
+            width:2.5em;
+            height:2.5em;
+        }
+        
+        .list{
+            
+            width:93%;
+            margin:0.8em auto 0em;
+            padding:0.4em 0em;
+            border-bottom:0.05em solid #D6D6D6;
+            
+        }
+        
+        .list2{
+            
+            width:93%;
+            margin:0.5em 0em 0em;
+           
+        }
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ac ub-ver" style="background-color:#ffffff;">
+            
+         
+     <!--       
+            <div class="ub ub-ac list" id="selectAll">
+                <div class="ub ub-ac ub-pc">
+                    <input type="checkbox"  class="checkBox">
+                </div>
+                <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                                                                全部
+                </div>                                   
+            </div>
+      -->      
+ 
+        </div>
+        
+        <div class="ub ub-ac ub-ver" style="background-color:#ffffff;" id="content">
+            <div class="ub ub-ac list"> 
+                <input type="checkbox" class="checkBox" id='selectAll'>
+                <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                                                                全部
+                </div>                                  
+            </div>
+            
+        </div>
+        
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+   
+    <script>
+        appcan.ready(function() {
+            getalbumtypelist()
+        });
+        
+        function getalbumtypelist(){
+            var getAlbumTypeListUrl=getUrl("auction/getalbumtypelist");
+            var data={
+                   
+                };
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data
+                    var str='';
+                    for(var i=0;i<data.length;i++){
+                        str+=templateDiv(data[i]);
+                    }
+                }else{
+                    
+                }
+                
+                $("#content").append(str);
+                
+                  $("#selectAll").click(function(){
+                        $(".checkBox").each(function(){ 
+                            if(this.id != "selectAll"){
+                                if($(this).attr("checked")){      
+                                       $(this).prop('checked',false);              
+                                 } else {    
+                                       $(this).prop('checked',true);               
+                                 } 
+                            }
+                             
+                        })  
+                  })
+               
+                 /*
+                 $(".list").click(function(){
+                                                    
+                                                          var checked=$(this).find(".checkBox");
+                                                           if(checked.attr("checked")){ 
+                                                               
+                                                               $(this).prop('checked',false);
+                                                                
+                                                           } else {    
+                                                               checked.attr("checked","true"); 
+                                                               
+                                                           } 
+                                                      
+                                                       
+                                   })*/
+
+            }
+           getRequestAjax(getAlbumTypeListUrl,data,callback);   
+        }
+        
+        function templateDiv(dataJson){
+            var str='<div class="ub ub-ac list" >'
+                       +'<div class="ub ub-ac ub-pc">'
+                           +'<input type="checkbox" class="checkBox" id='+dataJson.Id+'>'
+                       +'</div>'
+                       +'<div class="ub ub-ac ub-pc" style="margin-left:1em;">'
+                        //  +dataJson.Name +"("+dataJson.AlbumCount+")"
+                        +dataJson.Name
+                       +'</div>'
+                  +'</div>' ;
+            return str;                                      
+        }
+        
+        function getCheck(){
+            var albumTypeId=[]
+            $(".checkBox").each(function(index){
+                if(this.id != "selectAll"){
+                     if($(this).attr("checked")){
+                        albumTypeId.push(this.id); 
+                     }
+                 }
+                
+            })
+            
+            if(albumTypeId.length == 0){
+                albumTypeId=null;
+            }
+            
+            var selectDate=appcan.locStorage.val('auctionStartDay');
+            var readyIn=true;
+            var nowPageIndex=1;
+            var nowEndFlag=false;
+            uexWindow.evaluatePopoverScript('auction_index','content','getAlbumList("'+selectDate+'","'+readyIn+'","'+nowPageIndex+'","'+nowEndFlag+'","'+albumTypeId+'")');
+
+        }
+        
+      
+       
+
+    </script>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver">
+            <div class=" umar-at1">
+                <div id="listview"  class=" bc-border  c-wh  uinn-a7"></div>
+            </div>
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+    </body>
+    <script>
+       
+        appcan.ready(function() {
+            appcan.initBounce();
+            accout_safe();
+        })
+        function accout_safe() {
+            var Alipay = appcan.locStorage.getVal('Alipay')
+            var lAlipay = '请完善收款付款支付宝账号'
+            if (Alipay != "null") {
+                if (Alipay.length != 0) {
+                    Alipay = Alipay
+                    mAlipay = Alipay.substr(3, 4);
+                    lAlipay = Alipay.replace(mAlipay, "****");
+                } else {
+                    var lAlipay = '请完善收款付款支付宝账号'
+                }
+            } else {
+                $("#Alipay").text(Alipay);
+            }
+            var lphone = ''
+            Mobile = appcan.locStorage.getVal('Mobile')
+            if (Mobile) {
+                Telephone = Mobile
+                mphone = Telephone.substr(3, 4);
+                lphone = Telephone.replace(mphone, "****");
+            }
+            var lv = appcan.listview({
+                selector : "#listview",
+                type : "thinLine",
+                hasIcon : true,
+                hasAngle : true,
+                hasSubTitle : true,
+                multiLine : 1
+            });
+            lv.set([{
+                title : '我的支付宝账号',
+                subTitle : lAlipay,
+                id : 1
+            }, {
+                title : '我的手机号码',
+                subTitle : lphone,
+                id : 2
+            }, {
+                title : '修改登录密码',
+                subTitle : '',
+                id : 3
+            }]);
+            lv.on("click", function(ele, obj, curEle) {
+                switch(obj.id) {
+                case 1:
+                    Alipay = appcan.locStorage.getVal('Alipay');
+                    if (Alipay == "null" || Alipay == "") {
+                    appcan.openWinWithUrl("changeAlipay", 'changeAlipay.html');
+                    }
+                    break;
+                case 3:
+                    appcan.openWinWithUrl("changePas", 'changePas.html');
+                    break;
+                }
+
+            })
+        }
+         function Refresh() {
+             Alipay = appcan.locStorage.getVal('Alipay')
+            accout_safe();
+            return;
+        }
+
+        appcan.button(".head_photo", "ani-act", function() {
+            uexWindow.openPopover("head_photo", "0", "head_photo.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+    </script>
+</html>

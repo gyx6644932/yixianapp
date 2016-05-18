@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+
+            <div id="header" class="uh bc-text-head ub  ub-ver">
+                <div class="ub bc-head">
+                    <div class="close nav-btn" id="nav-left">
+                        <div class="fa fa-angle-left fa-2x"></div>
+                    </div>
+                    <h1 id='title' class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">市场</h1>
+                    <div class=" nav-btn" id="nav-right">
+                        <div class="edit nav-btn textb2 umar-r" id="edit">
+                            编辑
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+
+            </div>
+            <!--content结束-->
+            <div id="footer" class="add ub ub-ac ub-pc bc-btn" style="height:3em;color:#FFFFFF;display:block">
+                上传市场
+            </div>
+            <div id="chk" class=" ub-ac ub-pe ubb bc-border1" style="height:3em;background-color:#E6E6E6;color:red;display: none">
+                <div id="all" class="ub-f1 " style="padding-left:2em;">
+                    全选
+                </div>
+                <div id="cancel" class="ub-f1 " style="padding-left:2em;display: none">
+                    取消
+                </div>
+                <div id="delete" class="ub-f1 ub ub-pe" style="padding-right:2em;">
+                    入库
+                </div>
+            </div>
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "person_product_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+        });
+        appcan.button(".close", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+   
+        $('#footer').click(function() {
+            appcan.openWinWithUrl('product_publish','../product/product_publish.html');  
+        })
+        $('#all').click(function() {
+            uexWindow.evaluatePopoverScript("person_product", "content", "checkAll()");
+        })
+        $('#cancel').click(function() {
+            $('#all').css('display', 'block')
+            $('#cancel').css('display', 'none')
+            uexWindow.evaluatePopoverScript("person_product", "content", "cancelAll()");
+        })
+        $('#delete').click(function() {
+            uexWindow.evaluatePopoverScript("person_product", "content", "chkDelete()");
+        })
+        $('#edit').click(function() {
+            if ($('.edit').hasClass('edit')) {
+                $('.edit').html('完成').removeClass('edit nav-btn textb2 umar-r').addClass('finish nav-btn textb2 umar-r')
+                $('#footer').css('display', 'none').removeClass('ub')
+                $('#chk').css('display', 'block').addClass('ub')
+                uexWindow.evaluatePopoverScript("person_product", "content", "edit()");
+            } else if ($('.finish').hasClass('finish')) {
+                $('.finish').html('编辑').removeClass('finish nav-btn textb2 umar-r').addClass('edit nav-btn textb2 umar-r')
+                $('#footer').css('display', 'block').addClass('ub')
+                $('#chk').css('display', 'none').removeClass('ub')
+                uexWindow.evaluatePopoverScript("person_product", "content", "finish()");
+            }
+
+        })
+        function Refresh() {
+            $('.finish').html('编辑').removeClass('finish nav-btn').addClass('edit nav-btn')
+            $('#footer').css('display', 'block').addClass('ub')
+            $('#chk').css('display', 'none').removeClass('ub')
+            uexWindow.evaluatePopoverScript("person_product", "content", "finish()");
+        }
+
+        function cancelAll() {
+            $('#all').css('display', 'none')
+            $('#cancel').css('display', 'block')
+        }
+    </script>
+</html>

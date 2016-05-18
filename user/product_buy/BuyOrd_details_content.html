@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main.css">
+    </head>
+    <style type="text/css">
+        .top{
+            margin-top:0.5em;
+            font-size:0.9em;
+        }
+        .top .content{
+            margin:auto;
+            width:97%;
+            padding:0.5em 0em;
+        }
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver bc-bg top" >
+            <div class="ub ub-ac ub-pc ulev content">
+                <div class="ub ub-ac ub-ver" style="width:20%;">
+                     <div>
+                         <img src="../../img/img2/buy_1.png" style="width:2em;height:2em;">
+                     </div>
+                </div>
+                
+                <div class="ub ub-ac ub-ver" style="width:80%;">
+                     <div class="ub ub-ac ub-ver" style="width:100%;">
+                         <div class="ub ub-ac ub-pj" style="width:100%;">
+                             <div class="ub ub-ac" style="width:40%;"><font id="addressName"></font> </div>
+                             <div class="ub ub-ac ub-pe" style="width:60%;"><font id="addressMobile"></font></div>
+                         </div>
+                     </div>
+                     <div class="ub ub-ac" style="width:100%;">
+                             <font id="address"></font>
+                     </div>
+                </div>
+            </div>
+       </div> 
+        <div class="ub ub-ver bc-bg top" >
+           <div class="ub ub-ac ub-pc ulev content" >
+                <div class="ub ub-ac ub-pc" style="width:20%;">
+                    <img src="../../img/img2/buy_2.png" style="width:2em;height:2em;"> 
+                </div>
+                <div class="ub ub-ac ub-ver" style="width:80%;">
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                         订单状态：<font style="color:red;" id="status"></font>
+                     </div>
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                         订单号：<font id="orderId"></font>                                                       
+                     </div>
+                </div>
+            </div>
+       </div> 
+       <div class="ub ub-ver bc-bg top" id="expressDiv" style="display:none !important;">
+           <div class="ub ub-ac ub-pc ulev content" >
+                <div class="ub ub-ac ub-pc" style="width:20%;">
+                    <img src="../../img/img2/buy_3.png" style="width:2em;height:2em;"> 
+                </div>
+                <div class="ub ub-ac ub-ver" style="width:65%;">
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                         物流：<font id="expressName"></font>
+                     </div>
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                         订单号：<font id="codenumber"></font>                                                       
+                     </div>
+                </div>
+                <div class="ub ub-ac ub-ver" style="width:15%;">
+                     <div class="fa fa-angle-right fa-2x"></div>
+                </div>
+            </div>
+       </div> 
+              
+       <div class="ub ub-ver bc-bg top" >
+           <div class="ub ub-ac ub-pc ulev content" >
+                <div class="ub ub-ac ub-pc" style="width:20%;">
+                      <img id="sellerAvatar" style="width:3em;height:3em;border-radius:3em;">
+                </div>
+                <div class="ub ub-ac" style="width:50%;">
+                      <font id="sellerNicename"></font>
+                </div>
+                <div class="ub ub-ac ub-pe" style="width:30%;">
+                     <div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2 talk"  style="margin-left:0.5em;">联系卖家</div>
+                </div>
+                
+            </div>
+       </div>  
+       
+       <div class="ub ub-ver bc-bg top" >
+           <div class="ub ulev content" >
+                <div class="ub ub-ac ub-pc" style="width:30%;">
+                      <img id="thumb" style="width:6em;height:6em;">
+                </div>
+                <div class="ub" style="width:45%;">
+                      <font id="content"></font>
+                </div>
+                <div class="ub ub-ac ub-pe" style="width:25%;">
+                      <div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2" id="applyRefund" onclick="applyRefund()" style="margin:2.5em 0em 0em;">申请退款</div>                  
+                </div>
+                
+            </div>
+       </div> 
+       
+       <div class="ub ub-ver bc-bg top" style="padding:0.5em 0em;">
+           <div class="ub ub-ac ub-pj" style="width:98%;">
+                <div style="width:25%;"></div>
+                <div class="ub ub-ac ub-pc" style="width:20%;">
+                                                                           共1件藏品
+                </div>
+                <div class="ub ub-pc" style="width:35%;">
+                                                                           运费：买家承担
+                </div>
+                <div class="ub ub-ac ub-pe" style="width:20%;">
+                                                                             合计：￥<font id='price' color="red"></font>
+                </div>
+                
+            </div>
+       </div>
+       <div class="ub ub-ac ub-ver bc-bg top" id="statusDiv">
+            
+            
+       </div>        
+  
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        var orderStatus = appcan.locStorage.val('orderStatus');
+        var orderId=appcan.locStorage.val('orderId');
+        var addressId='';
+        var talkUserId='';
+        var talkAuctionId='';
+                     
+        appcan.ready(function() {
+           
+           function actionTop() {
+                getOrderInfo();
+           }
+           initBounce(actionTop, 0);
+           getOrderInfo();         
+        });
+        
+        function getOrderInfo(){
+           
+            getBuyOrderList();
+        }
+        
+        function getBuyOrderList(){       
+             var getOrderUrl=getUrl('auction/GetOrder');
+             var data={
+                orderid : orderId,
+                Token : getToken()
+             };
+             function callback(result){
+                 if(result.Success){
+                     var data=result.Data
+                     
+                     if(orderStatus == '1'){
+                         $("#status").html('待发货');
+                         
+                     }else if(orderStatus == '2'){
+                          $("#status").html('待收货');
+                          var sendDate=formatDate(data.SendDate);
+                          sendDate=new Date(sendDate).format("yyyy-MM-dd hh:mm:ss");
+                          
+                          var autoCompleteDate=formatDate(data.AutoCompleteDate);
+                          autoCompleteDate=new Date(autoCompleteDate).format("yyyy-MM-dd hh:mm:ss");
+                          
+                          var str='<div class="ub ub-ac content">'
+                                       +'一线客服电话：025-52282040'
+                                  +'</div>'               
+                                  + '<div class="ub ub-ac content">'
+                                     +'卖家发货时间：<font>'+sendDate+'</font>'               
+                                  +'</div>'
+                                  + '<div class="ub ub-ac content">'
+                                     +'系统自动确认收货时间：<font>'+autoCompleteDate+'</font>'               
+                                  +'</div>';
+                           $("#statusDiv").html(str);
+                           getOrderTrackList();
+                           $("#expressDiv").attr('style','display:block !important')      
+                     }else if(orderStatus == '3'){
+                          $("#status").html('已收货');
+                          var sendDate=formatDate(data.SendDate);
+                          sendDate=new Date(sendDate).format("yyyy-MM-dd hh:mm:ss");
+                          
+                          var autoCompleteDate=formatDate(data.AutoCompleteDate);
+                          autoCompleteDate=new Date(autoCompleteDate).format("yyyy-MM-dd hh:mm:ss");
+                          
+                          var str='<div class="ub ub-ac content">'
+                                       +'一线客服电话：025-52282040'
+                                  +'</div>'               
+                                  + '<div class="ub ub-ac content">'
+                                     +'卖家发货时间：<font>'+sendDate+'</font>'               
+                                  +'</div>'
+                                  + '<div class="ub ub-ac content">'
+                                     +'系统自动确认收货时间：<font>'+autoCompleteDate+'</font>'               
+                                  +'</div>';
+                           $("#statusDiv").html(str);
+                           getOrderTrackList();
+                           $("#expressDiv").attr('style','display:block !important') 
+                           $("#applyRefund").attr('style','display:none !important') 
+                     }
+                     
+                     var thumb=gerImgThumbUrl(data.Thumb);
+                     var sellerAvatar=getImgNormalUrl(data.SellerAvatar);
+                     talkUserId=data.SellerId;
+ 
+                     talkAuctionId=data.AuctionId;
+
+                     $('#thumb').attr('src',thumb);
+                     $('#content').html(data.Content);
+                     $('#price').text(data.Price);
+                     $("#sellerAvatar").attr('src',sellerAvatar);
+                     $("#sellerAvatar").attr('sellerId',data.SellerId);
+                     $("#sellerNicename").html(data.SellerNicename);
+                     $("#orderId").html(orderId);
+                     
+                     var address=data.Address;
+                     $('#addressName').text(address.Name);
+                     $('#addressMobile').text(address.Mobile);
+                     $("#addressZipCode").text(address.ZipCode);
+                     var strAddress=address.Area+address.Street+address.Detail;
+                     $('#address').text(strAddress);
+                 }else{
+                     uexWindow.toast("0", "5",result.Message, "2000");
+                    
+                 }
+             }
+             
+             getRequestAjax(getOrderUrl,data,callback);
+        }
+   
+        
+        
+
+        $(".talk").click(function(){
+             getmessage(talkUserId,'auction',talkAuctionId);
+             appcan.openWinWithUrl('talk', '../../common/talk.html');
+        })
+        
+        $("#sellerAvatar").click(function(){
+            var sellerId=$(this).attr('sellerId');
+            appcan.locStorage.setVal('userId', sellerId);
+            appcan.openWinWithUrl('userinfo', '../../common/userinfo.html');
+        })
+        
+        function trueComplete(){
+            appcan.window.alert({
+                  title : "提示",
+                  content : "您是否确认收货?",
+                  buttons : ['确定', '取消'],
+                  callback : function(err, data, dataType, optId) {
+                      if(data==0){
+                          
+                            var trueCompleteUrl=getUrl('auction/TrueComplete');
+                            var data={
+                                orderId:orderId,
+                                token : getToken()
+                            }
+                            function callback(result){
+                             
+                                uexWindow.evaluatePopoverScript('PerBuy_index','content','setUserState()');
+                                var orderType='buyOrderComplete';
+                                uexWindow.evaluateScript('PerBuy_details',0,'changeDiv("'+orderType+'")');
+                                uexWindow.toast("0", "5", '确认收货成功', "2000");
+                                appcan.openWinWithUrl('PerBuy_details','PerBuy_details.html');
+                                
+                            }
+                            getRequestAjax(trueCompleteUrl,data,callback);
+                              
+                      }else if(data == 1){
+                          return ;
+                      }
+          
+                  }
+            }); 
+        }
+        
+       function applyRefund(){
+           
+           appcan.window.alert({
+                  title : "提示",
+                  content : "您确认申请退款?",
+                  buttons : ['确定', '取消'],
+                  callback : function(err, data, dataType, optId) {
+                      if(data==0){
+                           var applyRefundUrl=getUrl('auction/ApplyRefund');
+                            var data={
+                                token : getToken(),
+                                orderId:orderId
+                            }
+                            function callback(result){
+                                uexWindow.toast("0", "5", '发送退款申请成功', "2000");
+                                uexWindow.evaluatePopoverScript('PerBuy_index','content','setUserState()');
+                                appcan.locStorage.val('buyRefundType','waitRefund');
+                                appcan.openWinWithUrl('PerBuy_refund','PerBuy_refund.html');
+                            }
+                            getRequestAjax(applyRefundUrl,data,callback);  
+                      }else if(data == 1){
+                          return ;
+                      }
+          
+                  }
+            });
+
+        }
+        
+        function getOrderTrackList(){
+            var getOrderTrackListUrl=getUrl('auction/GetOrderTrackList');
+            var data={
+                orderid : orderId,
+                token : getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length != 0){
+                       $("#codenumber").html(data.nu);
+                       $("#expressName").html(data.name);
+                    }else{
+                        
+                    }
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+            getRequestAjax(getOrderTrackListUrl, data, callback)
+        }
+        
+        $("#expressDiv").click(function(){
+            appcan.openWinWithUrl('order_logistics','../../common/order_logistics.html');
+        })
+    </script>
+</html>

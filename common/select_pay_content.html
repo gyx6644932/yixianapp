@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        .listDiv {
+            width: 100%;
+            margin: 0.8em 0em;
+            background-color: #FFFFFF;
+            padding: 0.8em 0em;
+        }
+
+        .list2 {
+            width: 100%;
+            background-color: #FFFFFF;
+            padding: 0.6em 0em;
+            color: #A1A1A1;
+            border-bottom: 0.05em solid #E2E2E2;
+        }
+        .list2 img {
+            width: 3.5em;
+            height: 3.5em;
+        }
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ac ub-ver">
+
+            <div class="ub ub-ac ub-ver listDiv"  >
+                <div class="ub ub-ac" style="width:100%;margin-bottom:.5em;">
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                        订单信息：
+                    </div>
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;" id="payDes"></div>
+                </div>
+
+                <div class="ub ub-ac" style="width:100%;">
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                        订单金额：
+                    </div>
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                        ￥<span id="fee"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ub ub-ac ub-pj list2" >
+                <div class="ub ub-ac" style="width:100%;">
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;">
+                        还需支付：
+                    </div>
+                    <div class="ub ub-ac ub-pc" style="margin-left:1em;color:red;">
+                        ￥<span id="realFee"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ub ub-ac ub-pj list2" >
+                <div class="ub " style="margin-left:1em;width:80%;">
+                    <img src="../img/img2/AL_P.png" class="ub ub-img1" style="">
+                    <div style="margin-left:1em;">
+                        <div style="font-size: 1.1em;color:#000000;">
+                            支付宝支付
+                        </div>
+                        <div style="height:0.7em;"></div>
+                        <div style="font-size: 0.8em;">
+                            推荐有支付宝账号的用户使用
+                        </div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="margin-left:1em;width:10%;">
+                    <div class="ub ub-img1 radio1 selectPay" id="AL_Pay"></div>
+
+                </div>
+            </div>
+            <div class="ub ub-ac ub-pj list2" >
+                <div class="ub " style="margin-left:1em;width:80%;">
+                    <img src="../img/img2/WX_P.png" class="ub ub-img1" >
+                    <div style="margin-left:1em;">
+                        <div style="font-size: 1.1em;color:#000000;">
+                            微信支付
+                        </div>
+                        <div style="height:0.7em;"></div>
+                        <div style="font-size: 0.8em;">
+                            推荐安装微信5.0及以上版本的用户使用
+                        </div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="margin-left:1em;width:10%;">
+                    <div class="ub ub-img1 radio selectPay" id="XW_Pay"></div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/MD5.js"></script>
+    </body>
+
+    <script>
+        var fee = appcan.locStorage.val('fee');
+        var realFee = appcan.locStorage.val('realFee');
+        var payType = appcan.locStorage.val('payType');
+        var orderId = appcan.locStorage.val('orderId');
+
+        var notifyUrl2 = '';
+        //回调地址
+
+        var subjectAL = '';
+        //为支付宝支付页面显示信息
+
+        var bodyWX = '';
+        //为微信支付页面显示信息
+        var attachWX = '';
+        //规格：attach: "{0}|{1}|{2}|{3}"（除了竞拍所得订单，其他的都不要考虑{3}） 以 | 分隔，{0}代表type   {1}代表orderId   {2}代表body  {3}代表subject
+        var bodyAL = '';
+        //阿里回调
+        var discountPrice = '';
+        //指定鉴定实际支付价格
+        function real() {
+            var getRealUrl = getUrl('identify/getidentifybyid');
+            var data = {
+                identifyId : orderId,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    data = result.Data;
+                    realFee = data.Price;
+                    $("#realFee").text(realFee);
+
+                    var payTypeWay = appcan.locStorage.val('payTypeWay');
+
+                    if (payTypeWay && payTypeWay == "exp") {
+                        getRequestAjax2(getUrl('identify/getdiscountprice'), {
+                            expertId : data.ExpertId,
+                            token : getToken()
+                        }, function(result) {
+                            if (result.Success) {
+                                realFee = result.Data;
+                                $("#realFee").text(realFee);
+                            }
+                        });
+                    }
+
+                }
+            }
+
+            getRequestAjax2(getRealUrl, data, callback);
+        }
+
+
+        appcan.ready(function() {
+            real();
+            $("#fee").text(fee);
+            $("#realFee").text(realFee);
+
+            if (payType == 'payTicket') {
+                $("#payDes").html('门票购买');
+                bodyWX = '门票购买';
+                subjectAL = '门票购买';
+                bodyAL = appcan.locStorage.val('albumticket');
+                notifyUrl2 = notifyUrl + 'paycallback?Type=0&orderId=' + orderId;
+
+                attachWX = "0|" + orderId + "|" + bodyAL;
+
+            } else if (payType == 'payIdentify') {
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "指定专家鉴定";
+                    subjectAL = '指定专家鉴定(来源:一线鉴定)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "随机专家鉴定";
+                    subjectAL = '随机专家鉴定(来源:一线鉴定)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+            } else if (payType == 'payIdentifyRepository') {
+                var repositoryId = appcan.locStorage.val('repositoryId');
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "repository:" + repositoryId;
+                    subjectAL = '指定专家鉴定(来源:仓库)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "repository:" + repositoryId;
+                    subjectAL = '随机专家鉴定(来源:仓库)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyFinish') {
+                var appraisalId = appcan.locStorage.val('appraisalId');
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "identify:" + appraisalId;
+                    subjectAL = '指定专家鉴定(来源:已鉴定)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "identify:" + appraisalId;
+                    subjectAL = '随机专家鉴定(来源:已鉴定)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyPer') {
+                var productId = appcan.locStorage.val('productId');
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "product:" + productId;
+                    subjectAL = '指定专家鉴定(来源:我的市场)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "product:" + productId;
+                    subjectAL = '随机专家鉴定(来源:我的市场)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyWaitpay') {
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "指定专家鉴定";
+                    subjectAL = '指定专家鉴定(来源:待付款)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "随机专家鉴定";
+                    subjectAL = '随机专家鉴定(来源:待付款)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyProduct') {
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "指定专家鉴定";
+                    subjectAL = '指定专家鉴定(来源:市场)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "随机专家鉴定";
+                    subjectAL = '随机专家鉴定(来源:市场)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyIndex') {
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "指定专家鉴定";
+                    subjectAL = '指定专家鉴定(来源:首页推荐)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "随机专家鉴定";
+                    subjectAL = '随机专家鉴定(来源:首页推荐)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+
+            } else if (payType == 'payIdentifyAuction') {
+                var auctionId = appcan.locStorage.getVal("auctionId");
+                var payTypeWay = appcan.locStorage.val('payTypeWay');
+                if (payTypeWay == 'exp') {
+                    $("#payDes").html('指定专家鉴定');
+                    bodyWX = '指定专家鉴定';
+                    bodyAL = "auction:" + auctionId;
+                    subjectAL = '指定专家鉴定(来源:拍卖)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=4&orderId=' + orderId;
+                    attachWX = "4|" + orderId + "|" + bodyAL
+                } else if (payTypeWay == 'rand') {
+                    $("#payDes").html('随机专家鉴定');
+                    bodyWX = '随机专家鉴定';
+                    bodyAL = "auction:" + auctionId;
+                    subjectAL = '随机专家鉴定(来源:拍卖)';
+                    notifyUrl2 = notifyUrl + 'paycallback?Type=3&orderId=' + orderId;
+                    attachWX = "3|" + orderId + "|" + bodyAL
+                }
+            } else if (payType == 'payAddAuction') {
+                $("#payDes").html('拍卖审核费用');
+                bodyWX = '拍卖审核费用';
+                subjectAL = '拍卖审核费用';
+                bodyAL = '拍卖审核费用';
+                notifyUrl2 = notifyUrl + 'paycallback?Type=1&orderId=' + orderId;
+                attachWX = "1|" + orderId + "|" + bodyAL
+
+            } else if (payType == 'payAddAuctionAuction') {
+                $("#payDes").html('拍卖审核费用');
+                bodyWX = '拍卖审核费用';
+                subjectAL = '拍卖审核费用';
+
+                bodyAL = 'auction:' + appcan.locStorage.val('auctionId');
+
+                notifyUrl2 = notifyUrl + 'paycallback?Type=1&orderId=' + orderId;
+
+                attachWX = "1|" + orderId + "|" + bodyAL
+
+            } else if (payType == 'payOrderAuction') {
+                $("#payDes").html('竞拍所得藏品费用');
+                bodyWX = '竞拍所得藏品费用';
+                subjectAL = appcan.locStorage.val('orderSubject');
+                bodyAL = appcan.locStorage.val('orderBody');
+                notifyUrl2 = notifyUrl + 'paycallback?Type=2&orderId=' + orderId;
+                attachWX = "2|" + orderId + "|" + bodyAL + "|" + subjectAL;
+
+            } else if (payType == 'payAddAuctionRepository') {
+
+                var repositoryId = appcan.locStorage.val('repositoryId');
+                $("#payDes").html('拍卖审核费用');
+                bodyWX = '拍卖审核费用';
+                bodyAL = "repository:" + repositoryId;
+                subjectAL = '拍卖审核费用(来源:我的仓库)';
+                notifyUrl2 = notifyUrl + 'paycallback?Type=1&orderId=' + orderId;
+                attachWX = "1|" + orderId + "|" + bodyAL
+
+            } else if (payType == 'payAddAuctionFinish') {
+                var appraisalId = appcan.locStorage.val('appraisalId');
+                $("#payDes").html('拍卖审核费用');
+                bodyWX = '拍卖审核费用';
+                bodyAL = "identify:" + appraisalId;
+                subjectAL = '拍卖审核费用(来源:已鉴定)';
+                notifyUrl2 = notifyUrl + 'paycallback?Type=1&orderId=' + orderId;
+                attachWX = "1|" + orderId + "|" + bodyAL
+            } else if (payType == 'payAddAuctionProduct') {
+                var productId = appcan.locStorage.val('productId');
+                $("#payDes").html('拍卖审核费用');
+                bodyWX = '拍卖审核费用';
+                bodyAL = "product:" + productId;
+                subjectAL = '拍卖审核费用(来源:我的市场)';
+                notifyUrl2 = notifyUrl + 'paycallback?Type=1&orderId=' + orderId;
+                attachWX = "1|" + orderId + "|" + bodyAL
+            }
+
+            //支付宝支付回调
+            uexAliPay.onStatus = function(status, des) {
+                // 1为在支付，2为支付失败，0为支付成功
+                uexWindow.toast("0", "5", des, "2000");
+
+                if (status == '0') {
+                    callback();
+                }
+            }
+            //微信生成支付订单回调
+            uexWeiXin.cbGetPrepayId = function(data) {
+
+                var prepayId = JSON.parse(data).prepay_id;
+                //预支付订单号
+                //生成订单后就该执行支付，不然多次生成订单号而不调用支付，签名将生成失败
+                //执行支付
+                startPay(prepayId);
+
+            }
+            //微信支付回调
+            uexWeiXin.cbStartPay = function(data) {
+
+                var errCode = JSON.parse(data).errCode;
+                ///状态码。0：成功；-1：错误；-2：用户取消
+
+                if (errCode == 0) {
+                    uexWindow.toast("0", "5", "支付成功", "2000");
+                    callback();
+                } else if (errCode == -1) {
+                    uexWindow.toast("0", "5", "支付错误", "2000");
+                } else if (errCode == -2) {
+                    uexWindow.toast("0", "5", "支付取消", "2000");
+                }
+                //errCode:为状态码。0：成功；-1：错误；-2：用户取消
+            }
+        });
+
+        // radio 行为效果
+        $("#XW_Pay").click(function() {
+            // getPrepayId()// 先生存订单
+            $(".selectPay").each(function() {
+                $(this).removeClass('radio1').addClass('radio');
+            })
+            if ($(this).hasClass('radio1')) {
+                $(this).removeClass('radio1').addClass('radio');
+            } else {
+                $(this).removeClass('radio').addClass('radio1');
+            }
+
+        })
+        // radio 行为效果
+        $("#AL_Pay").click(function() {
+
+            $(".selectPay").each(function() {
+                $(this).removeClass('radio1').addClass('radio');
+            })
+            if ($(this).hasClass('radio1')) {
+                $(this).removeClass('radio1').addClass('radio');
+            } else {
+                $(this).removeClass('radio').addClass('radio1');
+            }
+
+        })
+        // 阿里支付
+        function payAL() {
+
+            setInfo();
+            var body = bodyAL;
+            var date = new Date();
+            var num = getToken() + date.getTime();
+            uexAliPay.pay(num, subjectAL, body, realFee);
+        }
+
+        //AL设置支付信息
+        function setInfo() {
+            var partner = "2088911273341072";
+            var seller = "alzxt20150301@zhengxitang.com";
+            //私钥
+            var rsaPrivate = 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+            //公钥
+            var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+            uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl2);
+        }
+
+        //微信参数
+        var appIdWX = "wx3fc9836dfc01e003";
+        var mch_idWX = "1245604902";
+        var mch_keyWX = "key=d382d671c6672cba4b87980992cd9d77";
+
+        //微信生成订单，并在生成订单回调函数执行支付
+        function getPrepayIdXW() {
+
+            uexWeiXin.registerApp(appIdWX);
+
+            var date = new Date();
+            var time = date.getTime();
+
+            var params = {
+                appid : appIdWX, //(必选)
+                attach : attachWX,
+                body : bodyWX, //为支付页面显示信息
+                mch_id : mch_idWX, //(必选)
+                nonce_str : "fcf" + time, //(必选) 随机字符串，不长于32位。
+                notify_url : http + "common/weixinpay", //(必选) 接收微信支付异步通知回调地址
+                out_trade_no : "order" + time, //(必选) 商户系统内部的订单号,32个字符内、可包含字母
+                spbill_create_ip : "127.0.0.1", //(必选) 用户端ip
+                total_fee : realFee * 100, //微信支付金额已 分 为单位
+                trade_type : "APP"//(必选)
+            };
+
+            var stringA = '';
+            for (var key in params) {
+                stringA += key + "=" + params[key] + "&";
+            }
+            stringA += mch_keyWX;
+
+            var sign = MD5(stringA).toUpperCase();
+            params["sign"] = sign;
+            var data = JSON.stringify(params);
+            uexWeiXin.getPrepayId(data);
+        }
+
+        function startPay(prepayId) {
+            uexWeiXin.registerApp(appIdWX);
+
+            var time = new Date().getTime();
+            var paramsPay = {
+                appid : appIdWX, //(必选) 微信分配的AppID
+                noncestr : "fcf" + time, //(必选)
+                package : "Sign=WXPay", //固定格式
+                partnerid : mch_idWX, //(必选) 微信支付分配的商户号
+                prepayid : prepayId, //生成订单回调里给的订单号
+                timestamp : time.toString().substring(0, 10)
+            };
+
+            var pay_str = '';
+            for (var key in paramsPay) {
+                pay_str += key + "=" + paramsPay[key] + "&";
+            }
+
+            pay_str += mch_keyWX;
+            var sign = MD5(pay_str).toUpperCase();
+            paramsPay["sign"] = sign;
+            var startPayData = JSON.stringify(paramsPay);
+            uexWeiXin.startPay(startPayData);
+
+        }
+
+        //处理页面支付成功后跳转页面
+        function callback() {
+
+            if (payType == 'payTicket') {
+                uexWindow.evaluatePopoverScript('person_ticket', 'content', 'setAlbumTicket()');
+                uexWindow.evaluateScript("buy_ticket", 0, "closeWindeow()");
+            } else if (payType == 'payOrderAuction') {
+
+                uexWindow.evaluatePopoverScript('PerBuy_index', 'content', 'setUserState()');
+                var orderType = 'buyOrderNoSend';
+                uexWindow.evaluateScript('PerBuy_details', 0, 'changeDiv("' + orderType + '")');
+                appcan.openWinWithUrl('PerBuy_details', '../user/buy/PerBuy_details.html');
+
+            } else if (payType == 'payIdentifyRepository' || payType == 'payIdentifyFinish' || payType == 'payIdentifyWaitpay' || payType == 'payIdentifyProduct' || payType == 'payIdentifyIndex' || payType == 'payIdentifyPer' || payType == 'payIdentifyAuction' || payType == 'payIdentify') {
+                appcan.locStorage.setVal('myAppraisalIndex', 1);
+                appcan.locStorage.setVal('myYN', 'false');
+                if (payType == 'payIdentifyProduct' || payType == 'payIdentifyPer') {
+                    appcan.locStorage.setVal('myYN', 'true');
+                }
+                uexWindow.evaluateScript("myAppraisal", 0, "Refresh()");
+                uexWindow.evaluatePopoverScript("myAppraisal", "content", "Refresh()");
+                if (payType != 'payIdentifyFinish' && payType != 'payIdentifyWaitpay') {
+                    appcan.openWinWithUrl('myAppraisal', '../identify/myAppraisal.html');
+                }
+                var readyIn = true;
+                var pageIndex = 1;
+                var endFlag = false;
+                uexWindow.evaluatePopoverScript('PerAuction_index', 'content', 'setUserState()');
+                uexWindow.evaluatePopoverScript('check', 'content', 'changeDiv("' + readyIn + '","' + pageIndex + '","' + endFlag + '")');
+
+                uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("person_product", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("addAppraisalOnLine", "content", "paySuccess()");
+                
+                if (payType != 'payIdentifyProduct') {
+                    uexWindow.evaluatePopoverScript("pullAddAppraisal", "content", "paySuccess()");
+                }
+            } else if (payType == 'payAddAuction' || payType == 'payAddAuctionRepository' || payType == 'payAddAuctionFinish' || payType == 'payAddAuctionProduct' || payType == 'payAddAuctionAuction') {
+                var readyIn = true;
+                var pageIndex = 1;
+                var endFlag = false;
+                appcan.locStorage.setVal('myAppraisalIndex', 4);
+                uexWindow.evaluateScript("myAppraisal", 0, "Refresh()");
+                uexWindow.evaluatePopoverScript("myAppraisal", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("person_product", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript('PerAuction_index', 'content', 'setUserState()');
+                uexWindow.evaluatePopoverScript('check', 'content', 'changeDiv("' + readyIn + '","' + pageIndex + '","' + endFlag + '")');
+                uexWindow.evaluatePopoverScript('auction_publish', 'content', 'clearPage()');
+
+                appcan.openWinWithUrl('check', '../user/auction/check.html');
+            }
+            uexWindow.evaluateScript('select_pay', 0, 'closeWindow()');
+            uexWindow.evaluateScript("pullAddAppraisal", 0, "closeWindeow()");
+        }
+
+        //父框架调取支付
+        function pay() {
+            if ($(".radio1").attr('id') == 'AL_Pay') {
+                payAL();
+                //阿里支付
+            } else if ($(".radio1").attr('id') == 'XW_Pay') {
+                getPrepayIdXW();
+                //微信支付
+            }
+        }
+
+    </script>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        .mesBtn1{
+            background-color: #D9D9D9;
+            color:#FFFFFF;
+            width:19%;
+            height:2em;
+        }
+        
+        .mesBtn2{
+            background-color: #e55744;
+            color:#FFFFFF;
+            width:19%;
+            height:2em;
+        }
+        
+        .input{
+            background-color:#D9D9D9;
+            height: 1.5em; 
+            width: 100%; 
+            font-family: Arial, Helvetica, sans-serif; 
+            font-size: 1.2em; 
+        }
+        
+        .input:focus {
+            outline:none;
+            border:none;
+        }
+             
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0" id="title">聊天</h1>
+                <div class="nav-btn nav-bt" id="nav-right"></div>
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+                   
+            </div>
+           <div id="footer" class="uf ub ub-pc ub-ac" style="height:3em;border-top:0.05em solid #d9d9d9;">
+             <div class="ub ub-pj ub-ac" style="margin:auto;width:96%;">
+                 <div class="ub ub-ac ub-pc uc-a" style="width:80%;height:2em;background-color:#D9D9D9;">
+                     <input  type="text" class="input" id="message" >
+                 </div>
+                 <div class="ub ub-ac ub-pc uc-a1 mesBtn1" id="pushMessage">
+                                                                  发送
+                 </div>
+             </div>
+      <!--          <div class="uinput ub  ub-f1 bc-border2 uba">
+                    <input  type="text" id="message">
+                </div>
+
+                <div class="ub ub-ac ub-pc btn  bc-btn4 ulev" id="pushMessage" style="width:13%;">发送</div>
+       -->         
+         </div> 
+
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var talkUserId=appcan.locStorage.val('talkUserId');
+        appcan.ready(function() {
+            getMessageList();
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "talk_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+         
+        });
+        
+        
+        appcan.button(".nav-btn", "btn-act", function() {
+            
+            appcan.window.close(-1);
+        })
+        
+        $("#message").on('input',function(){
+            if($(this).val() != ''){
+               if($("#pushMessage").hasClass('mesBtn1')){
+                   $("#pushMessage").addClass('mesBtn2').removeClass('mesBtn1'); 
+               } 
+               
+            }else{
+                $("#pushMessage").addClass('mesBtn1').removeClass('mesBtn2'); 
+            }
+        })
+        
+       
+        $("#pushMessage").click(function(){
+            
+            var message=$("#message").val();
+            if(message.length !=0){
+                
+                $("#message").val('');
+                 $("#pushMessage").addClass('mesBtn1').removeClass('mesBtn2'); 
+                uexWindow.evaluatePopoverScript('talk','content','sendMessage("'+message+'")');
+            }else{
+                return ;
+            } 
+        })
+        
+         function getMessageList(){
+            var getMessageListUrl=getUrl('message/GetMessageList');
+            var data={
+                token :getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length != 0){
+                        for(var i=0;i<data.length;i++){
+                            
+                            var receiverId=data[i].ReceiverId
+                            if(talkUserId == receiverId){
+                                var messageId=data[i].Id;
+                                $("#title").html(data[i].Nicename);
+                                appcan.locStorage.val('messageId',messageId);
+                                return ;
+                            }
+                        }
+                    }else{
+                        
+                    }
+                    
+                  
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                  
+                }
+            }
+          getRequestAjax(getMessageListUrl, data, callback);  
+        }
+        
+        
+        
+
+    </script>
+</html>

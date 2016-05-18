@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart >
+        <div class="ub ub-ver ub-fh " >
+            <div class="ub ub-ver bc-bg ub-pc  textb2 red1" >
+                <div class='ub ub-ac ub-f1 ub-pc' style="padding-top: 1em;padding-bottom: 1em;">
+                    藏品照片
+                </div>
+                <div id="showlist" class="umar-t "></div>
+            </div>
+
+            <div class=' bc-bg textb2 gery' style="word-wrap:break-word;min-height:3em;padding-left: 2em;">
+                用户描述 :<span id="ReplyContent" class='uinn'></span>
+            </div>
+            <div class='ub inn-a7 textb3 uinn gery bc-bg umar-t'>
+                <div class='ub  ub-f1 ub-ver' >
+                    <div class='ub-f1 umar-a' style="padding-left: 1em;">
+                        鉴定方式：<span id="ReplyWay"></span>
+
+                    </div>
+                    <div class='ub-f1 umar-a' style="padding-left: 1em;">
+                        鉴定费用：<span id="ReplyFee"></span>
+
+                    </div>
+                </div>
+                <div class='ub  ub-f1 ub-ver' >
+                    <div class='ub-f1 umar-a' style="text-align: center">
+                        送鉴时间：<span id="upTime"></span>
+
+                    </div>
+
+                    <div class='ub-f1 umar-a' style="text-align: center">
+                        过期时间：<span id="outTime"></span>
+
+                    </div>
+                </div>
+            </div>
+            <div class="ub-f1  textb2  red1 bc-bg" style="text-align: center;padding-bottom: 1em;">
+                剩余鉴定时间 ：<span id="RemainCheckDate"></span>
+            </div>
+            <div class="ub-f1  textb2 uinn  bc-btn white " style="text-align: center;">
+                请您鉴定 <span id="RemainCheckDate"></span>
+            </div>
+            <div class="ub tx-l" style="padding: 0.8em 2.9em 1.4em 1.9em;">
+                <div class='ub ub-ac ub-f1'>
+                    <div class="sc-bg-active uinput ub ub-f1  bc-border uba">
+                        <textarea id="replyDesc" name="replyDesc" placeholder="请对该藏品进行简单描述!" type="text" class="ub-f1" style="padding: 0.8em;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        var tempData = [];
+        appcan.ready(function() {
+            getRely();
+        })
+        function getRely() {
+            var Token = ''
+            Token = getToken();
+            var appraisalId = appcan.locStorage.getVal("appraisalId");
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "identify/GetIdentifyById",
+                data : {
+                    identifyId : appraisalId,
+                    Token : Token
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        data = result.Data
+                        $("#ReplyContent").html(data.Content);
+                        if (data.Type == 0) {
+                            $("#ReplyWay").html('随机专家鉴定');
+                        } else if (data.Type == 1) {
+                            $("#ReplyWay").html('指定专家鉴定');
+                        }
+                        $("#ReplyFee").html(data.Price + '元');
+                        $("#ReplyState").html(data.StatusStr);
+                        $("#RemainCheckDate").html(data.CheckRemainDateStr);
+                        var upDate = new Date(formatDate(data.SendCheckDate));
+                        uptime = upDate.format("yyyy-MM-dd hh:mm:ss");
+                        $("#upTime").html(uptime);
+                        var outDate = new Date(formatDate(data.CheckExpireDate));
+                        outtime = outDate.format("yyyy-MM-dd hh:mm:ss");
+                        $("#outTime").html(outtime);
+                        var str = ''
+                        str += "<div id=" + data.Id + " class='market_details replayImg' style='padding-left:2em;'>";
+                        for (var j = 0; j < data.Icon.length; j++) {
+                            str += "<img src='" + imgThumbUrl + data.Icon[j] + "'/>";
+                        }
+                        str += "</div>";
+
+                        $('#showlist').html(str);
+                        var iconArr = data.Icon;
+                        var iconData = [];
+                        for (var i = 0; i < iconArr.length; i++) {
+                            iconData.push({
+                                img : imgNormalUrl + iconArr[i],
+                            });
+                            tempData.push(imgNormalUrl + iconArr[i]);
+                        }
+
+                        $("#showlist").click(function() {
+                            appcan.locStorage.val('showimage', tempData.join('|'));
+                            appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                        });
+
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+        }
+
+        function subRely() {
+            var replyDesc = $("#replyDesc").val();
+            if (replyDesc == 0) {
+                uexWindow.toast("0", "5", "请输入鉴定描述！", "2000");
+                return;
+            }
+            var replyDesc = $("#replyDesc").val();
+            if (replyDesc.length == 0) {
+                uexWindow.toast("0", "5", "请输入鉴定描述！", "2000");
+                return;
+            } else if (replyDesc.length <= 1) {
+                uexWindow.toast("0", "5", "鉴定描述不能少于1个字！", "2000");
+                return;
+            }
+            var localStorage = window.localStorage;
+            if (localStorage && localStorage.getItem("appraisalId")) {
+                var appraisalId = localStorage.getItem("appraisalId");
+                Token = getToken();
+                appcan.request.ajax({
+                    type : 'POST',
+                    url : http + "identify/AddIdentifyReply",
+                    data : {
+                        replyDesc : $("#replyDesc").val(),
+                        identifyId : appraisalId,
+                        Token : Token
+                    },
+                    dataType : 'json',
+                    timeout : 300,
+                    success : function(result) {
+                        if (result.Success) {
+                            uexWindow.evaluateScript("fillReplyRand", 0, "closeWindow()");
+                             uexWindow.evaluatePopoverScript('ident_wait', 'content', 'Refresh()');
+                        } else {
+                            uexWindow.toast("0", "5", result.Message, "2000");
+                        }
+                    },
+                    error : function(xhr, type) {
+                        uexWindow.toast("0", "5", '网络异常，请重试!', "2000");
+                    },
+                    offline : false
+                });
+            }
+        }
+    </script>
+</html>

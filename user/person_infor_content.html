@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver">
+            <div id="addimg" class=" ub bc-bg " >
+                <div class="ub-f1 ub ubb bc-border lis" style="margin: .7em;padding: .8em .5em .8em .5em">
+                    <div class="ub-f1 ub ub-ac" >
+                        头像
+                    </div>
+                    <div class="ub-f1 ub ub-ac ub-pe per-infor" >
+                        <div id="showimg" class="ub-img uwh-bg imgBg " style='margin-right:1.2em; margin-bottom: .4em;'><img src=../img/addImg.png>
+                        </div>
+                        <i class="fa fa-angle-right ulev2 sc-text ub ub-ac" ></i>
+                    </div>
+                </div>
+            </div>
+            <div id="listview"  class=" bc-border  c-wh  uinn-a7"></div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            loadImg();
+
+        })
+        function loadImg() {
+            var imgUrl = appcan.locStorage.getVal('Avatar');
+            var Nicename = appcan.locStorage.getVal('Nicename');
+            var sign = appcan.locStorage.getVal('Signature');
+            signature = '还没有填写个性签名';
+            if(sign =='null'){
+                 signature = '还没有填写个性签名';
+            }else {
+               signature = sign;
+            }
+            $("#showimg").html('<img src=' + imgUrl + '>');
+            var subTitle = '还是空的，快来取个有逼格的名字吧';
+            if (Nicename ) {
+                subTitle = Nicename;
+            }
+            var Sex = '还是空的';
+            Sex = appcan.locStorage.getVal('Sex');
+            if (Sex == '0') {
+                Sex = '男';
+            } else if (Sex == '1') {
+                Sex = '女';
+            }
+            var lv = appcan.listview({
+                selector : "#listview",
+                type : "thinLine",
+                hasIcon : true,
+                hasAngle : true,
+                hasSubTitle : true,
+                multiLine : 1
+            });
+            lv.set([{
+                title : '昵称',
+                subTitle : subTitle,
+                id : 1
+            }, {
+                title : '性别',
+                subTitle : Sex,
+                id : 2
+            }, {
+                title : '个性签名',
+                subTitle : '<a style="width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">' + signature + '</a>',
+                id : 3
+            }, {
+                title : '我喜欢的宝贝',
+                subTitle : '',
+                id : 4
+            }, {
+                title : '我的收货地址',
+                subTitle : '',
+                id : 5
+            }]);
+
+            lv.on("click", function(ele, obj, curEle) {
+                switch(obj.id) {
+                case 1:
+                    appcan.openWinWithUrl("changeName", 'changeName.html');
+                    break;
+                case 2:
+                    appcan.locStorage.setVal('pageName', 'csex');
+                    uexWindow.openPopover("push", "0", "../common/push.html", "", 0, 0, 0, 0, '', "0", 0);
+                    break;
+                case 3:
+                    appcan.openWinWithUrl('person_signature', 'person_signature.html');
+                    break;
+                case 4:
+                    appcan.openWinWithUrl('productType_setting', 'productType_setting.html');
+                    break;
+                case 5:
+                    // appcan.openWinWithUrl('person_address', 'person_address.html');
+                    appcan.locStorage.val('addressType', 'perInfo');
+                    appcan.openWinWithUrl('address_list', '../common/address_list.html');
+                    break;
+                }
+            })
+        }
+
+        function addImg() {
+            uexWindow.cbActionSheet = function(opId, dataType, data) {
+                if (data == 0) {
+                    cameraOpen();
+                }
+                if (data == 1) {
+                    fileOpen();
+                }
+            }
+            var value = "拍照上传;从手机相册选择";
+            var mycars = value.split(";");
+            uexWindow.actionSheet("", "取 消", mycars);
+        }
+
+        var Token = ''
+        Token = getToken();
+        function cameraOpen() {
+            uexCamera.cbOpen = function(opCode, dataType, data) {
+                upload(data);
+            }
+            uexCamera.open();
+        }
+
+        function fileOpen() {
+            uexImageBrowser.cbPick = function(opCode, dataType, data) {
+                upload(data);
+            }
+            uexImageBrowser.pick();
+        }
+
+        function upload(imgPath) {
+            var uploadHttp = http + "user/updateavatar?token=" + Token;
+            randOpId = Math.floor(Math.random() * (1000 + 1));
+            uexUploaderMgr.onStatus = function(opCode, fileSize, percent, serverPath, status) {
+                switch (status) {
+                case 0:
+                    uexWindow.toast("1", "5", percent + "%", "0");
+                    break;
+                case 1:
+                    uexWindow.closeToast();
+                    uexUploaderMgr.closeUploader(opCode);
+                    var json = eval("(" + serverPath + ")");
+                    if (json.Success) {
+                        $('#showimg').html("<img style='margin-bottom:1em;' src='" + imgThumbUrl + json.Data + "'>").removeClass('imgBg');
+                        uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                    }
+                    break;
+                case 2:
+                    uexUploaderMgr.closeUploader(opCode);
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            uexUploaderMgr.cbCreateUploader = function(opCode, dataType, data) {
+                if (data == 0) {
+                    var path = imgPath;
+                    var inCompress = 1;
+                    if (uexWidgetOne.platformName == "iOS") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                    if (uexWidgetOne.platformName == "android") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                } else {
+                    uexWindow.closeToast();
+                    var strimg2 = "图片上传失败";
+                    uexWindow.toast('0', '5', '图片上传失败', 3000);
+                }
+            }
+            var strimg2 = "开始上传图片";
+            uexWindow.toast('1', '5', strimg2, '');
+            uexUploaderMgr.createUploader(randOpId, uploadHttp);
+        }
+
+
+        $("#addimg").on("click", function() {
+            addImg();
+        });
+
+        function Refresh() {
+            loadImg();
+            return;
+        }
+
+
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+    </script>
+</html>

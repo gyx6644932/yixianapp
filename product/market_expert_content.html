@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="content"  class="ub-f1 tx-l umar-t" >
+            <div class="bc-bg uinn-a7" id="expertList" style="border-radius: 0em 0em 0.3em 0.3em;" id="expertList"></div>
+            <div id='openMore' class="openMore gery  bc-bg uinn bc-border ubb" style="text-align:center;display:none">
+                更多专家
+            </div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var selectItem = {};
+        var expertTypeId = ''
+        appcan.ready(function() {
+            getexpertlist()
+        });
+        function getexpertlist() {
+            fatherId = appcan.locStorage.getVal('fatherId');
+            flag = appcan.locStorage.getVal('fatherdata');
+            childrenId = appcan.locStorage.getVal('childrenId');
+            if (childrenId != '' && childrenId != null) {
+                $('#openMore').css('display', 'block');
+            }
+            if (flag == 0) {
+                expertTypeId = fatherId
+            } else if (flag == 1) {
+                expertTypeId = childrenId
+            }
+            var data2 = {
+                pageindex : 1,
+                pagesize : 40
+            }
+            if (flag == 0) {
+                data2.ExpertTypeId = expertTypeId;
+            }
+            if (flag == 1) {
+                data2.SubExpertTypeId = expertTypeId;
+            }
+            var token = getToken();
+            if (token != null) {
+                data2.userId = token;
+            }
+
+            var getUserUrl = getUrl("user/getexpertlist");
+            var data = data2;
+            function callback(result) {
+                if (result.Success) {
+                    if (result.Data.length > 0) {
+                        data = result.Data;
+                        var str = '';
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i]);
+                        }
+                        $('#expertList').html(str);
+                    } else {
+                        $('#openMore').css('display', 'none');
+                        str = templateDivEmpty();
+                        $('#expertList').html(str);
+                    }
+                  
+                   $('.chose').click(function() {
+                            count = $(this).attr('count');
+                            identify = $(this).attr('identify');
+                            id = this.id
+                            title = $(this).attr('title');
+                            price = $(this).attr('price'); 
+                            if (getToken() == id) {
+                                uexWindow.toast("0", "5", '不能选择您自己,请重新选择！', "2000");
+                                return;
+                            }
+                            if (count <= 0) {
+                                uexWindow.toast("0", "5", '该专家鉴定繁忙，请选择其他专家', "2000");
+                                return;
+                            } else if (identify === false) {
+                                uexWindow.toast("0", "5", '该专家鉴定繁忙，请选择其他专家', "2000");
+                                return;
+                            }
+                            uexWindow.evaluateScript("identify_push", 0, "close()");
+                            selectExpert = appcan.locStorage.getVal('selectExpert');
+                            if (selectExpert == 'identify') {
+                                appcan.window.evaluatePopoverScript('addAppraisalOnLine','content',"closepop('" + title + "'," + price + ",'" + id + "')");
+                            } else if (selectExpert == 'product') {
+                                appcan.window.evaluatePopoverScript('pullAddAppraisal','content', "closepop('" + title + "'," + price + ",'" + id + "')");
+                            } else if (selectExpert == 'repository') {
+                                appcan.window.evaluatePopoverScript('pullAddAppraisal','content', "closepop('" + title + "'," + price + ",'" + id + "')");
+                            } else if (selectExpert == 'user') {
+                                appcan.window.evaluatePopoverScript('pullAddAppraisal','content', "closepop('" + title + "'," + price + ",'" + id + "')");
+                            } else if (selectExpert == 'identify2') {
+                                appcan.window.evaluatePopoverScript('pullAddAppraisal','content', "closepop('" + title + "'," + price + ",'" + id + "')");
+                            }
+                             uexWindow.evaluateScript("selectExpert", 0, "closeWindow()");
+                        });
+                     $(".expert").click(function() {
+                        expertId = this.id;
+                        appcan.locStorage.setVal('userId',expertId);
+                        uexWindow.open("expertDetail", "0", "expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+                    })
+                    $(".openMore").click(function() {
+                        $("#openClose").removeClass('openMore').addClass('openClose')
+                        childrenId = appcan.locStorage.getVal('childrenId');
+                        if (childrenId) {
+                            $('#openMore').css('display', 'none');
+                            uexWindow.evaluateScript("selectExpert", 0, "Two()");
+                            appcan.locStorage.setVal('childrenId', '');
+                            appcan.locStorage.setVal('fatherdata', 0);
+                            getexpertlist();
+                            return;
+                        }
+                    })
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    uexWindow.evaluateScript("selectExpert", 0, "One()");
+                    $('#expertList').html(str);
+                    $("#error").click(function() {
+                      Refresh();
+                    });
+                }
+            }
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+      
+        $(".openClose").click(function() {
+           uexWindow.evaluateScript("selectExpert", 0, "closeWindow()");
+        })
+        function templateDiv(data) {
+            busyStatus = data.BusyStatus;
+            if (data.Identify === false || busyStatus == 2) {
+                TodayCount = "<a class='red1'>鉴定繁忙</a>";
+            } else if (busyStatus == 1){
+                TodayCount = "<a class='orange'>鉴定繁忙</a>";
+            }else if (busyStatus == 0){
+                TodayCount = "";
+            }
+            count = data.IdentifyTodayCount;
+            identify = data.Identify;
+            avatar = gerImgThumbUrl(data.ExpertAvatar);
+            expertCompany = data.ExpertCompany;
+            expertZc = data.ExpertZc;
+            
+            if(expertCompany == null){
+                expertCompany ='无'
+            } 
+            if(expertZc == null){
+               expertZc ='无'
+            }else {
+               var str=expertZc;
+               var reg=new RegExp("<br />","g"); 
+               expertZc= str.replace(reg,""); 
+            }
+            
+            var str = "";
+            str = ' <div class="ub bc-bg ubb bc-border"> '
+               +'<div id='+data.Id+' class="expert ub">'
+               +' <img src="'+avatar+'" style="width:4em;height:4em;border-radius: .3em;padding: 1em;"/>'
+               +' </div>'
+               +' <div id='+data.Id+' count='+count+' identify='+identify+' title='+data.ExpertName+' price='+data.IdentifyPrice+' class="chose ub ub-ver ub-f1" style="margin:.5em 0em 0em .2em;">'
+                   +' <div class="ub" style="padding-top:.4em;position:relative;">'
+                       +' <div class="ub ub-f1">'+data.ExpertName+''
+                       +' </div>'
+                   +' </div>'
+                   +' <div id="expertCompany" class="gery textb4 umar-t" style="padding-right:8.5em;height:1.4em;line-height:1.4em; overflow:hidden;">'+expertCompany+''
+                   +' <div class="red1" style="position:absolute;top:0px;right:0px;">'+TodayCount+''
+                       +' </div>'
+                   +' </div>'
+                   +' <div id="expertZc" class="ub gery textb4">'
+                     +'<a style="width:18em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">'+expertZc+'</a>'
+                     
+                       +' <div class="add textb white b-red  ub ub-f1 umar-rr uinn  ub ub-ac ub-pc uba bc-border uc-a1" style="position:absolute;top:-2em;right:0px;width:3em;">鉴定'
+                       +' </div>'
+                   +' </div>'
+                   +' <div class="ub gery textb4" >'
+                     +'<a style="width:18em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">'+data.ExpertType+'</a>'
+                   +' </div>'
+               +' </div>'
+           +' </div>'
+            return str;
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div><div class="ub gery uinn">专家正在加入中！</div><div id="openClose" class="openMore ub white uinn btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1">选择更多专家</div></div></div>'
+            return str
+        }
+        
+        function fatherRefresh() {
+            $('#openMore').css('display', 'none');
+            uexWindow.evaluateScript("selectExpert", 0, "Two()");
+            appcan.locStorage.setVal('childrenId', '');
+            appcan.locStorage.setVal('fatherdata', 0);
+            getexpertlist();
+            return;
+        }
+
+        function Refresh() {
+            getexpertlist();
+            return;
+        }
+
+        function closepop(flag, id) {
+            expertTypeId = id;
+            appcan.closePopover("identify_push");
+            getexpertlist();
+            return;
+
+        }
+    </script>
+</html>

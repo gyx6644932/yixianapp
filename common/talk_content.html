@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        .linkimg {
+            width: 10em;
+        }
+    </style>
+
+    <body class="um-vp bc-bg" ontouchstart>
+        
+        <div class="ub ub-ac ub-pc ub-ver"  id="LogContent">
+
+        </div>
+        
+        <div class="ub ub-ac ub-pc ub-ver"  id="SContent">
+
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var img = '';
+        var pageIndex = 1;
+        
+        var talkUserId = appcan.locStorage.val('talkUserId');
+        var messageId = appcan.locStorage.val('messageId');
+        var openPageType = appcan.locStorage.val('openPageType');
+        var picMessage = '';
+        
+        
+ 
+        appcan.ready(function() {
+
+            if (openPageType == 'product') {
+                var productId = appcan.locStorage.val('productId');
+                picMessage = 'product:' + productId;
+            } else if (openPageType == 'auction') {
+                var auctionId = appcan.locStorage.val('auctionId');
+                picMessage = 'auction:' + auctionId;
+            }
+            
+            getMessageInfoList(true);
+            
+           /*
+            function actionTop() {
+                           pageIndex += 1;
+                           getMessageInfoList(false);
+                           return;
+                       }
+                       
+                       initBounce(actionTop, 0);*/
+           
+        });
+
+        function getMessageInfoList(readyIn) {
+
+            var getMessageInfoList = getUrl('message/getmessageinfolist');
+            var data = {
+                pageindex : pageIndex,
+                pagesize : 150,
+                messageid : messageId,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    if (data.length != 0) {
+                        var str = '';
+                        for (var i = data.length - 1; i >= 0; i--) {
+
+                            if (data[i].Position == 0) {
+                                //自身发出给对方
+                                
+                                str += setLeftMessageDiv(data[i],data[i].SenderId);
+                            } else {
+                                
+                                str += setRightMessageDiv(data[i].Content,data[i].SenderId)
+                            }
+                        }
+                        if (readyIn) {
+                            //页面初始进入
+                            $("#SContent").html(str);
+                        } else {  
+                            //上拉刷新
+                            $("#LogContent").prepend(str);    
+                        }
+
+                        $('.linkimg').click(function() {
+                            var id = $(this).attr('data');
+                            var type = $(this).attr('type');
+                            
+                            if (type == 'product') {
+                                appcan.locStorage.val('productId', id);
+                                appcan.openWinWithUrl('market_details', '../product/market_details.html');
+                            } else if (type == 'auction') {
+                                appcan.locStorage.val('auctionId', id);
+                                appcan.openWinWithUrl('auction_details', '../auction/auction_details.html');
+                            }
+                        })
+                        
+                        $(".avatar").click(function(){
+                            
+                             appcan.locStorage.val('userId',this.id);
+                             appcan.openWinWithUrl('userinfo', 'userinfo.html');   
+                        })
+                        
+                        setTimeout("getMessageInfoList("+true+")", 4000);
+                        
+                    } else {
+
+                    }
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+                if (pageIndex == 1) {
+                    $(window).scrollTop($(document).height());
+                }
+            }
+            getRequestAjax2(getMessageInfoList, data, callback);
+        }
+
+        function setRightMessageDiv(content,userId) {
+            var localStorage = window.localStorage;
+            var avatar = localStorage.getItem('Avatar');
+            var str=''
+            
+            if(content.match('<img') !=null ){//图片进入的聊天
+                //产品进入
+                if(content.match("type='product'")){
+                    var content2  = content+"<div style='text-align:center;'>我在看</div>";
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">'
+                            + '<div class="ub ub-pe" style="width:89%">' 
+                                + '<div class="ub ub-ac ub-pe" style="width:98%;">' 
+                                   + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content2 + '</div>' 
+                                + '</div>' 
+                                + '<div class="triangle-right" style="margin-top:0.8em;"></div>' 
+                            + '</div>' 
+                            + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                                + '<img src=' + avatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                            + '</div>' 
+                         + '</div>'
+                }else if(content.match("type='auction'")){//拍卖进入
+                    var content2  = content+"<div style='text-align:center;'>我拍得的</div>";
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">'
+                            + '<div class="ub ub-pe" style="width:89%">' 
+                                + '<div class="ub ub-ac ub-pe" style="width:98%;">' 
+                                   + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content2 + '</div>' 
+                                + '</div>' 
+                                + '<div class="triangle-right" style="margin-top:0.8em;"></div>' 
+                            + '</div>' 
+                            + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                                + '<img src=' + avatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                            + '</div>' 
+                         + '</div>'
+                }else if(content.match("type='auctionOrder'")){//竞拍订单进入
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">'
+                            + '<div class="ub ub-pe" style="width:89%">' 
+                                + '<div class="ub ub-ac ub-pe" style="width:98%;">' 
+                                   + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content + '</div>' 
+                                + '</div>' 
+                                + '<div class="triangle-right" style="margin-top:0.8em;"></div>' 
+                            + '</div>' 
+                            + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                                + '<img src=' + avatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                            + '</div>' 
+                         + '</div>'
+                }
+                
+            }else{
+                str = '<div class="ub" style="margin:0.5em auto;width:95%;">'
+                        + '<div class="ub ub-pe" style="width:89%">' 
+                            + '<div class="ub ub-ac ub-pe" style="width:98%;">' 
+                               + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content + '</div>' 
+                            + '</div>' 
+                            + '<div class="triangle-right" style="margin-top:0.8em;"></div>' 
+                        + '</div>' 
+                        + '<div style="width:11%" class="avatar" id='+userId+'>'
+                            + '<img src=' + avatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                        + '</div>' 
+                     + '</div>'
+            }
+            
+            return str;
+        }
+
+        function setLeftMessageDiv(dataJson,userId) {
+            var receiverAvatar = gerImgThumbUrl(dataJson.SenderAvatar);
+            var str='';
+            var content=dataJson.Content;
+            
+            if(content.match("<img") !=null){//图片进入聊天
+                //产品进入
+                if(content.match("type='product'")){
+                    var content2  = content+"<div style='text-align:center;'>他在看</div>";
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">' 
+                         + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                            + '<img src=' + receiverAvatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                         + '</div>' 
+                         + '<div class="ub" style="width:88%">' 
+                             + '<div class="triangle-left" style="margin-top:0.8em;"></div>' 
+                             + '<div class="ub ub-ac" style="width:98%;">' 
+                                 + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content2 + '</div>' 
+                             + '</div>' 
+                         + '</div>' 
+                     + '</div>';
+                }else if(content.match("type='auction'")){//拍卖进入
+                    var content2  = content+"<div style='text-align:center;'>他拍得的</div>";
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">' 
+                         + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                            + '<img src=' + receiverAvatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                         + '</div>' 
+                         + '<div class="ub" style="width:88%">' 
+                             + '<div class="triangle-left" style="margin-top:0.8em;"></div>' 
+                             + '<div class="ub ub-ac" style="width:98%;">' 
+                                 + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content2 + '</div>' 
+                             + '</div>' 
+                         + '</div>' 
+                     + '</div>';
+                 }else if(content.match("type='auctionOrder'")){//竞拍订单进入
+                    str = '<div class="ub" style="margin:0.5em auto;width:95%;">' 
+                         + '<div style="width:11%" class="avatar" id='+userId+'>' 
+                            + '<img src=' + receiverAvatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                         + '</div>' 
+                         + '<div class="ub" style="width:88%">' 
+                             + '<div class="triangle-left" style="margin-top:0.8em;"></div>' 
+                             + '<div class="ub ub-ac" style="width:98%;">' 
+                                 + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content + '</div>' 
+                             + '</div>' 
+                         + '</div>' 
+                     + '</div>';
+                }
+                
+            }else{
+                str = '<div class="ub" style="margin:0.5em auto;width:95%;">' 
+                        +  '<div style="width:11%" class="avatar" id='+userId+'>'  
+                            + '<img src=' + receiverAvatar + ' style="height:2.5em;width:2.5em;border-radius:2em;">' 
+                         + '</div>' 
+                         + '<div class="ub" style="width:88%">' 
+                             + '<div class="triangle-left" style="margin-top:0.8em;"></div>' 
+                             + '<div class="ub ub-ac" style="width:98%;">' 
+                                 + '<div class="ub uinn bc-bg-gray3 uc-a ub-ver" >' + content + '</div>' 
+                             + '</div>' 
+                         + '</div>' 
+                     + '</div>';
+            }
+            
+            return str;
+        }
+
+        function sendMessage(message) {
+            var sendMessageUrl = getUrl('message/sendmessage');
+            var data = {
+                receiverId : talkUserId,
+                content : picMessage != '' ? picMessage : message,
+                token : getToken()
+            }
+            uexLog.sendLog(data.content);
+            function callback(result) {
+                if (result.Success) {
+                    var userId=getLocalStorageParme("UserId");
+                    var str = setRightMessageDiv(result.Data,userId);
+                    $('#SContent').append(str);
+                    
+                    //拍品或藏品跳转事件监听
+                    $('.linkimg').click(function() {
+                            var id = $(this).attr('data');
+                            var type = $(this).attr('type');
+                            if (type == 'product') {
+                                appcan.locStorage.val('productId', id);
+                                appcan.openWinWithUrl('market_details', '../product/market_details.html');
+                            } else if (type == 'auction') {
+                                appcan.locStorage.val('auctionId', id);
+                                appcan.openWinWithUrl('auction_details', '../auction/auction_details.html');
+                            }
+                     })
+                     
+                     $(".avatar").click(function(){
+                         
+                         appcan.locStorage.val('userId',this.id);
+                         appcan.openWinWithUrl('userinfo', 'userinfo.html'); 
+                           
+                     })
+                     
+                        
+                    if(picMessage != '') {
+           
+                        picMessage = '';
+                        sendMessage(message);
+                    }
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000")
+                }
+                $(window).scrollTop($(document).height());
+            }
+
+            getRequestAjax(sendMessageUrl, data, callback);
+        }
+
+        function openProductPage() {
+
+            appcan.openWinWithUrl('market_details', '../product/market_details.html');
+        }
+
+        function openAuctionPage() {
+
+            appcan.openWinWithUrl('auction_details', '../action/auction_details.html');
+        }
+
+    </script>
+</html>

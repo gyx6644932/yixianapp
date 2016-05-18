@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" id="bodyContent" ontouchstart>
+         <div id="slider" class="slider">
+               
+         </div>
+         <div class="ub ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;" id="TT" >
+  
+         </div>
+         <div class="ub ub-ac ub-pc" id="auctionDiv">
+             
+         </div>
+         
+         
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/appcan.slider.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        var auctionId = appcan.locStorage.val('auctionId');
+        var tempData = [];
+        appcan.ready(function() {
+            
+           getAuction();
+           
+           function actionTop() {
+                getAuction();
+           }
+           
+           initBounce(actionTop, 0);
+           
+        });
+        
+        
+        function getAuction() {
+            var getAuctionUrl = getUrl('auction/getauction');
+            var data = {
+                auctionid : auctionId
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length!=0){
+                       
+                       if (data.Identify != null) {
+                           var str='<div class="ub ub-ac ub-ver identify" id='+data.Identify.Id+' style="border-bottom:1em solid #F1F1F1;" >'
+                                       +'<div class="ub ub-ac"  style="width:95%;margin:auto;">'
+                                           +'<div class="ub ub-ac"></div>  藏品鉴定报告'
+                                      +'</div>'                                  
+                                   +'</div>' 
+                            $('#bodyContent').append(str); 
+                            
+                            $('.identify').click(function(){
+                                 appcan.locStorage.val('identifyId',this.id);
+                                 appcan.openWinWithUrl('auction_details_identify', '../../auction/auction_details_identify.html');
+                            })                                                    
+                       }
+                       
+                       var TTstr='';
+                       if(data.Title.length != 0){
+                           TTstr='<div class="" id="title" style="width:95%;margin:0.5em auto;word-wrap:break-word;text-align:center;">'
+                                            +'【'+data.Title+'】'
+                                  +'</div> '
+                       }
+                       
+                       if(data.Content.length !=0){
+                           TTstr+='<div class="" id="content" style="width:95%;margin:auto;word-wrap:break-word;text-align:center;">'
+                                         +data.Content
+                                   +'</div>'
+                       }
+                       
+                       $("#TT").html(TTstr);
+                       
+                       var arrIcon = data.Icon;
+                       
+                       var sliderArray = [];
+                        for (var i = 0; i < arrIcon.length; i++) {
+                            src = getImgNormalUrl(arrIcon[i]);
+                            sliderArray.push({
+                                    img : src
+                            });
+                            tempData.push(imgNormalUrl + arrIcon[i]);
+                        }
+                        var slider='';
+                        if(arrIcon.length == 1){
+                                slider = appcan.slider({
+                                    selector : '#slider',
+                                    aspectRatio : 6 / 16,
+                                    hasLabel : true,
+                                    index : 0,
+                                    aspectRatio : 0.8
+                                });
+                        }else{
+                                slider = appcan.slider({
+                                    selector : '#slider',
+                                    aspectRatio : 6 / 16,
+                                    hasLabel : true,
+                                    index : 0,
+                                    aspectRatio : 0.8,
+                                    auto : 2000
+                                });
+                        }   
+                           
+                        slider.set(sliderArray);
+                        slider.on("clickItem",function(index,data){
+                        
+                        })
+                        var str=statusDiv(data);
+                        $('#auctionDiv').html(str);
+                         
+                        //鉴定内容
+                        appcan.locStorage.val('Appraisal', 'rand'); 
+                        appcan.locStorage.val('auctionIcon', data.Icon.join('|'));   
+                    }else{
+                        
+                    }
+                }else{
+                    
+                }
+            }
+            getRequestAjax(getAuctionUrl, data, callback);
+        }
+        
+        
+        function statusDiv(dataJson){
+            var str='';
+            appcan.locStorage.val('albumId', dataJson.AlbumId);
+           if(dataJson.Status == 1){
+               var createDate_str = formatDate(dataJson.CreateDate);
+               var createDate=new Date(createDate_str).format("yyyy-MM-dd hh:mm:ss");
+              str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                         + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                               +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                         + '</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">送拍时间:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+createDate+'</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">审核状态:</div>'
+                               +'<div clss="ub ub-ac ub-pc">待审核</div>'
+                         +'</div>'  
+                       +'</div>';
+             }else if(dataJson.Status == 2){
+              var createDate_str = formatDate(dataJson.CreateDate);
+              var createDate=new Date(createDate_str).format("yyyy-MM-dd hh:mm:ss");
+              str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                         + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                               +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                         + '</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">送拍时间:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+createDate+'</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">审核状态:</div>'
+                               +'<div clss="ub ub-ac ub-pc">审核失败</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">失败原因:</div>'
+                               +'<div clss="ub ub-ac ub-pc">'+dataJson.CheckDesc+'</div>'
+                         +'</div>'  
+                       +'</div>';
+             }else if(dataJson.Status == 3){
+               var createDate_str = formatDate(dataJson.CreateDate);
+               var createDate=new Date(createDate_str).format("yyyy-MM-dd hh:mm:ss");
+               str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                         + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                               +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                         + '</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">送拍时间:</div>'
+                               +'<div clss="ub ub-ac ub-pc" >'+createDate+'</div>'
+                         +'</div>'
+                         +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                               +'<div clss="ub ub-ac ub-pc" style="width:25%;">在展状态:</div>'
+                               +'<div clss="ub ub-ac ub-pc">未预展</div>'
+                         +'</div>'
+                       +'</div>';
+                     
+             }else if(dataJson.Status == 4){
+                  var StartDate_str = formatDate(dataJson.StartDate);
+                  var nowTime=new Date().getTime();
+                  var hour=parseInt((StartDate_str - nowTime)/1000/60/60);
+                  var min=parseInt((StartDate_str - nowTime)/1000/60%60);
+                  var str_time=hour+'小时'+min+'分钟';
+                  var StartDate=new Date(StartDate_str).format("yyyy-MM-dd hh:mm:ss");
+                  
+                  str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                             + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                             + '</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">开拍时间:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+StartDate+'</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">距离开拍:</div>'
+                                   +'<div clss="ub ub-ac ub-pc">'+str_time+'</div>'
+                             +'</div>' 
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">围观人数:</div>'
+                                   +'<div clss="ub ub-ac ub-pc">'+dataJson.View+'</div>'
+                             +'</div>'  
+                           +'</div>'
+                          +'<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;" >'
+                             +'<div class="ub ub-ac ub-pj"  style="width:95%;margin: 0.5em auto;">'
+                                   +'<div clss="ub ub-ac ub-pc" >'+dataJson.AlbumTitle+'专场</div>'
+                                   +'<div clss="ub ub-ac ub-pc uc-a" style="color:red;border:0.1em solid red;padding:0.2em 1em;" onclick="openAuction()">进入专场</div>'
+                             +'</div>'
+                          +'</div>'; 
+               
+             }else if(dataJson.Status == 5 ){
+                  var EndDate_str = formatDate(dataJson.EndDate);
+                  var nowTime=new Date().getTime();
+                  var hour=parseInt((EndDate_str - nowTime)/1000/60/60);
+                  var min=parseInt((EndDate_str - nowTime)/1000/60%60);
+                  var str_time=hour+'小时'+min+'分钟';
+                  var EndDate=new Date(EndDate_str).format("yyyy-MM-dd hh:mm:ss");
+                  
+                  str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                             + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                             + '</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">结束时间:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+EndDate+'</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">剩余时间:</div>'
+                                   +'<div clss="ub ub-ac ub-pc">'+str_time+'</div>'
+                             +'</div>' 
+                              
+                           +'</div>'
+                           +'<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;" >'
+                                 +'<div class="ub ub-ac ub-pj"  style="width:95%;margin: 0.5em auto;">'
+                                       +'<div clss="ub ub-ac ub-pc" >'+dataJson.AlbumTitle+'专场</div>'
+                                       +'<div clss="ub ub-ac ub-pc uc-a" style="color:red;border:0.1em solid red;padding:0.2em 1em;" onclick="openAuction()">进入专场</div>'
+                                 +'</div>'
+                           +'</div>'
+                           +'<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;" >'
+                                 +'<div class="ub ub-ac ub-pj"  style="width:95%;margin: 0.5em auto;">'
+                                       +'<div clss="ub ub-ac ub-pc" >当前价格：<font color="red">'+dataJson.CurrentPrice+'</font></div>'
+                                       +'<div clss="ub ub-ac ub-pc" >出价次数：<font color="red">'+dataJson.BidCount+'</font></div>'
+                                 +'</div>'
+                           +'</div>' 
+             }else if(dataJson.Status == 6 ){
+                  var createDate_str = formatDate(dataJson.CreateDate);
+                  var createDate=new Date(createDate_str).format("yyyy-MM-dd hh:mm:ss");
+                  str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                             + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">起拍价格:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.Price+'</font>元</div>'
+                             + '</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">送拍时间:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+createDate+'</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">拍品状态:</div>'
+                                   +'<div clss="ub ub-ac ub-pc">已流拍</div>'
+                             +'</div>'  
+                           +'</div>';
+
+             }else if(dataJson.Status == 7 ){
+                  var EndDate_str = formatDate(dataJson.EndDate);
+                  var EndDate=new Date(EndDate_str).format("yyyy-MM-dd hh:mm:ss");
+                  str= '<div class="ub ub-ac ub-ver" style="margin-bottom:1em;background-color:#FFFFFF;width:100%;" >'
+                             + '<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">成交价格:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" ><font id="price">'+dataJson.CurrentPrice+'</font>元</div>'
+                             + '</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">加价幅度:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+dataJson.Increment+'元/次</div>'
+                             +'</div>'
+                             +'<div class="ub ub-ac"  style="width:95%;margin:auto;margin-bottom:0.5em;">'
+                                   +'<div clss="ub ub-ac ub-pc" style="width:25%;">成交时间:</div>'
+                                   +'<div clss="ub ub-ac ub-pc" >'+EndDate+'</div>'
+                             +'</div>' 
+                         +'</div>';
+             }
+             return str;
+        }
+        
+        function openAuction(){
+            appcan.openWinWithUrl('auction_list', '../../auction/auction_list.html');
+        }
+        
+        $('.slider').click(function() {
+            appcan.locStorage.val('showimage', tempData.join('|'));
+            appcan.openWinWithUrl('showimage', '../../shared/showimage.html');
+        })
+
+    </script>
+</html>

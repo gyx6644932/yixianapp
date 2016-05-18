@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp"  ontouchstart>
+        <div class="close"  style="position:absolute;height:100%;width:100%;background-color:rgba(0, 0, 0, 0.3);"></div>
+
+        <div class="ub ub-ver bc-bg2" style="bottom: 0%;position: absolute;width: 100%;margin: 0 auto;">
+            <div class="share ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;height: 6em;">
+                <div id='shareWX' class="ub-f1 ub-ver ub ub-ac ub-pc">
+                    <img src="../img/wx.png"/>
+                </div>
+                <div id='sharePYQ' class="ub-f1  ub-ver ub ub-ac ub-pc">
+                    <img src="../img/pyq.png"/>
+                </div>
+                <div id="shareQQ" class="ub-f1 ub-ver ub ub-ac ub-pc">
+                    <img src="../img/qq.png"/>
+                </div>
+                <div id="shareQZone" class="ub-f1  ub-ver ub ub-ac ub-pc">
+                    <img src="../img/kj.png"/>
+                </div>
+                <div id="shareSina" class="ub-f1  ub-ver ub ub-ac ub-pc">
+                    <img src="../img/wb.png"/>
+                </div>
+
+            </div>
+            <div class="close ub ub-ac ub-pc uinn bc-bg" style="margin-top: .6em;">
+                取消
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        var appIdQQ = "1104692121";//QQ分享
+        
+        var appIdWX = "wx3fc9836dfc01e003";//微信分享
+        var targetUrl = 'http://a.app.qq.com/o/simple.jsp?pkgname=zhengxitang.yixian';
+        
+        var appKeySina = "2130924509";
+        var appSecretSina = "0428a4fbf1e20144164df58909628894";
+        var registerUrlSina = "http://test.yx-app.com/api/common/connect?type=sina";//新浪微博分享
+        
+        var title = '';
+        var content = '';
+        foreignId = appcan.locStorage.getVal('productId');
+        appcan.ready(function() {
+            getRely();
+            shareSucess();
+        })
+      
+        $('#shareQZone').click(function() {
+            shareImgTextToQZone();//QQ空间分享
+        })
+        $('#shareQQ').click(function() {
+            shareWebImgTextToQQ();//QQ好友分享
+        })
+        $('#shareWX').click(function() {
+            type = 0;//微信好友
+            WXRegisterApp();
+        })
+        $('#sharePYQ').click(function() {
+            type = 1;//微信朋友圈
+            WXRegisterApp();
+        })
+        $('#shareSina').click(function() {
+            SinaRegisterApp();//新浪分享
+        })
+        
+        function shareSucess() {
+            uexQQ.cbShareQQ = function(opId, dataType, data) {
+                if (data === 0) {
+                    uexWindow.evaluateScript('loading', 0, 'close()');
+                    alert("分享成功！");
+                    closeWin();
+                }
+            };//QQ分享
+
+
+            uexWeiXin.cbShareLinkContent = function(data) {
+                if (data === 0) {
+                    uexWindow.evaluateScript('loading', 0, 'close()');
+                    alert("分享成功");
+                    closeWin();
+                }
+            };
+            uexWeiXin.cbRegisterApp = function(opCode, dataType, data) {
+                if (data === 0) {
+                    uexWindow.evaluateScript('loading', 0, 'close()');
+                    if (type == 0) {
+                        var json = '{"title":"分享给您一件藏品","description":"' + title + '","thumbImg":"' + firstImg + '","wedpageUrl":"' + targetUrl + '","scene":"' + type + '"}';
+                        uexWeiXin.shareLinkContent(json);
+                    } else if (type == 1) {
+                        var json = '{"title":"分享给您一件藏品","description":"' + title + '","thumbImg":"' + firstImg + '","wedpageUrl":"' + targetUrl + '","scene":"' + type + '"}';
+                        uexWeiXin.shareLinkContent(json);
+                    }
+                }
+            };//微信分享
+
+            uexSina.cbShare = function(opCode, dataType, data) {
+                if (data === 0) {
+                    uexWindow.evaluateScript('loading', 0, 'close()');
+                    alert("分享成功");
+                    closeWin();
+                }
+            };
+            
+            uexSina.registerCallBack = function(opCode,dataType,data){
+                if (data === 0) {
+                    var txt = title;
+                    var realImgPath = firstImg;
+                   uexSina.sendImageContent(realImgPath,txt);
+                }
+            };//新浪微博分享
+        }
+    
+        function shareWebImgTextToQQ() {
+            var json = '{"title":"分享给您一件藏品","summary":"' + title + '","targetUrl":"' + targetUrl + '","imageUrl":"' + firstImg + '","appName":"uexQQ", "cflag":"1"}';
+            uexQQ.shareWebImgTextToQQ(appIdQQ, json);
+        }
+
+        function shareImgTextToQZone() {
+            var json = '{"title":"' + title + '","summary":"' + contents + '","targetUrl":"' + targetUrl + '","imageUrl":["' + firstImg + '"]}';
+            uexQQ.shareImgTextToQZone(appIdQQ, json);
+        }
+
+        function WXRegisterApp() {
+            uexWeiXin.registerApp(appIdWX);
+        }
+
+        function SinaRegisterApp() {
+            uexSina.registerApp(appKeySina, appSecretSina, registerUrlSina);
+        }
+
+        function getRely() {
+            var getRelyUrl = getUrl('product/GetProduct');
+            var data = {
+                productId : foreignId
+            };
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    var iconArr = result.Data.Icon;
+                    firstImg = imgNormalUrl + iconArr[0];
+                    if (data.Title == '') {
+                        title = '一线藏品';
+                    } else {
+                        title = data.Title;
+                    }
+                    if (data.Content == '') {
+                        contents = '分享了一件藏品';
+                    } else {
+                        contents = data.Content;
+                    }
+                }
+            }
+
+            getRequestAjax(getRelyUrl, data, callback);
+        }
+          $('.close').click(function() {
+            appcan.window.close(-1);
+        })
+    </script>
+</html>

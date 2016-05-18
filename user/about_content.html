@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <style>
+            .version {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            .version img {
+                width: 5em;
+                height: 5em;
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver">
+            <div class=" umar-at1">
+                <div class="version">
+                    <img src="../img/logo.png">
+                    <br>
+                    一线 <span id="current"></span>
+                </div>
+                <div id="listview"  class="ubt bc-border  c-wh ">
+
+                </div>
+                <div id="listview2"  class="ubt bc-border  c-wh  umar-t">
+
+                </div>
+
+                <div class="ub ub-ver umar-t " style="margin-top: 6em;">
+                    <div class="ub uinn ub-ac ub-pc ub-ver gery" >
+                        <div class="ub " >
+                            Copyright @ 2015-2016
+                        </div>
+                        <div class="ub " >
+                            南京正熙堂电子商务有限公司
+                        </div>
+                        <div class="ub">
+                                                             一线热线：025-52282040
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var localPath = "/sdcard/";
+        var version = '1.7.7';
+        var installObj = {};
+        var confirmParams = ['稍后', '更新'];
+
+        var lv2 = appcan.listview({
+            selector : "#listview2",
+            type : "thinLine",
+            hasIcon : true,
+            hasAngle : true,
+            hasSubTitle : true,
+            multiLine : 1
+        });
+
+        lv2.set([{
+            title : '鉴定规则',
+            subTitle : '',
+            id : '2'
+        }, {
+            title : '拍卖规则',
+            subTitle : '',
+            id : '3'
+        }, {
+            title : '服务协议',
+            subTitle : '',
+            id : '4'
+        }]);
+
+        lv2.on('click', function(ele, obj, subobj) {
+            if (obj.id == '2') {
+                appcan.openWinWithUrl('identify_notice', '../identify/identify_notice.html')
+            }
+            if (obj.id == '3') {
+                appcan.openWinWithUrl('auction_notice', '../auction/auction_notice.html')
+            }
+            if (obj.id == '4') {
+                appcan.openWinWithUrl('about_contract', 'about_contract.html')
+            }
+        });
+
+        var lv3 = appcan.listview({
+            selector : "#listview3",
+            type : "thinLine",
+            hasIcon : true,
+            hasAngle : true,
+            hasSubTitle : true,
+            multiLine : 1
+        });
+
+        appcan.button(".head_photo", "ani-act", function() {
+            uexWindow.openPopover("head_photo", "0", "head_photo.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+
+        var onStatus = function(opId, fileSize, percent, status) {
+            if (status == 0) {
+                // 下载中...
+                uexWindow.toast('1', '5', '下载进度：' + percent + '%', '');
+            } else if (status == 1) {// 下载完成.
+                uexWindow.closeToast();
+                uexDownloaderMgr.closeDownloader('14');
+                //关闭下载对象
+                uexWidget.installApp(localPath + installObj.File);
+                // 安装下载apk文件
+            } else {
+                uexWindow.toast('1', '5', '下载出错，请关闭软件再次运行.', '');
+            }
+        };
+
+        //安卓版 ，创建下载对象回调函数（step:6）
+        var cbCreateDownloader = function(opId, dataType, data) {
+            uexDownloaderMgr.download('14', installUrl + installObj.File, localPath + installObj.File, '0');
+        };
+
+        function cbConfirm(opId, dataType, data) {
+            if (confirmParams.length > 1 && data == 0) {
+                uexLog.sendLog("1");
+            } else {
+                uexLog.sendLog("2");
+                if (uexWidgetOne.platformName == "iOS") {
+                    //uexDownloaderMgr.createDownloader("14");
+                }
+                if (uexWidgetOne.platformName == "android") {
+                    uexDownloaderMgr.createDownloader("14");
+                }
+            }
+        }
+
+
+        appcan.ready(function() {
+            appcan.initBounce();
+
+            uexDownloaderMgr.onStatus = onStatus;
+            uexDownloaderMgr.cbCreateDownloader = cbCreateDownloader;
+            uexWindow.cbConfirm = cbConfirm;
+
+            $("#current").html("V" + version);
+
+            if (uexWidgetOne.platformName != "iOS") {
+                appcan.request.ajax({
+                    type : 'POST',
+                    url : http + "common/checkupdate",
+                    data : {
+                        version : version
+                    },
+                    dataType : 'json',
+                    timeout : 300,
+                    success : function(result) {
+                        if (result.Success) {
+                            installObj = result.Data;
+
+                            var lv = appcan.listview({
+                                selector : "#listview",
+                                type : "thinLine",
+                                hasIcon : true,
+                                hasAngle : true,
+                                hasSubTitle : true,
+                                multiLine : 1
+                            });
+                            lv.set([{
+                                id : 1,
+                                title : '新版本监测',
+                                subTitle : "V" + installObj.Code
+                            }]);
+
+                            lv.on('click', function(ele, obj, subobj) {
+                                if (uexWidgetOne.platformName == "iOS")
+                                    return;
+
+                                if (obj.id == 1) {
+                                    uexWindow.confirm('更新提示', '当前有新版本，是否更新?', confirmParams);
+                                }
+                            });
+                        }
+                    },
+                    error : function(xhr, type) {
+                        uexWindow.toast("0", "5", '网络异常!', "2000");
+                    },
+                    offline : false
+                });
+            }
+        });
+    </script>
+</html>

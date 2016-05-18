@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div  class="ub-f1 tx-l ">
+
+            <div class="ub  ub-ver  umar-t  umar-t-ec3">
+                <div id="imgList">
+                    <img id="addimg" class='uwh-bg umar-r-ect' src='../img/addImg.png'>
+                </div>
+                    <div class="textb3 t-wh-c7 uinn-a7" >
+                您最多可以上传同件藏品9张照片（至少一张）
+            </div>
+            </div>
+
+            <div class='ub ub-ac uinn bc-bg ubt ubb bc-border umar-t'>
+
+                <div class="sc-bg-active uinput ub ub-f1 " >
+                    <input id="title" placeholder="请输入拍品名称" type="text" class="ub-f1" style="text-align:left;padding: 0.8em;">
+                </div>
+            </div>
+            
+            <div class="umar-t-ec2 umar-t ubt ubb bc-border">
+                <div class="c-wh uinn-ec1 uh-ect">
+                    <div class="uinput-Noborder ub ub-f1">
+                        <textarea id="content" name="content" placeholder="请描述你的拍品" type="text" class="ub-f1 uba bc-border"></textarea>
+                    </div>
+                   <div class="t-wh-c7 ulev-2 ub-pe ub-ae tx-r umar-tt umar-bb">
+                        还可以输入<span id="remain">150</span>个字
+                    </div>
+                </div>
+            </div>
+            <div class="ub ub-ver bc-bg uinn umar-t ubt ubb bc-border textb2 gery">
+                <div class="ub ub-ac" style="margin:0.5em;">
+                    1、所有拍品0元起拍
+                </div>
+                <div class="ub ub-ac" style="margin:0.5em;">
+                    2、所有拍品每次出价最低加价幅度为：30元/次
+                </div>
+                <div class="ub ub-ac" style="margin:0.5em;">
+                    3、拍品成交后，由买家承担运费
+                </div>
+            </div>
+             <div style="position: relative;width:94%;margin:1.5em auto;color:#989898" id="getoption">
+                <div style="position: absolute;top:0em;left:0em;width:35%;display:inline;text-align: center;">
+                    <hr>
+                </div>
+                <div style="position: absolute;top:-0.7em;left:35%;width:30%;display:inline;text-align: center;font-size: 1em;color:red;">
+                                                                拍卖规则
+                </div>
+                <div style="position: absolute;top:0em;left:65%;width:35%;display:inline;text-align: center;">
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var money = 1;
+        
+        appcan.ready(function() {
+            uexAliPay.onStatus = function(status, des) {
+               
+                // 1为在支付，2为支付失败，0为支付成功
+                uexWindow.toast("0", "5", des, "2000");
+                
+                if (status == '0') {
+                    var readyIn=true;
+                    var pageIndex=1;
+                    var endFlag=false;
+                    uexWindow.evaluatePopoverScript('PerAuction_index','content','setUserState()');
+                    uexWindow.evaluatePopoverScript('check','content','changeDiv("'+readyIn+'","'+pageIndex+'","'+endFlag+'")');
+                    clearPage();
+                    appcan.openWinWithUrl('check', '../user/auction/check.html');
+                }
+
+            }
+        });
+
+        
+
+        var imgObj = [];
+        var imgCount = 0;
+        var fileNames = [];
+
+        var Typeid = '';
+        var expertid = '';
+
+        function addImg() {
+            uexWindow.cbActionSheet = function(opId, dataType, data) {
+                if (data == 0) {
+                    cameraOpen();
+                }
+                if (data == 1) {
+                    fileOpen();
+                }
+            }
+            var value = "拍照上传;从手机相册选择";
+            var mycars = value.split(";");
+            uexWindow.actionSheet("", "取 消", mycars);
+        }
+
+        function deleteImg(obj) {
+            var src = $(obj).attr('data');
+
+            if (src) {
+                for (var i = 0; i < fileNames.length; i++) {
+                    if (fileNames[i] == src) {
+                        fileNames.splice(i, 1);
+                    }
+                }
+            }
+            imgCount--;
+            $(obj).remove();
+            
+            $("#addimg").show(); 
+        }
+
+        function cameraOpen() {
+            uexCamera.cbOpen = function(opCode, dataType, data) {
+
+                imgObj.push(data);
+
+                imgCount++;
+                var str = "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+
+                $(str).insertBefore($("#addimg"));
+                
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+            }
+            uexCamera.open(0, 10);
+        }
+
+        function fileOpen() {
+            uexImageBrowser.cbPick = function(opCode, dataType, data) {
+                if (data == "") {
+                    return;
+                }
+
+                arr = data.split(',');
+
+                if (imgCount + arr.length > 9) {
+                    uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                    return;
+                }
+
+                var str = "";
+                for (var i = 0; i < arr.length; i++) {
+                    imgCount++;
+                    imgObj.push(arr[i]);
+                    str += "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+                }
+
+                $(str).insertBefore($("#addimg"));
+                
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+            }
+            uexImageBrowser.pickMulti(9-imgCount);
+        }
+
+        function upload(imgPath) {
+            var uploadHttp = http + "common/uploadicon";
+            randOpId = Math.floor(Math.random() * (1000 + 1));
+            uexUploaderMgr.onStatus = function(opCode, fileSize, percent, serverPath, status) {
+                switch (status) {
+
+                case 0:
+                    //uexWindow.toast("1", "5", percent + "%", "0");
+                    break;
+                case 1:
+
+                    uexUploaderMgr.closeUploader(opCode);
+                    uexWindow.closeToast();
+
+                    var json = eval("(" + serverPath + ")");
+
+                    if (json.Success) {
+                        fileNames.push(json.Data);
+
+                        $("#imgList img[loading='true']").last().attr("data", json.Data).attr("src", imgThumbUrl + json.Data).removeAttr("loading");
+                    }
+
+                    //uexWindow.toast("0", "5", "图片成功上传！", "2000");
+                    uploadImg();
+                    break;
+                case 2:
+                    uexWindow.closeToast();
+                    //uexWindow.toast('0', '5', "图片上传失败", "2000");
+                    uexUploaderMgr.closeUploader(opCode);
+                    uploadImg();
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            uexUploaderMgr.cbCreateUploader = function(opCode, dataType, data) {
+                if (data == 0) {
+                    var path = imgPath;
+                    var inCompress = 1;
+                    if (uexWidgetOne.platformName == "iOS") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                    if (uexWidgetOne.platformName == "android") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                } else {
+                    uexWindow.closeToast();
+                    var strimg2 = "图片上传失败";
+                    uexWindow.toast('0', '5', '图片上传失败', 3000);
+                }
+            }
+
+            uexUploaderMgr.createUploader(randOpId, uploadHttp);
+        }
+
+        function uploadImg() {
+            if (imgObj.length == 0)
+                return;
+
+            var first = imgObj.shift();
+            upload(first);
+        }
+
+        function submit() {
+            if ($("#content").val().length > 150) {
+                uexWindow.toast("0", "5", "不能超过150字", "3000");
+                return;
+            }
+
+            if (imgCount > 0) {
+                if (imgCount != fileNames.length) {
+                    uexWindow.toast("0", "5", "等待图片上传！", "2000");
+                    return;
+                }
+            } else {
+                uexWindow.toast("0", "5", "请上传图片！", "2000");
+                return;
+            }
+
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "auction/addauction",
+                data : {
+                    token : getToken(),
+                    content : $('#content').val(),
+                    icon : fileNames.join('|'),
+                    title : $("#title").val(),
+                    price : '0'
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        
+                       
+                           //pay(result.Data, '上传拍卖', '上传拍卖', money);
+                           appcan.locStorage.val('fee', money);
+                           appcan.locStorage.val('realFee',money);
+                           appcan.locStorage.val('orderId',result.Data);//门票的order就是票据
+                           appcan.locStorage.val('payType','payAddAuction');
+                           appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+                           
+                    } else {
+                        flagSubmit = true;
+                        uexWindow.toast("0", "5", '上传拍品失败', "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '网络异常!', "2000");
+                },
+                offline : false
+            });
+
+        }
+
+
+        $("#content").on("input", function() {
+            var contentText = 150 - $(this).val().length
+            if (contentText >= 0) {
+                $("#remain").html(contentText);
+            } else if (contentText < 0) {
+                var str = '<font color="red">' + contentText + '</font>';
+                $("#remain").html(str);
+            }
+        });
+
+        $("#expert").on("click", function() {
+            appcan.locStorage.setVal('line', 'on');
+            uexWindow.open("selectExpertType", "0", "selectExpertType.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+
+        $("#addimg").on("click", function() {
+            if (imgCount >= 9) {
+                uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                return;
+            }
+            addImg();
+        });
+
+        function setInfo(id) {
+           
+            var partner = "2088911273341072";
+            var seller = "alzxt20150301@zhengxitang.com";
+            var rsaPrivate = 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+            var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+            var notifyUrl2 = notifyUrl+'paycallback?Type=1&orderId=' + id + '';
+            uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl2);
+        }
+
+        function pay(id, subject, body, fee) {
+
+            var date = new Date();
+            var num = getToken() + date.getTime();
+            setInfo(id);
+            uexAliPay.pay(num, subject, body, fee);
+
+        }
+
+        function clearPage() {
+            $('#content').val('');
+            $('#title').val('');
+            for (var i = 0; i < imgCount; i++) {
+                $("#imgList img").eq(0).remove();
+            }
+            imgObj = [];
+            imgCount = 0;
+            fileNames = [];
+        }
+        
+        $("#getoption").click(function(){
+             appcan.openWinWithUrl('auction_notice', 'auction_notice.html');
+        })
+
+    </script>
+</html>

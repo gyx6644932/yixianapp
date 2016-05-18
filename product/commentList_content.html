@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id='' class='ub ub-ver open uinn gery bc-bg '>
+            <div id="commentCont"></div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        flag = false;
+        var Token = '';
+        Token = getToken();
+        productId = appcan.locStorage.getVal('productId');
+        appcan.ready(function() {
+            load = true;
+            pageindex = 1;
+            loadcommentCont(load);
+            uexWindow.setBounce(1);
+            initBounce(mes1, mes2);
+        });
+        function mes1() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadcommentCont(load);
+            return;
+        }
+
+        function mes2() {
+            pageindex = pageindex + 1;
+            if (!flag) {
+                load = false;
+                str = loadcommentCont(load);
+            } else {
+                return;
+            }
+        }
+
+        function loadcommentCont(load) {
+            var loadcommentContUrl = getUrl('product/GetCommentList');
+            var data = {
+                pageindex : pageindex,
+                pagesize : 15,
+                productId : productId
+            };
+
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    var str = "";
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            str += commentCont(data[i], '');
+
+                            var Replys = data[i].Replys;
+                            if (Replys.length > 0) {
+                                for (var j = 0; j < Replys.length; j++) {
+                                    str += commentCont(Replys[j], data[i].Nicename);
+
+                                }
+                            }
+                        }
+                        if (data.length < 10) {
+                            flag = true;
+                            str += templateDivEnd();
+                        }
+
+                    } else {
+                        flag = true;
+                        str = templateDivEnd();
+                    }
+
+                    if (load) {
+                        $('#commentCont').html(str);
+                    } else {
+                        $('#commentCont').append(str);
+                    }
+                    $(".commentUser").click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', '../user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("commentList", 0, "userinfo()");
+                        }
+                    });
+                    $("#moreComment").click(function() {
+                        uexWindow.evaluateScript("market_details", 0, "moreComment()");
+                    });
+                }
+            };
+            getRequestAjax2(loadcommentContUrl, data, callback);
+        }
+
+        function commentCont(data, mastname) {
+            var dateS,hourS;
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var id = data.UserId;
+            var niceName = data.Nicename;
+            var content = data.Content;
+            var GreateDate = new Date(formatDate(data.CreateDate))
+            var oldMonth = GreateDate.format("d");
+            var oldDate = GreateDate.format("M月d日");
+            var oldTime = GreateDate.format("hh:mm");
+            var myDate = new Date();
+            var nowMonth = myDate.getDate();
+            if (oldMonth == nowMonth) {
+                dateS = '今天';
+            } else if (parseInt(oldMonth) + 1 == nowMonth) {
+                dateS = '昨天';
+            } else {
+                dateS = oldDate;
+            }
+
+            str = "";
+            str += "       <div id='" + id + "' nicename='" + niceName + "' class='commentUser ub open  uinn gery bc-bg  ubb bc-border1 umar-t textb2'>";
+            str += "        <div class='makertUser ub umar-r'>";
+            str += "            <img src='" + avatar + "' />";
+            str += "        </div>";
+            str += "        <div class='ub ub-f1 ub-ver'>";
+            str += "            <div class='ub ub-f1 gery'>";
+            str += "            <div class='ub ub-f1 gery'>";
+            if (mastname == '') {
+                str += "               <a style='width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>" + niceName + "</a>";
+            } else {
+                str += "                " + mastname + " ";
+            }
+
+            str += "            </div>";
+           str += "        <div class='ub-f1 ub ub-pe gery' style='font-size:.8em;'>";
+            str += "            " + dateS + "  " + oldTime + "";
+            str += "        </div>";
+            str += "            </div>";
+            str += "            <div class='ub-f1 gery2' style='word-wrap:break-word;'>";
+            str += "               " + content + "";
+            str += "            </div>";
+            str += "       </div>";
+ 
+            str += "      </div>";
+            return str;
+        }
+
+        function templateDivEnd() {
+            var strEnd = '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-ac ub-pc" style="color:#d3d3d3;margin:0.5em;">没有更多' + '</div>' + '</div>';
+
+            return strEnd;
+        }
+
+        function Refresh() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadcommentCont(load);
+            return;
+        }
+    </script>
+</html>

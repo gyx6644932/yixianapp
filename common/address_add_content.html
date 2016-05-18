@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <style type="text/css">
+        
+    .empty::-webkit-input-placeholder, .empty::-webkit-input-placeholder{
+          color: red !important;
+    }
+
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="ub ub-ver placeholderText" >
+            
+            <div class="ub ubt bc-border bc-bg  umar-t white " >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="name" placeholder="收货人姓名" type="text" class="ub-f1  ">
+                </div>
+
+            </div>
+
+            <div class="ub ubt bc-border bc-bg  white " >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="Telephone"  placeholder="手机号码" type="number" class="ub-f1  ">
+                </div>
+
+            </div>
+            <div class="ub ubt bc-border bc-bg   white " >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="ZipCode" placeholder="邮政编码(如不清楚请填写000000)" type="text" class="ub-f1  ">
+                </div>
+
+            </div>
+            <!--
+           <div class="ub ubt bc-border bc-bg   white " id="areaPickerView" >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="Area" placeholder="选择省、市、区" type="text" class="ub-f1" readOnly="true">
+                    <div id="fa" style="color:#C6C6C6;" class="fa fa-chevron-down"></div>
+                </div>
+
+          </div> 
+          -->
+             <div class="ub ubt bc-border bc-bg   white " id="areaPickerView" >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="Area" placeholder="选择省、市、区" type="text" class="ub-f1" >
+                    <div id="map-marker" style="color:red;margin:0em 0.5em;" class="fa fa-2x fa-map-marker"></div>
+                </div>
+
+            </div>
+            <div class="ub ubt bc-border bc-bg   white " style="display:none !important;" >
+
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                    <input id="Street" placeholder="街道" type="text" class="ub-f1" value="1">
+                </div>
+
+            </div>
+            <div class="ub ubt bc-border bc-bg white" >
+                <div class="sc-bg-active uin-input ub ub-f1 ub-ac ub-pc uinn">
+                <textarea id="Detail" placeholder="详细地址" type="text" class="ub-f1  w-full" style="background-color:#FFFFFF;"></textarea>
+                </div>
+            </div>
+           
+        </div>
+    </body>
+    
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    
+    </body>
+    <script>
+    
+        
+        //防止重复提交
+        var flag=true;
+        appcan.ready(function() {  
+         
+            uexAreaPickerView.onConfirmClick = function(json){
+                var obj = eval('(' + json + ')');
+                $("#Area").val(obj.city);
+            }
+            
+            uexLocation.onChange = function(lat, log){
+                uexLocation.getAddress(lat,log,1);
+            }
+            
+             uexLocation.cbGetAddress = function(opCode, dataType, data){
+                var addressDate=JSON.parse(data);
+                var addressComponent=addressDate.addressComponent;
+                var province=addressComponent.province;
+                var street_number=addressComponent.street_number;
+                var distance=addressComponent.distance;
+                var district=addressComponent.district;
+                var street=addressComponent.street;
+                var city=addressComponent.city;
+              
+                
+                var area=province+city+district;
+                $("#Area").val(area);
+                $("#Street").val(street);
+                $("#Detail").val(street+street_number);
+                
+                uexLocation.closeLocation();
+            }
+            
+
+        });
+   
+        
+     function addAddress(){
+          var emptyFlag=false;
+          $(".placeholderText input,textarea").each(function(){
+                var prompt='';
+                if($(this).val() == ''){ 
+                    prompt=$(this).attr('placeholder')+'不能为空！';
+                    $(this).attr('placeholder',prompt);
+                    $(this).addClass("empty");
+                    emptyFlag=true;
+                }
+           
+          })
+          
+           if(!checkTel($("#Telephone").val())){
+             
+               uexWindow.toast("0", "5", "请输入11位手机号！", "2000");
+               return;
+          }
+          
+        
+          if(!flag || emptyFlag){
+              return ;
+          }
+          flag=false;
+         
+             var name = $("#name").val();
+             var Telephone = $("#Telephone").val();
+             var ZipCode = $("#ZipCode").val();
+             var Area = $("#Area").val();
+             var Street = $("#Street").val();
+             var Detail = $("#Detail").val();
+             var getUserUrl=getUrl("user/AddAddress");
+             var data = {
+                         name : name,
+                         Mobile : Telephone,
+                         ZipCode : ZipCode,
+                         Area : Area,
+                         Street : Street,
+                         Detail : Detail,
+                         token  : getToken()
+              }
+              function callback(result){
+                  if(result.Success){
+                      
+                     uexWindow.toast("0", "5", '地址添加成功', "2000");
+                     uexWindow.evaluateScript('address_add',0,'close()');
+                     var readyIn=true;
+                     var pageIndex=1;
+                     var endFlag=false;
+                     var firstInfo=true;
+                     uexWindow.evaluatePopoverScript('address_list','content','getaddresslist("'+readyIn+'","'+pageIndex+'","'+endFlag+'","'+firstInfo+'")');  
+                     
+                  }else{
+                      uexWindow.toast("0", "5", '地址添加失败', "2000");
+                     
+                      flag=true;
+                  }
+                      
+                       //uexWindow.toast("0", "5", '添加成功', "2000");
+                      
+              }     
+              getRequestAjax(getUserUrl,data,callback);
+        }
+          
+
+        appcan.button("#nav-left", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        
+        $("#map-marker").click(function(){
+            
+                //0最准确，1十米以内 ，2百米以内，3千米内，4三千米以内
+                var locLevel = 0;
+                //distanceFilter 更新距离，如果设置为 100m,则100m以内不回调定位
+                var distanceFilter = 10;
+                //以上两参数仅ios支持
+                uexLocation.openLocation(locLevel, distanceFilter);
+                
+                
+           // uexAreaPickerView.open();
+        })
+        
+        $("#fa").click(function(){
+    
+            uexAreaPickerView.open();
+        })
+
+    </script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div id="addressList">
+            
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+             appcan.initBounce();
+                function actionTop(){
+                        
+                     getaddresslist();
+                        return ;
+                }
+               
+                initBounce(actionTop,0); 
+           getaddresslist();
+
+        });
+        
+        function getaddresslist() {
+            var getUserUrl = getUrl("user/getaddresslist");
+            var data = {
+                pageindex : 1,
+                pagesize : 10,
+                token : getToken()
+            }
+
+            function callback(result) {
+
+                if (result.Success) {
+                     
+                     var data=result.Data;
+                     var str='';
+                     if(data.length != 0){
+                         
+                         uexWidgetOne.onError = function(opCode, errorCode, errorDesc) {
+                                                alert(errorCode + ":" + errorDesc);
+                                            }
+                         for(var i=0;i<data.length;i++){
+                             str += templateDiv(data[i],i);
+                         }
+                         $("#addressList").html(str);
+                         changeDetail('addShoppingSite'); 
+                         $('.addSS').click(function(){
+                            appcan.openWinWithUrl('editShoppingSite', '../user/editShoppingSite.html');
+                            appcan.locStorage.setVal('addressId',this.id);
+                        })
+ 
+                     }else {
+                          str=templateDivEmpty('我的地址为空')
+                          $("#addressList").html(str);
+                     }
+                        
+                        $('#editShoppingSite').addClass('');
+                    } 
+            }
+            getRequestAjax(getUserUrl, data, callback);
+        }
+        
+         function templateDiv(dataJson,i){
+            var str = "";
+            if(i==0){
+                
+                        str += "<div class='ub ub-ver addSS' id="+dataJson.Id+" ><div class='editShoppingSite ub ubt bc-border bc-bg uinn umar-t addressDelfault'>";
+                        str += "<div class='ub-f4  ub ub-ver' >";
+                        str += " <div class='ub ' ><div class='ub-f1 textb bold' >" + dataJson.Name + "</div>";
+                        str += "<div class='ub-f1 ub ub-pe uinn-a7' > " + dataJson.Mobile + "</div> </div>";
+                        str += " <div class='ub-f4 textb2 umar-t' >【默认】" + dataJson.Area + dataJson.Street +dataJson.Detail+ "</div></div>";
+                        str += " <div class='ub-f1 ub ub-ac '><i class='fa fa-check-circle-o textbs '></i></div></div></div>";
+            }else{
+                str += "<div class='ub ub-ver addSS' id="+dataJson.Id+" ><div class='editShoppingSite ub ubt bc-border bc-bg uinn umar-t'>";
+                        str += "<div class='ub-f4  ub ub-ver' >";
+                        str += " <div class='ub ' ><div class='ub-f1 textb bold' >" + dataJson.Name + "</div>";
+                        str += "<div class='ub-f1 ub ub-pe uinn-a7' > " + dataJson.Mobile + "</div> </div>";
+                        str += " <div class='ub-f4 textb2 umar-t' >" + dataJson.Area + dataJson.Street +dataJson.Detail+ "</div></div>";
+                        str += " <div class='ub-f1 ub ub-ac '></div></div></div>";
+            }
+                        return str;
+        }
+
+    </script>
+</html>

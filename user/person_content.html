@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+
+    <body class="um-vp bc-bg2" ontouchstart>
+
+        <div class="ub ub-img1  banImg ub-ver" >
+            <div class="ub ub-ac ub-pc" id="headDiv" style="height:7em;">
+
+            </div>
+            <div class="ub ub-ac ub-pj" style="width:99%;margin:auto;color:#FFF1F1;">
+                <div class="ub ub-ac ub-pc ub-ver opa_bg " id="followProduct" style="width:33%;height:3em;">
+                    <div class="ulev-1" >
+
+                    </div>
+                    <div class="ulev-1">
+                        收藏藏品
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pc ub-ver opa_bg" id="followUser" style="width:33%;height:3em;">
+                    <div class="ulev-1" >
+
+                    </div>
+                    <div class="ulev-1">
+                        关注藏友
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pc ub-ver opa_bg" id="followAuction" style="width:33%;height:3em;">
+                    <div class="ulev-1" >
+
+                    </div>
+                    <div class="ulev-1">
+                        关注拍品
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="ub-ver bc-bg" id="waitIdentify" style="display: none">
+            <div class="ub" style="padding-top: .5em;">
+                <div class="WaitPay ub ub-ac ub-pc" style="width:10%;padding-left: .6em;">
+                    <img src="../img/wait.png" />
+                </div>
+                <div class="ub-f1 uinn ub ub-ac" >
+                    等您鉴定
+                    <div id="NewIdentify" style="display: none;padding-left: 1em;padding-top: .3em;" >
+                        <img src="../img/identify/new.png" style="width:2em;"/>
+                    </div>
+                </div>
+                <div id='identifyNum' class="ub-f1 ub ub-ac ub-pc per-infor" style="color: #D5D5D5;"></div>
+
+            </div>
+        </div>
+
+        <div class="ub ub-ac ub-ver" style="margin-top:1em;background-color:#FFFFFF;" >
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1  " id="per_rep" >
+                <div class="ub  ub-img1 " style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_rep.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我的仓库
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1  " id="per_ide" >
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_ide.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我的鉴定
+                        <div  id="NewIdentifyComplete"  style="display: none;padding-left: 1em">
+                            <img src="../img/identify/new.png" style="width:2em;"/>
+                        </div>
+                    </div>
+                   
+
+                </div>
+            </div>
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1  " id="per_auc" >
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_auc.png">
+                </div>
+                <div class="ub ub-ac " style="width:85%;">
+                    <div class="ub ub-ac">
+                        我的拍卖
+                    </div>
+                    <div  id="auctionNewTag" style="display:none;" >
+                            &nbsp;&nbsp;<img src="../img/identify/new.png" style="width:2em;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1  " id="per_mar" >
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_mar.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我的市场
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+
+        <div class="ub ub-ac ub-ver" style="margin-top:1em;background-color:#FFFFFF;" >
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1  " id="per_buy" >
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_buy.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我买到的
+                        <div  id="buyNewTag" style="display:none;" >
+                            &nbsp;&nbsp;<img src="../img/identify/new.png" style="width:2em;"/>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1 " id="per_sel" >
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_sel.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我卖出的
+                   <div  id="sellerNewTag" style="display:none;" >
+                            &nbsp;&nbsp;<img src="../img/identify/new.png" style="width:2em;"/>
+                        </div>   
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+
+        <div class="ub ub-ac ub-ver" style="margin-top:1em;margin-b:1em;background-color:#FFFFFF;" >
+            <div class="ub ub-ac ub-pj listDiv ubb bc-border1 " id="per_tic">
+                <div class="ub  ub-img1" style="width:10%;padding-left: .8em;">
+                    <img class="totileImg" src="../img/img2/per_tic.png">
+                </div>
+                <div class="ub ub-ac ub-pj" style="width:85%;">
+                    <div class="ub ub-ac">
+                        我的票券
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            appcan.initBounce();
+            function actionTop() {
+                setUserState();
+                return;
+            }
+
+            initBounce(actionTop, 0);
+            setUserState();
+            expertCount();
+        })
+        
+        function setUserState() {
+            var imgUrl = '../img/img2/opa_bg.png';
+            var actionDivStr = '<div id="actionDiv" class="ub ub-ac ub-pj" style="width:50%;color:#FFFFFF;">' + '<div id="login" class="ub ub-ac ub-pc uc-a1" style="height:2em;width:4em;background-image:url(' + imgUrl + ');">' + '登录</div>' + '<div id="reg" class="ub ub-ac ub-pc uc-a1" style="height:2em;width:4em;background-image:url(' + imgUrl + ');">' + '注册</div> ' + '</div>';
+            var avatarDivStr = '<div id="avatarDiv" class="ub ub-pc ub-ac" style="width:80%;">' + '<div id="avatar" class="ub uba bc-border uwh-esh2 ub-img uwh-per2" ></div>' + '<div id="realName" class="ub ub-f1 white uinn"></div>' + '</div>';
+            if (getToken() != null) {
+                var localStorage = window.localStorage;
+                var getUserUrl = getUrl("user/getuser");
+
+                var data = {
+                    token : getToken()
+                }
+
+                function callback(result) {
+                    var data = result.Data;
+                    for (key in data) {
+
+                        if (key == 'Avatar') {
+                            localStorage.setItem(key, gerImgThumbUrl(data[key]));
+                        } else {
+                            localStorage.setItem(key, data[key]);
+                        }
+                    }
+
+                    var newIdentifyComplete = data.NewIdentifyComplete;
+                    //引导 鉴定完成
+                    if (newIdentifyComplete == true) {
+                        $("#NewIdentifyComplete").css('display', 'block !important');
+                    } else {
+                        $("#NewIdentifyComplete").css('display', 'none !important');
+                    }
+
+                    //引导我买到的
+                    if (data.NewBuyOrderWaitPay || data.NewBuyOrderSend|| data.NewBuyOrderRefund) {
+                        $('#buyNewTag').attr('style', 'display:block !important');
+                    } else {
+                        $('#buyNewTag').attr('style', 'display:none !important');
+                    }
+                    //引导我卖出的
+                    if (data.NewSellOrderWaitPay|| data.NewSellOrderNoSend|| data.NewSellOrderRefund|| data.NewSellOrderComplete) {
+                        $('#sellerNewTag').attr('style', 'display:block !important');
+                    } else {
+                        $('#sellerNewTag').attr('style', 'display:none !important');
+                    }
+                    
+                    
+                    if (data.NewAuctionCheckFailure  || data.NewAuctionPreview || data.NewAuctionOngoing|| data.NewAuctionFailure) {
+                        $('#auctionNewTag').attr('style', 'display:block !important');
+                    } else {
+                        $('#auctionNewTag').attr('style', 'display:none !important');
+                    }
+                    
+                    
+                    $("#headDiv").html(avatarDivStr);
+                    $("#actionDiv").remove();
+                    $("#realName").text(localStorage.getItem('Nicename'));
+                    var imgUrl = localStorage.getItem('Avatar');
+                    $("#avatar").css('background-image', 'url(' + imgUrl + ')');
+                    $('#avatar').click(function() {
+                        appcan.openWinWithUrl('sys_setting', '../user/sys_setting.html');
+                    })
+                    $('#followAuction div:first-child').text(localStorage.getItem("FollowAuction"));
+                    $('#followProduct div:first-child').text(localStorage.getItem("FollowProduct"));
+                    $('#followUser div:first-child').text(localStorage.getItem("FollowUser"));
+
+                    setTimeout("setUserState()", 4000);
+                }
+                getRequestAjax2(getUserUrl, data, callback);
+            } else {
+                $('#buyNewTag').attr('style', 'display:none !important');
+                $('#sellerNewTag').attr('style', 'display:none !important');
+                $("#NewIdentifyComplete").css('display', 'none').removeClass('ub');
+                $('#auctionNewTag').attr('style', 'display:none !important');
+                
+                $("#headDiv").html(actionDivStr);
+                $("#avatarDiv").remove();
+                $("#login").click(function() {
+                    uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+                })
+                $("#reg").click(function() {
+                    appcan.openWinWithUrl("reg", "reg.html");
+                })
+                $('#followAuction div:first-child').text('0');
+                $('#followProduct div:first-child').text('0');
+                $('#followUser div:first-child').text('0');
+
+            }
+        }
+
+
+        $("#per_rep").click(function() {
+            if (getToken() != null) {
+                appcan.locStorage.setVal('identifyYN', 'true');
+                appcan.openWinWithUrl('repository_index', '../repository/repository_index.html');
+            } else {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_ide").click(function() {
+            if (getToken() != null) {
+                appcan.openWinWithUrl('myAppraisalList', '../identify/myAppraisalList.html');
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_auc").click(function() {
+            if (getToken() != null) {
+
+                appcan.openWinWithUrl('PerAuction_index', '../user/auction/PerAuction_index.html');
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_mar").click(function() {
+            if (getToken() != null) {
+                appcan.openWinWithUrl('person_product', '../user/person_product.html');
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_buy").click(function() {
+            if (getToken() != null) {
+                appcan.openWinWithUrl('PerBuy_index', '../user/buy/PerBuy_index.html');
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_sel").click(function() {
+            if (getToken() != null) {
+                appcan.openWinWithUrl('PerSel_index', '../user/seller/PerSel_index.html');
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#per_tic").click(function() {
+            if (getToken() != null) {
+                appcan.openWinWithUrl('person_ticket', '../user/person_ticket.html');
+            } else {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#followAuction,#followProduct,#followUser").click(function() {
+
+            if (getToken() != null) {
+                var obj = this.id;
+                if (obj == 'followUser' || obj == 'followProduct') {
+                    appcan.locStorage.val('personFollowObjExp', obj);
+                    appcan.openWinWithUrl('person_follow_objectExpert', '../user/person_follow_objectExpert.html');
+                } else if (obj == 'viewHistory') {
+                    appcan.openWinWithUrl('person_log', 'person_log.html');
+                } else if (obj == 'followAuction') {
+                    appcan.openWinWithUrl('person_follow_auction', 'person_follow_auction.html');
+                }
+
+            } else {
+                uexWindow.open("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+        function openAuction() {
+            var date = new Date().format("yyyy-MM-dd");
+            appcan.locStorage.val('auctionStartDay', date);
+            uexWindow.evaluateScript('auction_index', 0, 'writeDay("' + date + '")');
+            appcan.window.open({
+                name : 'auction_index',
+                data : '../auction/auction_index.html',
+                dataType : 0
+            });
+        }
+
+
+        $("#waitIdentify").click(function() {
+            var Token = getToken();
+            if (Token == null) {
+                appcan.locStorage.val('nextPageName', 'ident_wait');
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.openWinWithUrl('identWaitlist', '../identify/identWaitlist.html');
+        })
+        
+        function expertCount() {
+            var getUserUrl = getUrl("user/getuser");
+            var data = {
+                token : getToken()
+            }
+
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    randomIdentify = data.RandomIdentify;
+                    expertIdentify = data.ExpertIdentify;
+                    isExpert = data.IsExpert;
+                    newRandomIdentify = data.NewRandomIdentify;
+                    newExpertIdentify = data.NewExpertIdentify;
+                    if (newRandomIdentify == true || newExpertIdentify == true) {
+                        $("#NewIdentify").css('display', 'block').addClass('ub')
+                    } else {
+                        $("#NewIdentify").css('display', 'none').removeClass('ub')
+                    }
+                    if (isExpert === true) {
+                        $("#identifyNum").text("随机:" + randomIdentify + " 指定:" + expertIdentify);
+                        $("#waitIdentify").css('display', 'block');
+                    } else {
+                        $("#waitIdentify").css('display', 'none');
+                    }
+                }
+            }
+
+            getRequestAjax2(getUserUrl, data, callback);
+            setTimeout("expertCount()", 4000);
+        }
+    </script>
+</html>

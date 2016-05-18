@@ -1,0 +1,153 @@
+/*****************************************/
+/*基础header颜色*/
+.bc-head {
+    background-color: #F9F9F9;
+    border-bottom:1px #C6C6C6 solid;
+}
+/*****************************************/
+/*基础body背景颜色*/
+.bc-bg {
+   background-color: #fff;
+}
+
+.bc-bg2{
+    background-color:#F5F5F5;
+}
+.bc-bg-opacity7{
+     background-color:#fff;
+     opacity: 0.7;
+}
+
+.bc-bg-red{
+    background-color:#E9524B;
+    
+}
+.bc-bg-gray{
+    background-color:#C7C7C7;
+}
+.bc-bg-gray2{
+    background-color:#F7F7F7;
+}
+.bc-bg-gray3{
+    background-color:#EDEDED;
+}
+.bc-bg-blue{
+    background-color:#228ACF;
+}
+/*辅助控件背景颜色*/
+.sc-bg {
+    background-color: #EEEEEE;
+}
+/*辅助控件背景颜色*/
+.sc-bg-active {
+    background-color: #fff;
+}
+/*警告背景色*/
+.sc-bg-alert {
+    background-color: #F16412;
+}
+/*****************************************/
+/*基础字体颜色*/
+.bc-text {
+    color: black;
+}
+
+.bc-text2{
+    color:#fff;
+}
+
+.bc-text3{
+    color: #C7C7C7
+}
+
+/*基础标题字体颜色*/
+.bc-text-head {
+    color: #333131;
+}
+/*辅助字体颜色*/
+.sc-text {
+    color: #848484;
+}
+/*辅助字体颜色*/
+.sc-text-active {
+    color: #dd3030 !important;
+}
+/*辅助字体颜色*/
+.sc-text-hint {
+    color: #E3E3E3;
+}
+/*辅助字体颜色*/
+.sc-text-warn {
+    color: #FC7800;
+}
+.sc-text-warn2 {
+   color: #D31726;
+line-height: 3em;
+font-size: 1em;
+font-weight: bold;
+}
+/*辅助字体颜色*/
+.sc-text-tab {
+    color: #636363;
+}
+/*****************************************/
+/*基础边框颜色*/
+.bc-border {
+    border-color: #E2E2E2;
+    border-radius: 3px;
+}
+.bc-border2 {
+    border-color: #BABABA;
+    border-radius: 3px;
+}
+/*辅助边框颜色*/
+.sc-border {
+    border-color: #FFFFFF;
+}
+.sc-border-tab {
+    border-color: #00A1EA;
+}
+/*****************************************/
+/*基础按钮颜色*/
+.bc-btn {
+    background-color: #E55847;
+}
+.bc-btn3 {
+    background-color: #800019;
+    
+}
+.bc-btn4{
+    background-color: #F0F0F0;
+}
+
+.bc-btn5{
+    background-color:#E5E5E5;
+}
+
+.bc-btn6{
+    background-color:#E55847;
+}
+.bc-btn7{
+    background-color:#FFFFFF;
+}
+.bc-btn8{
+    background-color:#E9524B;
+}
+.bc-btn2 {
+ background-color: #fff;
+border-color: #272626;
+border-style: solid;
+border-width: .1em;
+border-radius: .4em;
+color: #000;
+}
+/*辅助按钮颜色*/
+.sc-btn {
+    background-color: #00A1EA;
+}
+
+
+
+
+
+

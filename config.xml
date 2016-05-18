@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<widget appId="11409085" channelCode="0000" height="480" pid="" sreensize="4.5" version="01.00.0009" viewmode="application" widgetId="" width="320">
+	<name>一线</name>
+	<description/>
+	<author email=""> </author>
+	<icon src="icon.png"/>
+	<license href=""/>
+	<content encoding="utf-8" src="index.html"/>
+	<updateurl/>
+	<logserverip>192.168.199.245</logserverip> 
+	<showmyspace>false</showmyspace>
+	<obfuscation>true</obfuscation>
+	<bgcolor>#fefefe</bgcolor>
+	<orientation>1</orientation>
+	<config desc="uexQQ" type="URLSCHEME">
+		<urlScheme name="uexQQ" schemes="['QQ41D84399','tencent1104692121']"/>
+	</config>
+	<config desc="uexWeiXin" type="URLSCHEME">
+		<urlScheme name="uexWeiXin" schemes="['wx3fc9836dfc01e003']"/>
+	</config>
+</widget>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main1.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0" id="title">x</h1>
+                <div class="nav-btn nav-bt" id="nav-right">
+                                                                        
+                </div> 
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+
+            </div>
+            <!--content结束-->
+           
+        </div>
+        <script src="../../js/appcan.js"></script>
+        <script src="../../js/appcan.control.js"></script>
+        <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        var auctionStatus=appcan.locStorage.val('auctionStatus');
+        var auctionId = appcan.locStorage.val('auctionId');
+        appcan.ready(function() {
+            
+            var str= '<div id="footer" class="uf ub ub-ac ub-pj" style="width:95%;margin:auto;height:3em;color:#269DE0;">'
+                          +'<div class="ub ub-ac ub-pc ub-f1" onclick="toIdentify()">送鉴定</div>'
+                          +'<div class="ub ub-ac ub-pc ub-f1" onclick="toProduct()" style="border-left:0.1em solid #C9C9C9;border-right:0.1em solid #C9C9C9;">送市场</div>'
+                          +'<div class="ub ub-ac ub-pc ub-f1" onclick="toAuction()">送拍卖</div>'
+                     +'</div>'
+             if(auctionStatus == 1 ){
+               $('#title').html('拍品审核');
+              
+             }else if(auctionStatus == 2){
+               $('#title').html('拍品审核');
+                $('#page_0').append(str);
+             }else if(auctionStatus == 3){
+               $('#title').html('拍品在展');
+             }else if(auctionStatus == 4){
+               $('#title').html('拍品在展');
+             }else if(auctionStatus == 5 ){
+               $('#title').html('拍品在拍');
+             }else if(auctionStatus == 6 ){
+               $('#title').html('流拍拍品');
+               $('#page_0').append(str);
+             }else if(auctionStatus == 7 ){
+               $('#title').html('成交拍品')
+             }
+             
+            
+             uexAliPay.onStatus = function(status, des) {
+                // 1为在支付，2为支付失败，0为支付成功
+                uexWindow.toast("0", "5", des, "2000");
+                flagSubmit = true;
+                if (status == '0') {
+                      var readyIn=true;
+                      var nowPageIndex=1;
+                      var nowEndFlag=false;
+                      uexWindow.evaluatePopoverScript('check',"content","changeDiv('"+readyIn+"','"+nowPageIndex+"','"+nowEndFlag+"')"); 
+                      appcan.openWinWithUrl('check', 'check.html');
+                }
+
+            }
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "PerAuc_details_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+            
+            
+        });
+        
+        var money = 1;
+        var flagSubmit = true;
+        
+        function toAuction(){
+            if (flagSubmit) {
+                flagSubmit = false;
+            } else {
+                return;
+            }
+          
+            var toAuctionUrl=getUrl('Auction/ToAuction');
+            var data={
+                token : getToken(),
+                auctionId : auctionId
+            }
+            function callback(result){
+                if(result.Success){
+                     pay(result.Data,money);
+                }else{
+                     flagSubmit = true;
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+            getRequestAjax(toAuctionUrl, data, callback)  
+        }
+        
+         function setInfo(id) {
+            var partner = "2088911273341072";
+            var seller = "alzxt20150301@zhengxitang.com";
+            var rsaPrivate = 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+            var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+            var notifyUrl2 = notifyUrl+'paycallback?Type=1&orderId=' + id + '';
+            uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl2);
+        }
+
+        function pay(id,fee) {
+            var subject='上传拍卖';
+            var body="auction:"+auctionId;
+            var date = new Date();
+            var num = getToken() + date.getTime();
+            setInfo(id);
+            uexAliPay.pay(num, subject, body, fee);
+        }
+        
+        function toProduct(){
+            appcan.openWinWithUrl('product_push2', 'product_push2.html');
+        }
+        
+        function toIdentify(){
+
+            appcan.locStorage.setVal('Appraisal', 'rand');
+            appcan.locStorage.setVal('payType','payIdentifyAuction');
+            appcan.openWinWithUrl('pullAddAppraisal', '../../common/pullAddAppraisal.html');
+
+            //appcan.openWinWithUrl('AucAddAppraisal', 'AucAddAppraisal.html'); 
+
+        }
+        
+         appcan.button("#nav-left", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        
+     /*
+        $("#nav-right").click(function(){
+                  appcan.openWinWithUrl('auction_publish','../../auction/auction_publish.html');
+             })*/
+     
+
+    </script>
+</html>

@@ -1,0 +1,49 @@
+body {
+    background-color: #000;
+}
+
+.scroll {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 10000;
+    background-color: #000;
+    height: 100%;
+    overflow: hidden;
+}
+
+.scroll .wrap {
+    display: -webkit-box !important;
+    display: box !important;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.scroll .item {
+    float: left;
+    height: 100%;
+    overflow: auto;
+    margin-right: 0px;
+    background-color: #000;
+}
+
+.scroll .item img {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.scroll .pager {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    width: 100px;
+    margin-left: -50px;
+    text-align: center;
+    color: #fff;
+}

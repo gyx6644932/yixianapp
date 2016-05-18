@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        <link rel="stylesheet" href="../css/codeio.css">
+    </head>
+    <body class="um-vp bc-bg2"  ontouchstart>
+
+        <div class="ub ub-ver ub-fh bc-bg gery" style="margin: 0 auto;background: #EBE8E8;">
+
+            <div class="ub ub-ver bc-bg ub-pc  textb2 red1" >
+                <div class='ub ub-ac ub-f1 ub-pc' style="padding-top: 1em;padding-bottom: 1em;">
+                    藏品照片
+                </div>
+                <div id="showlist" class="umar-t "></div>
+            </div>
+            <!-- <div id='person' class="ub ub-ver bc-bg uinn textb2 umar-t">
+            <img src=""/>
+            </div>-->
+            <div  class="ub ub-ver bc-bg uinn textb2 umar-t">
+                <div id='ReplyTitle' class='open  uinn gery bc-bg ub ubb bc-border umar-t '>
+                    <div class="makertOrder umar-ll umar-rr">
+                        <img src="../img/marketOrder.png"/>
+                    </div>
+                    <div class="ub-f1 ub ub-ac">
+                        鉴定详情
+                    </div>
+
+                </div>
+                <div id='ReplyType1' class='ub-ver uinn-a7' style="display: none">
+                    <div class='ub  ub-f1 umar-a' >
+                        方式：<span id="Reply0"></span>
+                    </div>
+                    <div class=' umar-a' id='hidePrice'>
+                        评述：<span class="ReplyDesc"></span>
+                    </div>
+                </div>
+                <div id='ReplyType2' class='ub-ver uinn-a7' style="display: none">
+                    <div class='ub  ub-f1 umar-a' >
+                        方式：<span id="Reply1"></span>
+                    </div>
+                    <div class='ub  ub-f1 umar-a' >
+                        <div class='ub-f1'>
+                            专家：<span id="ReplyExpert"></span>
+                        </div>
+                        <div class='expertDetail' >
+                            <img src="../img/identify/exp.png" style="width: 1.2em;height: 1.2em;position: absolute;right: 0;"/>
+                        </div>
+                    </div>
+                    <!-- <div class='ub  ub-f1 umar-a'>
+                    藏品分类：<span id="CategoryName"><div id="big"></div>/<div id="small"></div> </span>
+                    </div>-->
+                    <div class='ub  ub-f1 umar-a' >
+                        名称：<span id="ReplyName"></span>
+                    </div>
+                    <div class='ub ub-f1 umar-a'>
+                        年代：<span id="ReplyYear"></span>
+                    </div>
+                    <div class=' umar-a' id='ReplyPriceTitle'>
+                        估价：<span id="ReplyPrice"></span>
+                    </div>
+
+                    <div class=' umar-a'>
+                        评述：<span class="ReplyDesc"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="red umar-ll umar-t">
+            注： 图片鉴定，仅供参考！
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+        <script src="../js/codeio.showimage.js"></script>
+    </body>
+    <script>
+        var tempData = [];
+        appcan.ready(function() {
+            var Token = ''
+            Token = getToken();
+            getRely();
+        });
+        function getRely() {
+            var Token = ''
+            Token = getToken();
+
+            var identifyId = appcan.locStorage.getVal("appraisalId");
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "identify/GetIdentifyById",
+                data : {
+                    identifyId : identifyId,
+                    Token : Token
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        data = result.Data
+                        GoodsCategoryId = data.GoodsCategoryId
+                        appcan.locStorage.setVal("userId", data.ExpertId);
+                        appcan.locStorage.setVal("GoodsCategoryId", GoodsCategoryId);
+                        if (data.Type == 0) {
+                            $("#ReplyType1").css('display', 'block').addClass('ub')
+                            $("#Reply0").html('随机专家鉴定');
+                            $(".ReplyDesc").html(data.ReplyDesc);
+                        } else if (data.Type == 1) {
+                            $("#ReplyType2").css('display', 'block').addClass('ub')
+                            $("#Reply1").html('指定专家鉴定');
+                            $("#Content").html(data.Content);
+                            $("#ReplyExpert").html(data.ExpertName);
+                            $("#ReplyName").html(data.ReplyName);
+                            $("#big").html(data.ParentCategoryName);
+                            $("#small").html(data.CategoryName);
+                            $("#ReplyYear").html(data.ReplyYear);
+                            if (data.ReplyPrice == '') {
+                                $("#ReplyPriceTitle").css('display', 'none')
+                            } else {
+                                $("#ReplyPrice").html(data.ReplyPrice);
+                            }
+                            $(".ReplyDesc").html(data.ReplyDesc);
+                        }
+                        var str = ''
+                        str += "<div id=" + data.Id + " class='market_details replayImg' style='padding-left:2em;'>";
+                        for (var j = 0; j < data.Icon.length; j++) {
+                            str += "<img src='" + imgThumbUrl + data.Icon[j] + "'/>";
+                        }
+                        str += "</div>";
+
+                        $('#showlist').html(str);
+                        var iconArr = data.Icon;
+                        var iconData = [];
+                        for (var i = 0; i < iconArr.length; i++) {
+                            iconData.push({
+                                img : imgNormalUrl + iconArr[i],
+                            });
+                            tempData.push(imgNormalUrl + iconArr[i]);
+                        }
+
+                        $("#showlist").click(function() {
+                            appcan.locStorage.val('showimage', tempData.join('|'));
+                            appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                        });
+
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+        }
+
+
+        $(".expertDetail").click(function() {
+            uexWindow.open("expertDetail", "0", "expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+        function sendIdentify() {
+            var identifyType = appcan.locStorage.getVal("identifyType");
+            if (identifyType == 0) {
+                appcan.locStorage.setVal('Appraisal', 'rand');
+            } else if (identifyType == 1) {
+                appcan.locStorage.setVal('Appraisal', 'exp');
+            }
+            appcan.locStorage.setVal('payType', 'payIdentifyFinish');
+            appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+        }
+
+        function sendAunction() {
+            var identifyId = appcan.locStorage.getVal("appraisalId");
+            appcan.window.alert({
+                title : "提示",
+                content : "发布到拍卖，审核费用1元?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "identify/ToAuction",
+                            data : {
+                                token : getToken(),
+                                identifyId : identifyId
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                    appcan.locStorage.val('fee', 1);
+                                    appcan.locStorage.val('realFee', 1);
+                                    appcan.locStorage.val('orderId', result.Data);
+                                    appcan.locStorage.val('payType', 'payAddAuctionFinish');
+                                    appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+        }
+
+        function sendMarket() {
+            appcan.openWinWithUrl('replyProduct', 'replyProduct.html');
+        }
+
+    </script>
+</html>

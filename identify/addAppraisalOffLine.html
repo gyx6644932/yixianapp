@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+          <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">线下鉴定</h1>
+                <div class="nav-btn nav-bt" id="nav-right">
+                    <div class="ub-img iocn-more umw2 umh4"></div>
+                </div>
+            </div>
+        <div id="tablist" class="ub" style="height: 2.5em;font-size: .9em;">
+            <div id="mine1" class="mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de" style="height: 2.5em;">
+                个人鉴定
+            </div>
+
+            <div id="mine2" class="mine ub-f1 ub ub-ac ub-pc" style="height: 2.5em;">
+                微场鉴定
+            </div>
+        </div>
+        <div class="umar-t-ec2">
+            <div class="c-wh uinn-ec1 uh-ect">
+                <div class=" uinput ub ub-f1">
+                    <textarea placeholder="填写待鉴定藏品的描述！"  id="content" type="text" class="ub-f1"></textarea>
+                </div>
+                <div class="t-wh-c7 ulev-2 ub-pe ub-ae tx-r">
+                    还可以输入500个字
+                </div>
+            </div>
+
+        </div>
+
+         <div class="ub umar-t-ec3">
+            <div id="imgList">
+
+            </div>
+            <div id="addimg" class="ub-img uwh-bg imgBg umar-r-ect"></div>
+        </div>
+               <div class="bc-border ubb c-wh  uinn-a7">
+            <ul>
+                <li id="site" class="ub bc-border bc-text ub-ac lis expert">
+                    <i class="fa fa-map-marker umar-l"></i>
+                    <div id="expertName" class="umar-l-1 lv_title ub-f1 marg-l ub ub-ver ut-m line1">
+                        预约地点
+                    </div>
+                    <div class="tx-r sc-text ulev-1 umar-r lv_subTitle">
+                      浙江嘉兴
+                    </div><div class="fa fa-angle-right ulev2 sc-text"></div>
+                </li>
+                <li id="siteinfo" class="bc-border bc-text ub-ac lis">
+                    <div class="pic">
+
+                    </div>
+                    <div class="param">
+                        <div class="name">
+
+                        </div>
+                        <div class="price">
+
+                        </div>
+                        <div class="count">
+
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+            </ul>
+        </div>
+       <!-- <div class="ub ub-f1 bc-bg umar-at1 ubt bc-border " >
+            <div class=" uin-input ub-f1  bc-border uba umar-a" >
+                <input placeholder="请输入鉴定金额" type="text" class="ub-f1 ">
+            </div>
+        </div>
+        <div class="ub ub-f1 bc-bg">
+            <div class=" uin-input ub-f1  bc-border uba umar-a" >
+                <input placeholder="请输入预约时间" type="text" class="ub-f1 ">
+            </div>
+        </div>
+            -->
+        <div class="bc-border ubb c-wh  uinn-a7" id="member" style="display: none">
+            <ul>
+                <li id="expert1" class="ub bc-border bc-text ub-ac lis expert">
+                    <i class="fa fa-male umar-l"></i>
+                    <div id="expertName" class="umar-l-1 ub-f1 marg-l ub ub-ver ut-m line1">
+                        设置成员
+                    </div>
+                    <div class="tx-r sc-text ulev-1 umar-r lv_subTitle">
+                        从好友中选择
+                    </div><div class="fa fa-angle-right ulev2 sc-text"></div>
+                </li>
+                <li id="memberinfo" class="bc-border bc-text ub-ac lis">
+                    <div class="pic">
+
+                    </div>
+                    <div class="param">
+                        <div class="name">
+
+                        </div>
+                        <div class="price">
+
+                        </div>
+                        <div class="count">
+
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+            </ul>
+        </div>
+        <div class="bc-border ubb c-wh  uinn-a7">
+            <ul>
+                <li id="expert2" class="ub bc-border bc-text ub-ac lis expert">
+                    <i class="fa fa-male umar-l"></i>
+                    <div id="expertName" class="umar-l-1 lv_title ub-f1 marg-l ub ub-ver ut-m line1">
+                        选择专家
+                    </div>
+                    <div class="tx-r sc-text ulev-1 umar-r lv_subTitle">
+                        从专家库选择
+                    </div><div class="fa fa-angle-right ulev2 sc-text"></div>
+                </li>
+                <li id="expertinfo" class="bc-border bc-text ub-ac lis">
+                    <div class="pic">
+
+                    </div>
+                    <div class="param">
+                        <div class="name">
+
+                        </div>
+                        <div class="price">
+
+                        </div>
+                        <div class="count">
+
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+            </ul>
+        </div>
+        <div class="ub">
+            <div class="ub ub-ver ub-ac ub-f1">
+
+                <div class="sc-text-warn2" id="cost">
+                    鉴定费用：￥50
+                </div>
+            </div>
+            <div class="ub ub-ver ub-ac ub-f1 " id="submit">
+                <div class="uinn">
+                    <div class=" btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1"  >
+                        确定发起并支付
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/appcan.tab.js"></script>
+        <script src="../js/uploadImg.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var pageName='';
+            pageName = appcan.locStorage.getVal('Appraisal');
+          
+            if (pageName =='member'){
+                $("#mine1").removeClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de').addClass('mine ub-f1 ub ub-ac ub-pc');
+                $("#mine2").removeClass('mine ub-f1 ub ub-ac ub-pc').addClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de');
+               
+                $('#member').css('display', 'block');
+                $("#cost").html('鉴定费用：￥5000')
+                
+            }
+        })
+            $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de') {
+                    $(this).removeClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de').addClass('mine ub-f1 ub ub-ac ub-pc');
+
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'mine ub-f1 ub ub-ac ub-pc') {
+                $(TA).removeClass('mine ub-f1 ub ub-ac ub-pc').addClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de');
+            }
+
+            if (TA.id == 'mine1') {
+               $('#member').css('display', 'none');
+                  $("#cost").html('鉴定费用：￥50')
+            }
+            if (TA.id == 'mine2') {
+                $('#member').css('display', 'block');
+                  $("#cost").html('鉴定费用：￥5000')
+            }
+             pageName = appcan.locStorage.getVal('Appraisal');
+             if (pageName =='person') {
+               appcan.locStorage.setVal('Appraisal','member');
+            }
+            if (pageName =='member') {
+             appcan.locStorage.setVal('Appraisal','person');
+            }
+        });
+   
+   
+   
+         
+        var uploadImgNum = 0;
+        var imgArr = [];
+        var fileNames = [];
+        var Typeid = 1;
+        var expertid = 1;
+        function addImg() {
+            uexWindow.cbActionSheet = function(opId, dataType, data) {
+                if (data == 0) {
+                    cameraOpen();
+                }
+                if (data == 1) {
+                    fileOpen();
+                }
+            }
+            var value = "拍照上传;从手机相册选择";
+            var mycars = value.split(";");
+            uexWindow.actionSheet("", "取 消", mycars);
+        }
+
+        function deleteImg(obj) {
+            var src = $(obj).attr('src');
+            var str = "";
+            for (var i = 0; i < imgArr.length; i++) {
+                if (imgArr[i] == src) {
+                    imgArr.splice(i, 1);
+                } else {
+                    str += imgArr[i];
+                }
+            }
+            $(obj).remove();
+        }
+
+        function cameraOpen() {
+            uexCamera.cbOpen = function(opCode, dataType, data) {
+
+                imgArr.push(data);
+
+                var str = "";
+
+                for (var i = 0; i < imgArr.length; i++) {
+                    str += "<img onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='" + imgArr[i] + "'>";
+                }
+                $('#imgList').html(str);
+            }
+            uexCamera.open();
+        }
+
+        function fileOpen() {
+            uexImageBrowser.cbPick = function(opCode, dataType, data) {
+                if (data == "") {
+                    return;
+                }
+
+                var arr = data.split(',');
+
+                if (imgArr.length + arr.length > 4) {
+                    uexWindow.toast("0", "5", "上传图片不能超4张！", "2000");
+                    return;
+                }
+
+                for (var i = 0; i < arr.length; i++) {
+                    imgArr.push(arr[i]);
+                }
+
+                var str = "";
+
+                for (var i = 0; i < imgArr.length; i++) {
+                    str += "<img onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='" + imgArr[i] + "'>";
+                }
+                $('#imgList').html(str);
+            }
+            uexImageBrowser.pickMulti(4);
+        }
+
+    
+
+        function upload(imgPath, i) {
+            var uploadHttp = http + "common/uploadicon";
+            randOpId = Math.floor(Math.random() * (1000 + 1));
+            uexUploaderMgr.onStatus = function(opCode, fileSize, percent, serverPath, status) {
+                switch (status) {
+                   
+                case 0:
+                    uexWindow.toast("1", "5", percent + "%", "0");
+                    break;
+                case 1:
+               
+                    uexUploaderMgr.closeUploader(opCode);
+                    uexWindow.closeToast();
+                    
+                    var json = eval("(" + serverPath + ")");
+
+                    if (json.Success) {
+                        fileNames.push(json.Data);
+
+                    }
+
+                    uexWindow.toast("0", "5", "图片成功上传！", "2000");
+                    uploadImg();
+                    break;
+                case 2:
+                    uexWindow.closeToast();
+                    uexWindow.toast('0', '5', "图片上传失败", "2000");
+                    uexUploaderMgr.closeUploader(opCode);
+                    uploadImg();
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            uexUploaderMgr.cbCreateUploader = function(opCode, dataType, data) {
+                if (data == 0) {
+                    var path = imgPath;
+                    var inCompress = 1;
+                    if (uexWidgetOne.platformName == "iOS") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                    if (uexWidgetOne.platformName == "android") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                } else {
+                    uexWindow.closeToast();
+                    var strimg2 = "图片上传失败";
+                    uexWindow.toast('0', '5', '图片上传失败', 3000);
+                }
+            }
+            var strimg2 = "开始上传图片";
+            uexWindow.toast('1', '5', strimg2, '');
+            uexUploaderMgr.createUploader(randOpId, uploadHttp);
+        }
+            function uploadImg() {
+
+            var content = $("#content").val();
+            var Token = getToken();
+
+            if (Token == null) {
+                 uexWindow.openPopover("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+              if (content == "" || imgArr.length == 0) {
+                uexWindow.toast("0", "5", "请填写描述和上传图片！", "2000");
+                return;
+            }
+
+            if (expertid == 0 || Typeid == 0) {
+                uexWindow.toast("0", "5", "请选择！", "2000");
+                return;
+            }
+
+            if (uploadImgNum == imgArr.length) {
+                
+                uexWindow.toast("0", "5", "图片上传结束！", "2000");
+            
+                appcan.request.ajax({
+                    type : 'POST',
+                    url : http + "identify/AddPersonalIdentify",
+                    data : {
+                        token : Token,
+                        content : content,
+                        icon : fileNames.join('|'),
+                        expertId : expertid,
+                        count : 2
+                    },
+                    dataType : 'json',
+                    timeout : 300,
+                    success : function(result) {
+                        if (result.Success) {
+                            uexWindow.toast("0", "5", result.Message, "2000");
+                        } else {
+                            uexWindow.toast("0", "5",result.Message, "2000");
+                        }
+                    },
+                    error : function(xhr, type) {
+                        uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                    },
+                    offline : false
+                });
+           
+                return;
+            }
+            upload(imgArr[uploadImgNum], uploadImgNum);
+            uploadImgNum++;
+        }
+
+    
+         $("#content").on("input", function() {
+            if ($(this).val().length > 500) {
+                $(this).val('');
+                uexWindow.toast("0", "5", "描述不能超500字！", "2000");
+            } else {
+                $("#remain").html(500 - $(this).val().length);
+            }
+        });
+
+    
+         $("#expert1").on("click", function() {
+              var Token = getToken();
+            if (Token == null) {
+                 uexWindow.openPopover("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            
+                return;
+            }
+            uexWindow.openPopover("selectFriend", "0", "selectFriend.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+        $("#expert2").on("click", function() {
+               var Token = getToken();
+            if (Token == null) {
+                 uexWindow.openPopover("login", "0", "login.html", "", 0, 0, 0, 0, '', "0", 0);
+            
+                return;
+            }
+             appcan.locStorage.setVal('line','off');
+            uexWindow.openPopover("selectExpert", "0", "selectExpert.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+       $("#addimg").on("click", function() {
+            if (imgArr.length == 4) {
+                uexWindow.toast("0", "5", "上传图片不能超4张！", "2000");
+                return;
+            }
+            addImg();
+        });
+
+        $("#submit").on("click", function() {
+            uploadImg();
+        });
+       function closepop(icon, title, price, count, id) {
+            expertid = id;
+            $("#expert2").addClass("ubb");
+            $("#expertinfo .pic").html("<img src='" + icon + "'>");
+            $("#expertinfo .name").html(title);
+            $("#expertinfo .price").html("鉴定费用：￥" + price);
+            $("#expertinfo .count").html("剩余次数：" + count);
+            $("#expertinfo").show();
+            appcan.closePopover("selectExpert");
+        }
+        
+     
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        });
+         $("#expert1").on("click", function() {
+            uexWindow.openPopover("selectFriend", "0", "selectFriend.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+     
+          function closepop2(icon, title, price, count, id) {
+              
+            Typeid = id;
+            $("#expert1").addClass("ubb");
+            $("#memberinfo .pic").html("<img src='" + icon + "'>");
+            $("#memberinfo .name").html(title);
+            $("#memberinfo").show();
+            appcan.closePopover("selectFriend");
+        }
+    </script>
+</html>

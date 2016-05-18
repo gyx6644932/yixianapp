@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ver">
+            <div class="ub ub-ver" style="border-bottom:0.1em solid #dcdcdc;" >
+                <div class="site ub bc-bg uinn">
+                   
+                    <div class="ub-f4 ub ub-ver" >
+                        <div class="ub textb2" >
+                            <div class="ub-f1 " >
+                                                                                    收货人：<font id="addressName"></font>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="ub-f4 textb2" >
+                                收货地址:<font id="address"></font>
+                        </div>
+                        <div class="ub textb2" >
+                            <div class="ub-f1 " >
+                                                                                   邮编：<font id="zipCode"></font>
+                            </div>
+                            <div class="ub-f1 ub ub-pe" >
+                                                                                        电话：<font id="addressMobile"></font>
+                            </div>
+                        </div>
+                        
+                        <div class="ub-f4 textb2" >
+                                买家留言:<font id="comment"></font>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </div>
+            
+            <div class="ub ub-ac ub-pc ub-ver" style="width:100%;">
+                                <div class="ub ub-pc" style="width:95%;margin-top:0.5em;">
+                                   <div class="ub ub-img1">
+                                      <img id="thumb" style="width:5em;height:4em;">
+                                   </div>
+                                   <div class="ub ub-f1" style="margin:0em 0.5em;" id="content">
+                                      
+                                   </div>
+                                   <div class="ub  ub-pc" style="color:red;">
+                                                                                                                       待发货
+                                   </div>
+                                </div>
+                                <div class="ub ub-ac ub-pj" style="width:95%;margin:0.5em 0em;">
+                                    <div >共<font class="blod" > 1 </font>件</div>
+                                     <div >￥<font class="blod" id='price'></font></div>
+                                </div>
+                                <div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;border-bottom:0.1em solid #dcdcdc;">
+                                    <div class="ub ub-ac ub-pc">实付:￥<p class="blod" style="color:red;" id="priceCount"></p></div>
+                                </div>
+                               
+             </div>
+    
+           
+        </div>
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+           getOrder();
+        });
+        
+        function getOrder(){
+            
+            var getOrderUrl=getUrl('auction/GetOrder');
+            var orderId=appcan.locStorage.val('orderId');
+            var data={
+                orderId : orderId,
+                Token : getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length != 0){
+                        var thumb=gerImgThumbUrl(data.Thumb);
+                        $('#thumb').attr('src',thumb);
+                        $('#content').text(data.Content);
+                        $('#price').text(data.Price);
+                        $('#priceCount').text(data.Price);
+                        $('#comment').text(data.Comment);
+                        var addressInfo=data.Address;
+                        var address=addressInfo.Area+addressInfo.Street+addressInfo.Detail;
+                        $('#addressMobile').text(addressInfo.Mobile);
+                        $('#zipCode').text(addressInfo.ZipCode);
+                        $('#addressName').text(addressInfo.Name);
+                        $('#address').text(address);
+                    }else{
+                        
+                    }
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                   
+                }
+            }
+            getRequestAjax(getOrderUrl, data, callback)
+        }
+
+    </script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <style type="text/css">
+        p {
+            font-size: 0.8em;
+        }
+    </style>
+    <body class="um-vp bc-bg ub ub-pc" ontouchstart>
+        <div id="rule" class="ub ub-ac ub-ver"  style="width:95%;margin:1em 0em;">
+
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+         
+           getoption();
+        });
+        
+        function getoption(){
+            var getoptionUrl=getUrl('common/getoption');
+            var data={};
+            function callback(result){
+                if (result.Success) {
+                    $("#rule").html(result.Data.AuctionRule);
+                }
+            }
+            getRequestAjax2(getoptionUrl, data, callback);
+        }
+
+    </script>
+</html>

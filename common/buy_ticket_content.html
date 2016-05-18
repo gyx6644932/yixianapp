@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style>
+        input {
+            width: 2em;
+            font-size: 1.8em;
+            text-align: center;
+        }
+    </style>
+    <body class="um-vp bc-bg" style="color: #848484;" ontouchstart>
+
+        <div class="ub ub-ac ub-ver">
+
+            <div class="ub ub-ac ub-pc" style="border-bottom:0.1em solid #EDEDED;width:95%;padding:0.5em 0em;">
+                <div class="ub ub-ac ub-pc ub-img1" style="width:20%;">
+                    <img src="../img/img1/ticket.png" style="width:3.5em;height:1.8em;">
+                </div>
+                <div class="ub ub-ac ub-ver" style="width:50%;">
+                    <div class="ub ub-ac" style="margin:0em 0.5em;width:90%;">
+                        拍卖门票
+                    </div>
+                    <div class="ub ub-ac ulev-1" style="margin:0.5em;width:90%;color:#848484">
+                        需要拍卖出价时使用
+                    </div>
+
+                </div>
+                <div class="ub ub-ac" style="width:30%;">
+                    <div class="ub ub-ac ub-pe " style="width:90%;">
+                        票价:￥<font style="color:red;" id="onePrice"></font>/张
+                    </div>
+                </div>
+            </div>
+        
+        
+            <div class="ub ub-ac" style="width:95;">
+                <div class="ub ub-ac ub-ver" style="width:40%;">
+
+                    <div class="ub ub-ac uinn" style='width:60%;'>
+                        <div class="ub ub-ac ub-pc  minus" >
+                                 <img class="ub ub-img1" src="../img/img2/minus.png" style="height:2.8em;width:3em;">
+                        </div>
+                        <input  id="albumticket" style="margin:0em 0.3em;" value='1' type="text" readonly="true">
+                        <div class="ub ub-ac ub-pc uc-a plus" >
+                                 <img class="ub ub-img1" src="../img/img2/plus.png" style="height:2.8em;width:3em;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="ub ub-ac ub-pc" style="position:fixed;bottom:0em;height:3em;border-top:0.05em solid #EDEDED;width:100%;">
+                <div class='ub ub-ac ub-f1 ulev1' style="margin:0em 1em;">
+                                                                      总计：￥<font id="countPrice" style="color:red;"></font>
+
+                </div>
+                <div class="ub ub-ac ub-pc  uc-a1 goPayBtn" id="buy">
+                                                                                    去付款
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+
+            uexAliPay.onStatus = function(status, des) {
+                // 1为在支付，2为支付失败，0为支付成功
+                if (status == 0) {
+                    var albumticket = getLocalStorageParme('AlbumTicket');
+                    var count = $("#albumticket").val() * 1 + albumticket * 1
+                    setLocalStorageParme('AlbumTicket', count);
+                    uexWindow.evaluateScript("buy_ticket", 0, "closeWindeow()");
+                }
+            }
+            getTicketPrice();
+
+        });
+
+        function getTicketPrice() {
+            var getTicketPriceUrl = getUrl('auction/getticketprice');
+            var data = {
+                albumticket : 1,
+                dayticket : 2,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data
+                    $('#countPrice').text(data);
+                    $('#onePrice').text(data);
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+
+            getRequestAjax(getTicketPriceUrl, data, callback)
+        }
+
+
+        $('.minus').click(function() {
+            var obj = $(this).next();
+            var count = $("#count");
+            var countPrice = $("#countPrice");
+            var onePrice = $("#onePrice");
+            var val = parseInt(obj.val());
+            if (val == '1') {
+                return;
+            } else {
+                val -= 1;
+                obj.val(val);
+                count.text(val);
+                countPrice.text(val * onePrice.text());
+
+            }
+
+        })
+
+        $('.plus').click(function() {
+            var obj = $(this).prev();
+            var count = $("#count");
+            var countPrice = $("#countPrice");
+            var onePrice = $("#onePrice");
+            var val = parseInt(obj.val());
+            val += 1;
+            obj.val(val);
+            count.text(val);
+            countPrice.text(val * onePrice.text());
+        })
+        
+        function setInfo() {
+            var partner = "2088911273341072";
+            var seller = "alzxt20150301@zhengxitang.com";
+            var rsaPrivate = 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+            var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+            var notifyUrl2 = notifyUrl + 'paycallback?Type=0&orderId=' + getToken();
+            uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl2);
+        }
+
+        function pay() {
+
+            setInfo();
+            var subject = '门票购买';
+            var body = $("#albumticket").val();
+            var fee = $("#countPrice").text();
+            var date = new Date();
+            var num = getToken() + date.getTime();
+            uexAliPay.pay(num, subject, body, fee);
+        }
+
+
+        $("#buy").click(function() {
+            
+           var fee = $("#countPrice").text();
+           
+           appcan.locStorage.val('fee', fee);
+           appcan.locStorage.val('realFee',fee);
+           appcan.locStorage.val('orderId',getToken());//门票的order就是票据
+           appcan.locStorage.val('payType','payTicket');
+           
+           //购买的票数
+           appcan.locStorage.val('albumticket',$("#albumticket").val());
+            
+           appcan.openWinWithUrl('select_pay', 'select_pay.html');
+           // pay();
+            
+        })
+
+    </script>
+</html>

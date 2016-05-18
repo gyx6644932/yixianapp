@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp"  ontouchstart>
+        <div class="close"  style="position:absolute;height:100%;width:100%;background-color:rgba(0, 0, 0, 0.7);"></div>
+          <div class="identifyAd ub ub-ver" style="bottom: 55%;position: absolute;width: 100%;text-align: center;">
+            <img src="../img/identifyAd.png"/>
+        </div>
+
+        <div class="ub ub-ver" style="bottom: 27%;position: absolute;width: 100%;margin: 0 auto;">
+            <div class="identifyList ub ub-ac ub-pc uinn white" style="padding: 1em;height: 6em;">
+                <div class="rand ub-f1 ub-ver ub ub-ac ub-pe" style="margin-left: 2em;">
+                    <div class="ub" >
+                        <img src="../img/identifyRand.png"/>
+                    </div>
+                    <div class="ub">
+                        随机专家
+                    </div>
+
+                </div>
+                <div class="exp ub-f1  ub-ver ub ub-ac" style="margin-right: 2em;">
+                    <div class="ub">
+                        <img src="../img/identifyExp.png"/>
+                    </div>
+                    <div class="ub">
+                        指定专家
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+
+        })
+        $('.close').click(function() {
+            appcan.window.close(-1);
+        })
+        function close() {
+           appcan.window.close(-1);
+        }
+        $('.rand').click(function() {
+            appcan.locStorage.setVal('Appraisal', 'rand');
+            appcan.locStorage.setVal('appraisalId', '');
+            appcan.locStorage.setVal('sendAgin', '');
+            appcan.locStorage.setVal('EditContent', '');
+            appcan.locStorage.setVal('EditIcon', '');
+            appcan.openWinWithUrl('addAppraisalOnLine', 'addAppraisalOnLine.html');
+        })
+        $('.exp').click(function() {
+           appcan.locStorage.setVal('Appraisal', 'exp');
+            appcan.locStorage.setVal('appraisalId', '');
+            appcan.locStorage.setVal('sendAgin', '');
+            appcan.locStorage.setVal('EditContent', '');
+            appcan.locStorage.setVal('EditIcon', '');
+            appcan.locStorage.setVal('userId', '');
+            appcan.openWinWithUrl('addAppraisalOnLine', 'addAppraisalOnLine.html');
+        })
+    </script>
+</html>

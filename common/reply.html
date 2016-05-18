@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp"  ontouchstart>
+        <div class="close"  style="position:absolute;height:100%;width:100%;background-color:rgba(0, 0, 0, 0.3);"></div>
+
+        <div class="ub ub-ver" style="top: 30%;position: absolute;width: 100%;margin: 0 auto;">
+            <div  style="margin: 0 3em;">
+                <div class="ub ub-ac ub-f1 uinn bc-btn white"  style="border-radius: .4em .4em 0em 0em;">
+                    <div class='ub-f1 ub ub-pc ub-ac uinn'>
+                        鉴定报告
+                    </div>
+                </div>
+                <div id='none' class='uinn textb2 gery  bc-bg ' style="text-align: center;display: none;">
+                    暂无鉴定内容
+                </div>
+                <div class=" uinn textb2 gery  bc-bg " id='ReplyItem' style="border-radius: 0em 0em .4em .4em ;display: none;">
+
+                    <div id="ReplyExpertWay" class="umar-a ubb bc-border1 uinn"  style="display: none;">
+                        <div class='ub ub-ac ub-f1'>
+                            方式：<span id="ExpertWay" class="uinn-a7"></span>
+                        </div>
+                    </div>
+
+                    <div id="ReplyExpertPanel" class='ub-ac ub-f1 umar-a ubb bc-border1 uinn'  style="display: none;">
+                        <div class='ub-f1' >
+                            专家： <span id="ReplyExpert" style="padding-left: .3em;"></span>
+                        </div>
+                        <div class='expertDetail ub-f1' >
+                            <img src="../img/identify/exp.png" style="width: 1.2em;height: 1.2em;"/>
+                        </div>
+                    </div>
+
+                    <div id="ReplyNamePanel" class="umar-a ubb bc-border1 uinn" style="background: #fff;display: none;">
+                        <div class='ub ub-ac ub-f1 c-org ' >
+                            名称：<a id="ReplyName" class="uinn-a7"></a>
+                        </div>
+                    </div>
+
+                    <div id="ReplyYearPanel" class='umar-a ubb bc-border1 uinn '   style="display: none;">
+                        年代：<a id="ReplyYear" class="uinn-a7"></a>
+                    </div>
+
+                    <div id="ReplyPricePanel" class='umar-a ubb bc-border1 uinn'   style="display: none;">
+                        估价：<a id="ReplyPrice" class="uinn-a7"></a>
+                    </div>
+
+                    <div id="ReplyDescPanel" class='umar-a uinn'   style="display: none;">
+                        评述：<a id="ReplyDesc" class="uinn-a7"></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        var token = getToken();
+        appcan.ready(function() {
+            getRely();
+        })
+        $('.close').click(function() {
+            appcan.window.close(-1);
+        })
+        foreignId = appcan.locStorage.getVal('productId');
+        function getRely() {
+            var getRelyUrl = getUrl('product/GetProduct');
+            var data = {
+                productId : foreignId
+            };
+
+            function callback(result) {
+                if (result.Success) {
+                    data = result.Data;
+                    if (token != null && data.UserId != null) {
+                        if (token == data.UserId) {
+                            uexWindow.evaluateScript("market_detail", 0, "hide()");
+                        }
+                    }
+                    identify = data.Identify;
+                    if (identify != null) {
+                        if (identify.ReplyDesc != null && identify.ReplyDesc != '') {
+                            $("#ReplyItem").css('display', 'block');
+                        }
+                        if (identify.Type == 0) {
+                            $("#ExpertWay").html('随机专家鉴定');
+                            $("#ReplyExpertWay").css('display', 'block');
+
+                        } else if (identify.Type == 1) {
+                            $("#ExpertWay").html('指定专家鉴定');
+                            $("#ReplyExpertWay").addClass('ub').css('display', 'block');
+                            if (identify.ExpertName != null && identify.ExpertName != '') {
+                                $("#ReplyExpertPanel").addClass('ub').css('display', 'block');
+                                $("#ReplyExpert").html(identify.ExpertName);
+                            }
+                            if (identify.ReplyName != null && identify.ReplyName != '') {
+                                $("#ReplyNamePanel").css('display', 'block');
+                                $("#ReplyName").html(identify.ReplyName);
+                            }
+                            if (identify.ReplyYear != null && identify.ReplyYear != '') {
+                                $("#ReplyYearPanel").css('display', 'block');
+                                $("#ReplyYear").html(identify.ReplyYear);
+                            }
+                            if (identify.ReplyPrice != '' && identify.ReplyPrice != null) {
+                                $("#ReplyPricePanel").css('display', 'block');
+                                $("#ReplyPrice").html(identify.ReplyPrice);
+                            }
+                            appcan.locStorage.setVal("userId", identify.ExpertId);
+                        }
+
+                        if (identify.ReplyDesc != null && identify.ReplyDesc != '') {
+                            $("#ReplyDescPanel").css('display', 'block');
+                            $("#ReplyDesc").html(identify.ReplyDesc);
+                        }
+                    } else {
+                        $("#none").css('display', 'block');
+                    }
+
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    $('#contentDivError').css('display', 'block');
+                    $('#contentDivError').html(str);
+                    $("#error").click(function() {
+                        getRely();
+                        $('#contentDivError').css('display', 'none');
+                        return;
+                    })
+                }
+            }
+
+            getRequestAjax(getRelyUrl, data, callback);
+        }
+
+
+        $(".expertDetail").click(function() {
+            uexWindow.open("expertDetail", "0", "../identify/expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+    </script>
+</html>

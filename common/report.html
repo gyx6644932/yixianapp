@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp"  ontouchstart>
+        <div class="close"  style="position:absolute;height:100%;width:100%;background-color:rgba(0, 0, 0, 0.3);"></div>
+
+        <div class="ub ub-ver bc-bg2" style="top: 20%;position: absolute;width: 80%;left:10%;margin: 0 auto;">
+            <div class="sc-bg-active uinput ub ub-ver ub-f1">
+          
+                <div class="uinn umar-a">
+                    <div class="uba bc-border uinput-Noborder ub ub-f1">
+                        <textarea placeholder=" 请填写举报内容！" id='content' type="text" class="ub-f1 bc-bg uinn"></textarea>
+                    </div>
+
+                </div>
+            </div>
+            <div class="uinn-at1 uinn">
+                <div class="btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1 bc-btn" id="submit">
+                    举报
+                </div>
+            </div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        var Token = '';
+        Token = getToken();
+        var productId = appcan.locStorage.getVal('productId');
+        $("#submit").click(function() {
+            var content = $("#content").val();
+            if (content == 0) {
+                uexWindow.toast("0", "5", "请输入举报内容！", "2000");
+                return;
+            }
+            var getUserUrl = getUrl("product/AddComplaint");
+
+            var data = {
+                content : content,
+                token : Token,
+                productId : productId
+            }
+            function callback(result) {
+                appcan.window.alert({
+                    title : "提示",
+                    content : "举报信息提交成功！",
+                     callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                          appcan.window.close(-1);
+                    }
+                }
+                });
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        });
+           $('.close').click(function() {
+            appcan.window.close(-1);
+        })
+    </script>
+</html>

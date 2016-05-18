@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <form method="post" >
+            <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x" ></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3  tx-c" tabindex="0">送市场</h1>
+                <div id="sendMarket" class="sendMarket nav-right nav-btn" id="nav-right">
+                    确认
+                </div>
+            </div>
+            <div class="uinput ub ub-f1">
+                <div id="slider" class="slider"></div>
+
+            </div>
+            <div class="ub ub-ver">
+
+                <div class="ub ubt ubb bc-border bc-bg gery umar-t" >
+
+                    <div class="sc-bg-active  ub ub-f4 bc-text" style="padding:.5em 1em .5em 0em;">
+                        <div id='changeCategory' class=" sc-bg-active ub ub-f1 gery bc-border textb2 uinn">
+                            <div id="CategoryName"  style="padding-left: .7em;">
+                                <a id="Big">请选择藏品分类</a><a id="Small"></a>
+                            </div>
+                            <div  class=' textb2' style="position:absolute;right:0;">
+                                <i class="fa fa-angle-right ulev2 sc-text"></i></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="ub ubt ubb bc-border bc-bg  white umar-t" >
+
+                    <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                        <input id="title" placeholder="请输入藏品名称" type="text" class="ub-f1 ">
+                    </div>
+
+                </div>
+
+                <div class="ub ubt ubb  bc-border bc-bg white umar-t" >
+
+                    <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                        <input id="price" placeholder="请输入藏品价格" type="number" class="ub-f1  ">
+                    </div>
+
+                </div>
+
+                <div class="umar-t-ec2 umar-t ubb bc-border">
+                    <div class="c-wh uinn-ec1 uh-ect">
+                        <div class=" uinput-Noborder ub ub-f1">
+                            <textarea id="content" name="content" placeholder="请描述你的藏品" type="text" class="ub-f1 uba bc-border"></textarea>
+                        </div>
+                        <div class="t-wh-c7 ulev-2 ub-pe ub-ae tx-r umar-tt umar-bb">
+                            还可以输入<span id="remain">150</span>个字
+                        </div>
+                    </div>
+                </div>
+                <div  class="ub ub-ver bc-bg uinn textb2 umar-t gery">
+
+                    <div id='ReplyType1' class='ub-ver uinn-a7' style="display: none">
+                        <div class='ub  ub-f1 umar-a' >
+                            方式：<span id="Reply0"></span>
+                        </div>
+                        <div class='umar-a'>
+                            评述：<span id="sjDesc"></span>
+                        </div>
+                    </div>
+                    <div id='ReplyType2' class='ub-ver uinn-a7' style="display: none">
+                        <div class='ub  ub-f1 umar-a' >
+                            方式：<span id="Reply1"></span>
+                        </div>
+                        <div class='ub  ub-f1 umar-a' >
+                            <div class='ub-f1' >
+                                专家：<span id="ReplyExpert"></span>
+                            </div>
+                            <div class='expertDetail' >
+                                <img src="../img/identify/exp.png" style="width: 1.2em;height: 1.2em;position: absolute;right: 0;"/>
+                            </div>
+                        </div>
+                        <div class='ub  ub-f1 umar-a' >
+                            名称：<span id="ReplyName"></span>
+                        </div>
+                        <div class='ub ub-f1 umar-a'>
+                            年代：<span id="ReplyYear"></span>
+                        </div>
+                        <div class='umar-a' id='hidePrice'>
+                            估价：<span id="ReplyPrice"></span>
+                        </div>
+                        <div class='umar-a'>
+                            评述：<span id="ReplyDesc"></span>
+                        </div>
+                    </div>
+                </div>
+                <input id="token" id="token"  type="text" value=""  style="display: none">
+            </div>
+        </form>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    <script>
+        var categoryId = null;
+        var Token = getToken();
+        var appraisalId = appcan.locStorage.getVal("appraisalId");
+        appcan.ready(function() {
+            getRely()
+        });
+        function getRely() {
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "identify/GetIdentifyById",
+                data : {
+                    identifyId : appraisalId,
+                    Token : Token
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        data = result.Data;
+                        GoodsTitle = data.GoodsTitle;
+                        GoodsContent = data.GoodsContent;
+                        GoodsPrice = data.GoodsPrice;
+                        GoodsCategoryId = data.GoodsCategoryId;
+                        categoryId = data.GoodsCategoryId;
+                        GoodsCategoryName = data.GoodsCategoryName;
+                        GoodsParentCategoryName = data.GoodsParentCategoryName;
+                        HaveCategory = data.HaveCategory;
+                        appcan.locStorage.setVal("HaveCategory", HaveCategory);
+                        if (GoodsTitle != 'null') {
+                            $("#title").val(GoodsTitle)
+                        }
+                        if (HaveCategory === true) {
+                            $("#Big").text(GoodsParentCategoryName)
+                            $("#Small").text(" / " + GoodsCategoryName)
+                        }
+                        if (GoodsPrice != 'null') {
+                            $("#price").val(GoodsPrice)
+                        }
+                        if (GoodsContent != 'null') {
+                            $("#content").text(GoodsContent)
+                        }
+                        if (data.Type == 0) {
+                            $("#ReplyType1").css('display', 'block').addClass('ub')
+                            $("#Reply0").html('随机专家鉴定');
+                            $("#sjDesc").html(data.ReplyDesc);
+                        } else if (data.Type == 1) {
+                            $("#ReplyType2").css('display', 'block').addClass('ub')
+                            $("#Reply1").html('指定专家鉴定');
+                            $("#Content").html(data.Content);
+                            $("#price").html(data.Price);
+                            $("#ReplyExpert").html(data.ExpertName);
+                            $("#ReplyName").html(data.ReplyName);
+                            $("#ReplyYear").html(data.ReplyYear);
+                            if (data.ReplyPrice == '') {
+                                $("#hidePrice").css('display', 'none')
+                            } else {
+                                $("#ReplyPrice").html(data.ReplyPrice);
+                            }
+                            $("#ReplyDesc").html(data.ReplyDesc);
+                        }
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+        }
+
+        var IdentifyId = appcan.locStorage.getVal("appraisalId");
+        $(".sendMarket").click(function() {
+             if ($("#content").val().length > 150) {
+                alert("不能超过150字");
+                return;
+            }
+            appcan.window.alert({
+                title : "提示",
+                content : "确定要发布到市场?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        var title = $("#title").val();
+                        var content = $("#content").val();
+                        var price = $("#price").val();
+                        var HaveCategory = appcan.locStorage.getVal("HaveCategory");
+                        if (HaveCategory == "false") {
+                            uexWindow.toast("0", "5", "请完善藏品信息后再发布！", "2000");
+                            return;
+                        }
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "identify/toproduct",
+                            data : {
+                                token : getToken(),
+                                title : title,
+                                content : content,
+                                price : price,
+                                categoryId : categoryId,
+                                identifyId : IdentifyId
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    uexWindow.toast("0", "5", '成功发布', "2000");
+                                    uexWindow.open("person_product", "0", "../user/person_product.html", "", 0, 0, 0, 0, '', "0", 0);
+                                    appcan.window.close(-1);
+                                    uexWindow.evaluateScript("checkReply", 0, "closeWindow()");
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+
+        })
+
+        appcan.button("#nav-left", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+
+        $('#changeCategory').click(function() {
+            appcan.openWinWithUrl("replyProduct_push", "replyProduct_push.html");
+        })
+        $(".expertDetail").click(function() {
+            uexWindow.open("expertDetail", "0", "expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+        $("#content").on("input", function() {
+            var contentText = 150 - $(this).val().length
+            if (contentText >= 0) {
+                $("#remain").html(contentText);
+            } else if (contentText < 0) {
+                var str = '<font color="red">' + contentText + '</font>';
+                $("#remain").html(str);
+            }
+        });
+        function changeSmallBig(fatherName, childrenName, childrenId) {
+            categoryId = childrenId;
+            $('#Big').text(fatherName);
+            $('#Small').text('/' + childrenName);
+            appcan.locStorage.setVal("HaveCategory", 'true');
+        }
+    </script>
+</html>

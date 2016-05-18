@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ver ub-f1">
+            <div class="ub ub-ver">
+
+            </div>
+        </div>
+        <div id="contentDiv"></div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var identify = '';
+        identify = appcan.locStorage.getVal('identifyYN');
+        appcan.ready(function() {
+            document.getElementsByTagName('input').checked = true;
+            appcan.locStorage.setVal('edit', false);
+            initBounce(actionTop, 0);
+            getRepositoryList(identify);
+        });
+        
+        function actionTop() {
+            identify = appcan.locStorage.getVal('identifyYN');
+            appcan.window.evaluateScript("repository_index", "Refresh()");
+            getRepositoryList(identify);
+            return;
+        }
+
+        function initBounce2(funcTop, funcBottom) {
+            uexWindow.setBounce("1");
+            if (!funcTop) {
+                uexWindow.showBounceView("0", "rgba(255,255,255,0)", "0");
+                return;
+            }
+            var top = 0,
+                btm = 1,
+                edit = 'false';
+            uexWindow.onBounceStateChange = function(type, state) {
+
+                if (type == top && state == 2) {//顶部弹动
+                    edit0 = appcan.locStorage.getVal('edit');
+                    if (edit0 == 'true') {
+                        edit = edit0
+                    }
+                    if (edit == 'false') {
+                        funcTop();
+                        uexWindow.resetBounceView("0");
+                    }
+                }
+            }
+            edit0 = appcan.locStorage.getVal('edit');
+            if (edit0 == 'true') {
+                edit = edit0
+            }
+            if (edit == 'false') {
+                if (funcTop) {
+                    uexWindow.setBounceParams('0', "{'pullToReloadText':'下拉刷新','releaseToReloadText':'释放刷新','loadingText':'正在刷新，请稍候'}");
+                    uexWindow.showBounceView(top, "rgba(255,255,255,0)", 1);
+                    uexWindow.notifyBounceEvent(top, 1);
+                }
+            } else if (edit == 'true') {
+                uexWindow.hiddenBounceView("0")
+            }
+
+        }
+
+        function getRepositoryList(identify) {
+            var token = getToken();
+            var getRepositoryListUrl = getUrl('Repository/GetRepositoryList');
+            var data = {
+                pageIndex : 1,
+                pageSize : 100,
+                identify : identify,
+                token : token
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    var str = '';
+                    if (data.length != 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i], i);
+                        }
+                    } else {
+                        str = templateDivEmpty();
+                    }
+                    $('#contentDiv').html(str);
+
+                    $('.checkDetail').click(function() {
+                        appcan.openWinWithUrl('repository_detail', 'repository_detail.html');
+                        appcan.locStorage.val('repositoryId', this.id);
+                    })
+                    $(".pic").click(function() {
+                        if ($(this).hasClass('checkbox2')) {
+                            $(this).removeClass('checkbox2').addClass('checkbox1').css('background-color', 'rgba(0, 0, 0, 0.2)')
+                        } else if ($(this).hasClass('checkbox1')) {
+                            $(this).removeClass('checkbox1').addClass('checkbox2').css('background-color', 'rgba(0, 0, 0, 0)')
+                        }
+                    })
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    $('#contentDiv').html(str);
+                    $("#error").click(function() {
+                      Refresh();
+                    });
+                }
+            }
+            getRequestAjax(getRepositoryListUrl, data, callback);
+        }
+
+        function templateDiv(dataJson, x) {
+            var w = $(document).width() * 9 / 20 + 'px';
+            var icon = gerImgThumbUrl(dataJson.Thumb);
+            str = "";
+            str += "<div class='ub uinn-ele3 floatl w-half' ><div class='ub ub-ver ub-f1 '>";
+            str += "<div class='bc-bg'>";
+            str += "<div id=" + dataJson.Id + "  class='checkDetail ub-f ub-fh ub ub-ac ub-pc'>";
+            str += "<img style='width:" + w + ";' src='" + icon + "'/>";
+            str += "</div></div></div>";
+            str += "<div id='" + dataJson.Id + "' class='pic checkbox2' x=" + x + " style='position:absolute;left: 0;width: 100%;height: 100%;z-index:99;display:none;'>";
+            str += "<input type='checkbox' style='position:absolute;right:20%;bottom:15%;z-index:-1'>";
+            str += "</div></div>";
+            return str;
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub gery uinn">' + '仓库里空空如也,请点击添加藏品' + '</div></div>' + '</div>'
+            return str
+        }
+
+        function Refresh() {
+            identify = appcan.locStorage.getVal('identifyYN');
+            getRepositoryList(identify);
+            return;
+        }
+
+        function chkDelete() {
+            var checkedNum = $(".checkbox1").length;
+            if (checkedNum == 0) {
+                alert("请选择至少一项！");
+                return;
+            }
+            appcan.window.alert({
+                title : "提示",
+                content : "确定要删除所选项目？",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        var checkedList = new Array();
+                        var text = "";
+                        $(".checkbox1").each(function() {
+                            checkedList.push(this.id);
+                        });
+                        Token = getToken();
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "repository/deleterepositorys",
+                            data : {
+                                repositoryIds : checkedList,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    identify = appcan.locStorage.getVal('identifyYN');
+                                    appcan.window.evaluateScript("repository_index", "Refresh()");
+                                    getRepositoryList(identify);
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", result.Message, "2000");
+                            },
+                            traditional : true,
+                            offline : false
+                        });
+
+                    } else {false
+
+                    }
+                }
+            });
+
+        }
+        function edit() {
+            $(".pic").css("display", "block");
+            appcan.locStorage.setVal('edit', true);
+        }
+
+        function finish() {
+            $(".pic").css("display", "none");
+            appcan.locStorage.setVal('edit', false);
+        }
+
+        function checkAll() {
+            appcan.window.evaluateScript("repository_index", "cancelAll()");
+
+            if ($(".pic").hasClass('checkbox2')) {
+                $(".pic").removeClass('checkbox2').addClass('checkbox1').css('background-color', 'rgba(0, 0, 0, 0.2)');
+
+            }
+        }
+
+        function cancelAll() {
+            if ($(".pic").hasClass('checkbox1')) {
+                $(".pic").removeClass('checkbox1').addClass('checkbox2').css('background-color', 'rgba(0, 0, 0, 0)');
+            }
+        }
+
+        function identify1() {
+            var identify = 'true';
+            getRepositoryList(identify)
+            return;
+        }
+
+        function identify2() {
+            var identify = 'false';
+            getRepositoryList(identify)
+            return;
+        }
+
+    </script>
+</html>

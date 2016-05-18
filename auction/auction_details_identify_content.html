@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" id="bodyContent" ontouchstart>
+        <div class="ub ub-ac ub-pc">
+            <div id="slider" class="slider">
+            </div>
+
+        </div>
+        <div class="ub ub-ac ub-ver" style="width:95%;margin:auto;" >
+            <div class="ub ub-ac ub-ver" style="width:100%">
+                <div class="ub ub-ac ulev1" style="width:100%;color:red;margin:0.5em 0em;">
+                                                                   专家评述
+                </div>
+                <div class="ub ub-ac" style="width:100%;padding:0.5em 0em;border-bottom:0.1em solid #E8E8E8" id="replyDesc">
+         
+                </div>
+            </div>
+            <div class="ub ub-ac ub-ver" style="width:100%" id="replay1">
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac " style="width:30%;">鉴定方式：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="replyType"> </div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac " style="width:30%;">鉴定专家：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="expertName"></div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac " style="width:30%;">鉴定名称：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="replyName"></div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac" style="width:30%;">藏品类别：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="categoryName"></div>
+                </div>
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac" style="width:30%;">鉴定年代：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="replyYear"></div>
+                </div>
+                 <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;" id="replyPriceDiv">
+                    <div class="ub ub-ac" style="width:30%;">参考估计：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="replyPrice"></div>
+                </div>
+            </div> 
+            <div class="ub ub-ac ub-ver" style="width:100%" id="replay2">
+                <div class="ub ub-ac ub-pc" style="width:100%;margin:0.3em 0em;">
+                    <div class="ub ub-ac " style="width:30%;">鉴定方式：</div>
+                    <div class="ub ub-ac" style="width:70%;" id="replyType2"> </div>
+                </div>
+            </div>
+        </div>
+        
+      
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+   <script src="../js/appcan.slider.js"></script>
+ </body>
+    <script>
+        appcan.ready(function() {
+
+            var identifyId = appcan.locStorage.val('identifyId');
+
+            if (identifyId != null) {
+                getIdentify(identifyId);
+            } else {
+                var str = templateEmptyDiv();
+                $("#bodyContent").html(str);
+            }
+        });
+
+        function getIdentify(identifyId) {
+            var getIdentifyUrl = getUrl('identify/getidentifybyid');
+            var json = {
+                identifyId : identifyId
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                   
+                    
+                    var arrIcon = data.Icon;
+                
+                    var sliderArray = [];
+                    for (var i = 0; i < arrIcon.length; i++) {
+                        src = getImgNormalUrl(arrIcon[i]);
+                        sliderArray.push({
+                                img : src
+                        });
+                      
+                    }
+                    var slider='';
+                    if(arrIcon.length == 1){
+                            slider = appcan.slider({
+                                selector : '#slider',
+                                aspectRatio : 6 / 16,
+                                hasLabel : true,
+                                index : 0,
+                                aspectRatio : 0.8
+                            });
+                    }else{
+                            slider = appcan.slider({
+                                selector : '#slider',
+                                aspectRatio : 6 / 16,
+                                hasLabel : true,
+                                index : 0,
+                                aspectRatio : 0.8,
+                                auto : 2000
+                            });
+                    }
+                       
+                    slider.set(sliderArray);
+                    slider.on("clickItem",function(index,data){
+                        
+                    }) 
+                    $("#replyDesc").html(data.ReplyDesc);
+                    if(data.ReplyPrice != null){
+                        $("#replay2").attr('style','display:none !important');
+                        $("#replyType").html('指定专家鉴定');
+                        $("#expertName").html(data.ExpertName);
+                        $("#replyName").html(data.ReplyName);
+                        var categoryName=data.CategoryName+"/"+data.ParentCategoryName;
+                        $("#categoryName").html(categoryName);
+                        $("#replyYear").html(data.ReplyYear);
+                        var replyPrice=data.ReplyPrice;
+                        if(replyPrice==''){
+                            $("#replyPriceDiv").attr('style','display:none !important');
+                        }else{
+                            $("#replyPrice").html(replyPrice);
+                        }
+                        
+                    }else{
+                        $("#replay1").attr('style','display:none !important');
+                        $("#replyType2").html('随机专家鉴定');
+    
+                    }
+                  
+                }
+            }
+
+            getRequestAjax(getIdentifyUrl, json, callback);
+        }
+
+        function templateEmptyDiv() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub bc-text3 uinn">该拍品未鉴定' + '</div>' + '</div>' + '</div>'
+            return str
+        }
+
+
+ </script>
+</html>

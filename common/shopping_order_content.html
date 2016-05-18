@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        .top{
+            margin-top:0.5em;
+            font-size:0.9em;
+        }
+        .top .content{
+            margin:auto;
+            width:97%;
+            padding:0.5em 0em;
+        }
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        
+        <div class="ub ub-ver bc-bg top" id="addressDiv">
+            <div class="ub ub-ac ub-pc ulev content">
+                <div class="ub ub-ac ub-ver site" style="width:20%;">
+                     <div>
+                         <img src="../img/img2/buy_1.png" style="width:2em;height:2em;">
+                     </div>
+                     
+                     <div class="ub ub-ac ub-pc " id="" style="color:red;">更改地址 </div>
+                </div>
+                
+                <div class="ub ub-ac ub-ver" style="width:80%;">
+                     <div class="ub ub-ac ub-ver" style="width:100%;">
+                         <div class="ub ub-ac ub-pj" style="width:100%;margin:0.5em 0em;">
+                             <div class="ub ub-ac" style="width:40%;"><font id="addressName"></font> </div>
+                             <div class="ub ub-ac ub-pe" style="width:60%;"><font id="addressMobile"></font></div>
+                         </div>
+                     </div>
+                     <div class="ub ub-ac" style="width:100%;">
+                              <font id="address"></font>
+                     </div>
+                </div>
+            </div>
+       </div> 
+       
+       <div class="ub ub-ac ub-pc bc-bg top" id="addressEmptyDiv">
+           <div class="ub ub-ac ub-pc content">
+               <div class="ub ub-ac ub-pc" style="width:20%">
+                    <img src="../img/img2/buy_1.png" style="width:2em;height:2em;">
+               </div>
+               <div class="ub ub-ac ub-pj" style="width:80%">
+                   <div class="ub ub-ac">添加收货地址</div>
+                   <div class="ub ub-ac ub-pe">
+                       <div class="fa fa-angle-right angle ulev2"></div>
+                   </div>
+               </div>
+           </div>
+       </div>
+       
+        <div class="ub ub-ver bc-bg top" >
+           <div class="ub ub-ac ub-pc ulev content" >
+                <div class="ub ub-ac ub-ver" style="width:20%;">
+                    <img src="../img/img2/buy_2.png" style="width:2em;height:2em;">
+                     
+                </div>
+                
+                <div class="ub ub-ac ub-ver" style="width:80%;">
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                         订单状态：<font style="color:red;">等待付款</font>
+                     </div>
+                     <div class="ub ub-ac" style="width:100%;">
+                                                                        请在 <font id="closeDate"></font> 前完成支付，超时订单将自动关闭。                                                          
+                     </div>
+                </div>
+                
+            </div>
+       </div>        
+       <div class="ub ub-ver bc-bg top" >
+           <div class="ub ub-ac ub-pc ulev content" >
+                <div class="ub ub-ac ub-pc" style="width:20%;">
+                      <img id="sellerAvatar" style="width:3em;height:3em;border-radius:3em;">
+                </div>
+                <div class="ub ub-ac" style="width:50%;">
+                      <font id="sellerNicename"></font>
+                </div>
+                <div class="ub ub-ac ub-pe" style="width:30%;">
+                     <div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2 talk"  style="margin-left:0.5em;">联系卖家</div>
+                </div>
+                
+            </div>
+       </div>     
+            
+            
+            
+            
+            <div class="ub ub-ver bc-bg umar-t">
+                <div class="ub  uinn-a7 ub-ac">
+                    <div class="ub-f1 textb2 ubb bc-border uinn">
+                                                                          订单来源：竞拍所得
+                    </div>
+                </div>
+                <div class="uinn-a7">
+                    <div class="uinn-a1 ubb bc-border ub">
+                       
+                            <ul>
+                                <li class="ub bc-text ub-ac " >
+                                    <div class="lv_title ub-f1 marg-l ub ub-ver ut-m line1"></div>
+                                </li>
+                            </ul>
+                        
+                        <div class="uh-app1 uw-app2 mar-ar1 ub-img1">
+                            <img id="thumb">
+                        </div>
+                        <div class=" ub-f1 ulev-1 mar-ar1 textb3 uinn-a7">
+                            <font id="content">
+                                
+                            </font>
+                           
+                        </div>
+                        <div class="ub ub-ver ub-ac">
+                            <div class="ub-f1 ub-ac t-red1 ufm1 ulev bold">
+                                                                                                     ￥<font id='price'></font>
+                            </div>
+                        </div>
+                    </div>
+                    <li  class="ub  ubb bc-border bc-text textb2 ub-ac lis expert">
+
+                        <div class="lv_title ub-f1 marg-l ub ub-ver ut-m line1">
+                        运费：
+                        </div>
+                        <div class="tx-r sc-text ulev-1 umar-r lv_subTitle" id="">
+                           买家承担（货到付款）
+                        </div>
+                    </li>
+                    
+                    <li  class="ub  ubb bc-border bc-text textb2 ub-ac lis expert">
+
+                        <div class="lv_title ub-f1 marg-l ub ub-ver ut-m line1">
+                                                                                           下单时间：<font id="createDate"></font>
+                        </div>
+           
+                    </li>
+                    <li  class="ub  ubb bc-border bc-text textb2 ub-ac lis expert">
+
+                        <div class="lv_title ub-f1 marg-l ub ub-ver ut-m line1">
+                                                                                           一线客服电话：025-52282040
+                        </div>
+           
+                    </li>
+                   
+                    <li  class="ub  ubb bc-border bc-text textb2 ub-ac lis expert">
+
+                        <div class="sc-bg-active uin-input2 ub ub-f1 bc bc-border uba">
+                            <input placeholder="给卖家留言:" id="subject" type="text" class="ub-f1 bc-bg2">
+                        </div>
+
+                    </li>
+              
+                </div>
+
+            </div>
+           
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var orderId=appcan.locStorage.val('orderId');
+        var addressId='';
+        var talkUserId='';
+        var talkAuctionId='';
+                     
+        appcan.ready(function() {
+             uexAliPay.onStatus = function(status, des){
+                //1为在支付，2为支付失败，0为支付成功
+               uexWindow.toast("0", "5",des, "2000");
+               if(status == 0){
+                   uexWindow.evaluatePopoverScript('PerBuy_index','content','setUserState()');
+                   
+                   var orderType='buyOrderNoSend';
+                   uexWindow.evaluateScript('PerBuy_details',0,'changeDiv("'+orderType+'")');
+                   appcan.openWinWithUrl('PerBuy_details','../user/buy/PerBuy_details.html');
+                   
+               }
+           } 
+           
+           function actionTop() {
+                getOrderInfo();
+           }
+           
+           initBounce(actionTop, 0);
+           
+           getOrderInfo(); 
+                   
+        });
+        
+        
+        function getOrderInfo(){
+            getAddressList();
+            getBuyOrderList();
+        }
+        
+        
+        function getBuyOrderList(){
+             var getOrderUrl=getUrl('auction/GetOrder');
+             var data={
+                orderid : orderId,
+                Token : getToken()
+             };
+             function callback(result){
+                 if(result.Success){
+                     var data=result.Data
+                     var thumb=gerImgThumbUrl(data.Thumb);
+                     var sellerAvatar=getImgNormalUrl(data.SellerAvatar);
+                     talkUserId=data.SellerId;
+                     var closeDate=formatDate(data.CloseDate);
+                     var createDate=formatDate(data.CreateDate);
+                     
+                     closeDate=new Date(closeDate).format("yyyy-MM-dd hh:mm:ss");
+                     createDate=new Date(createDate).format("yyyy-MM-dd hh:mm:ss");
+                     talkAuctionId=data.AuctionId;
+                     
+                     $("#createDate").html(createDate);
+                     $("#closeDate").html(closeDate);
+                     $('#thumb').attr('src',thumb);
+                     $('#content').html(data.Content);
+                     $('#price').text(data.Price);
+                     $("#sellerAvatar").attr('src',sellerAvatar);
+                     $("#sellerAvatar").attr('sellerId',data.SellerId);
+                     $("#sellerNicename").html(data.SellerNicename);
+                     uexWindow.evaluateScript("shopping_order",0,"writePriceCount('"+data.Price+"')");
+                 }else{
+                     uexWindow.toast("0", "5",result.Message, "2000");
+                    
+                 }
+             }
+             
+             getRequestAjax(getOrderUrl,data,callback);
+        }
+        
+        
+           
+            
+        
+        function getAddressList(){
+            
+            var getAddressListUrl=getUrl('user/getaddresslist');
+            var data={
+                pageindex : '1',
+                pagesize :'1',
+                token : getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length !=0){
+                         addressId=data[0].Id;
+                         $('#addressName').text(data[0].Name);
+                         $('#addressMobile').text(data[0].Mobile);
+                         $("#addressZipCode").text(data[0].ZipCode);
+                         var strAddress=data[0].Area+data[0].Street+data[0].Detail;
+                         $('#address').text(strAddress);
+                         $("#addressDiv").attr('style','display:block !important');
+                         $("#addressEmptyDiv").attr('style','display:none !important');
+                    }else{
+                         $("#addressDiv").attr('style','display:none !important;');
+                         $("#addressEmptyDiv").attr('style','display:block !important');
+                    }
+                }else{
+                   uexWindow.toast("0", "5",result.Message, "2000");
+                }
+            }
+            getRequestAjax(getAddressListUrl,data,callback);
+        }
+
+        
+       
+         appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        
+        function pay(fee){
+            
+             var subject = $('#subject').val();
+             if(subject.length == 0){
+                        subject='未留言';
+             }
+             var body='';
+             if(addressId.length == 0){
+                 uexWindow.toast("0", "5", '请先完善收货地址！', "2000");
+                 return; 
+             }else{
+                 body = addressId;
+             }
+             
+             var id=getLocalStorageParme('Id');
+             var date=new Date();
+             var num = id+date.getTime();
+             setInfo();
+                 
+             var getOrderUrl=getUrl('auction/GetOrder');
+             var data={
+                orderid : orderId,
+                Token : getToken()
+             };
+             function callback(result){
+                 if(result.Success){
+                     var data=result.Data
+                     var status=data.Status
+                     
+                     if(status == 0){
+                         
+                        // uexAliPay.pay(num, subject, body, fee);
+                         
+                         appcan.locStorage.val('fee', fee);
+                         appcan.locStorage.val('realFee',fee);
+                         appcan.locStorage.val('orderId',orderId); 
+                         appcan.locStorage.val('orderBody',body); //收货地址
+                         appcan.locStorage.val('orderSubject',subject); //订单留言
+                         
+                         appcan.locStorage.val('payType','payOrderAuction');
+                         appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+
+                     }else{
+                        uexWindow.toast("0", "5", '您已支付成功', "2000"); 
+                     }
+                 }
+             }
+             getRequestAjax2(getOrderUrl,data,callback);     
+                 
+        }
+         function setInfo(){
+            var partner = "2088911273341072";
+            var seller = "alzxt20150301@zhengxitang.com";
+            var rsaPrivate ='MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+            var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+            var notifyUrl2 = notifyUrl+'paycallback?Type=2&orderId='+orderId+'';
+            uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl2);
+        }
+        
+        $(".talk").click(function(){
+             getmessage(talkUserId,'auction',talkAuctionId);
+             appcan.openWinWithUrl('talk', 'talk.html');
+        })
+        
+        $("#sellerAvatar").click(function(){
+            var sellerId=$(this).attr('sellerId');
+            appcan.locStorage.setVal('userId', sellerId);
+            appcan.openWinWithUrl('userinfo', 'userinfo.html');
+        })
+        
+        $("#addressEmptyDiv").click(function(){
+            
+             appcan.locStorage.val('addressType', 'shopping');
+             appcan.openWinWithUrl('address_list', 'address_list.html');
+        })
+        
+         appcan.button(".site", "ani-act", function() {
+            appcan.locStorage.val('addressType', 'shopping');
+            appcan.openWinWithUrl('address_list', 'address_list.html');
+        })
+ 
+    </script>
+</html>

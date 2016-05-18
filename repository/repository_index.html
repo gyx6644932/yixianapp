@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+
+            <div id="header" class="uh bc-text-head ub  ub-ver">
+                <div class="ub bc-head">
+                    <div class="close nav-btn" id="nav-left">
+                        <div class="fa fa-angle-left fa-2x"></div>
+                    </div>
+                    <h1 id='title' class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">我的仓库</h1>
+                    <div class=" nav-btn" id="nav-right">
+                        <div class="edit nav-btn textb2 umar-r" id="edit">
+                            编辑
+                        </div>
+                    </div>
+                </div>
+                <div class="ub">
+                    <div class='ub ub-f1 ub-pc' id="tablist">
+                        <div class="repositoryChecked" id="repositoryChecked">
+                            有鉴定
+                        </div>
+                        <div class="repositoryCheck" id="repositoryCheck">
+                            无鉴定
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+
+            </div>
+            <!--content结束-->
+            <div id="footer" class="add ub ub-ac ub-pc bc-btn" style="height:3em;color:#FFFFFF;display:block">
+                添加藏品
+            </div>
+            <div id="chk" class=" ub-ac ub-pe ubb bc-border1" style="height:3em;background-color:#E6E6E6;color:red;display: none">
+                <div id="all" class="ub-f1 " style="padding-left:2em;">
+                    全选
+                </div>
+                <div id="cancel" class="ub-f1 " style="padding-left:2em;display: none">
+                    取消
+                </div>
+                <div id="delete" class="ub-f1 ub ub-pe" style="padding-right:2em;">
+                    删除
+                </div>
+            </div>
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "repository_index_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+            load();
+        });
+        appcan.button(".close", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        $("#tablist").click(function() {
+
+            $(this).children().each(function() {
+                if (this.className == 'repositoryChecked') {
+                    $(this).removeClass('repositoryChecked').addClass('repositoryCheck');
+
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'repositoryCheck') {
+                $(TA).removeClass('repositoryCheck').addClass('repositoryChecked');
+            }
+
+            if (TA.id == 'repositoryChecked') {
+                $('#all').css('display', 'block')
+                $('#cancel').css('display', 'none')
+                Refresh();
+                appcan.locStorage.setVal('identifyYN', 'true');
+                uexWindow.evaluatePopoverScript("repository_index", "content", "cancelAll()");
+                uexWindow.evaluatePopoverScript("repository_index", "content", "identify1()");
+
+            } else if (TA.id == 'repositoryCheck') {
+                $('#all').css('display', 'block')
+                $('#cancel').css('display', 'none')
+                Refresh();
+                appcan.locStorage.setVal('identifyYN', 'false');
+                uexWindow.evaluatePopoverScript("repository_index", "content", "cancelAll()");
+                uexWindow.evaluatePopoverScript("repository_index", "content", "identify2()");
+            }
+
+        });
+        $('#footer').click(function() {
+            appcan.openWinWithUrl('repository_add', 'repository_add.html');
+        })
+        $('#all').click(function() {
+            uexWindow.evaluatePopoverScript("repository_index", "content", "checkAll()");
+        })
+        $('#cancel').click(function() {
+            $('#all').css('display', 'block')
+            $('#cancel').css('display', 'none')
+            uexWindow.evaluatePopoverScript("repository_index", "content", "cancelAll()");
+        })
+        $('#delete').click(function() {
+            uexWindow.evaluatePopoverScript("repository_index", "content", "chkDelete()");
+        })
+        $('#edit').click(function() {
+            if ($('.edit').hasClass('edit')) {
+                $('.edit').html('完成').removeClass('edit nav-btn textb2 umar-r').addClass('finish nav-btn textb2 umar-r')
+                $('#footer').css('display', 'none').removeClass('ub');
+                $('#chk').css('display', 'block').addClass('ub');
+                uexWindow.evaluatePopoverScript("repository_index", "content", "edit()");
+
+            } else if ($('.finish').hasClass('finish')) {
+                $('.finish').html('编辑').removeClass('finish nav-btn textb2 umar-r').addClass('edit nav-btn textb2 umar-r')
+                $('#footer').css('display', 'block').addClass('ub');
+                $('#chk').css('display', 'none').removeClass('ub');
+                uexWindow.evaluatePopoverScript("repository_index", "content", "finish()");
+
+            }
+
+        })
+        function load() {
+            identify = appcan.locStorage.getVal('identifyYN');
+            if (identify == 'false') {
+                $("#repositoryCheck").removeClass('repositoryCheck').addClass('repositoryChecked');
+                $("#repositoryChecked").removeClass('repositoryChecked').addClass('repositoryCheck');
+            }
+        }
+
+        function Refresh() {
+            $('.finish').html('编辑').removeClass('finish nav-btn').addClass('edit nav-btn')
+            $('#footer').css('display', 'block').addClass('ub')
+            $('#chk').css('display', 'none').removeClass('ub')
+            uexWindow.evaluatePopoverScript("repository_index", "content", "finish()");
+        }
+
+        function cancelAll() {
+            $('#all').css('display', 'none')
+            $('#cancel').css('display', 'block')
+        }
+    </script>
+</html>

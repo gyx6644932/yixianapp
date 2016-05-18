@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ver">
+            <div class="umar-tcon ubt bc-border ">
+    
+                <div id="listview1" class="change list mar-lrlist ulev-1"></div>
+
+       
+            </div>
+            <div class="umar-tcon ubt bc-border ubb">
+                <div class="list ub ub-ac bc-border uinn-3">
+                    <div class="ub-f1  ">
+                        <span class="ulev-1">静音免打扰时段</span>
+                    </div>
+                    <div class="ulev-1 t-6b9">
+                       从 23:00至 8:00  >
+                    </div>
+                </div>
+             </div>
+        <div class="uinn">
+           <div class="btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1"  id="submit">
+                                清空全部消息
+           </div>
+        </div>
+  
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+               $(".change").click(function() {
+                var CNArray = this.classList;
+                for (var i = 0; i < CNArray.length; i++) {
+                    if (CNArray[i] == 'check') {
+                        $(this).addClass('checking').removeClass('check');
+                        return;
+                    } else if (CNArray[i] == 'checking') {
+                        $(this).removeClass('checking').addClass('check');
+                        return;
+                    }
+                }
+            });
+            
+        })
+        var lv1 = appcan.listview({
+            selector : "#listview1",
+            type : "thinLine",
+            hasIcon : true,
+            hasAngle : false,
+            hasControl : true,
+        });
+        lv1.set([{
+            title : "物流通知",
+            "switchBtn" : {
+                value : false,
+                mini : true
+            }
+        }, {
+            title : "优惠促销",
+            "switchBtn" : {
+                value : true,
+                mini : true
+            }
+        }, {
+            title : "商品提醒",
+            "switchBtn" : {
+                value : false,
+                mini : true
+            }
+        }, {
+            title : "社区动态",
+            "switchBtn" : {
+                value : false,
+                mini : true
+            }
+        }, {
+            title : "系统通知",
+            "switchBtn" : {
+                value : false,
+                mini : true
+            }
+        }]);
+
+        lv1.on("switch:change", function(ele, obj) {
+            //lv1.updateItem(ele,"title","Switch:"+obj.switchBtn.value);
+        })
+   appcan.button(".btn", "ani-act", function() {
+            
+})
+ </script>
+</html>

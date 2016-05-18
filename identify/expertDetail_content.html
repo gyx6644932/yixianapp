@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="bc-bg2" ontouchstart>
+        <div class="c-gra1 uinn-a1 ub ub-ver ub-img7"  style="background: #3099EC;">
+            <div class="ub-f1 ub ">
+                <div class="ub-f1">
+                    <!-- <div class="round back ub ub-ac ub-pc" >
+                        <div class="fa fa-angle-left fa-2x" style="color: #746E6E;margin-right:.1em;"></div>
+                    </div>-->
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pc ub-ver">
+                    <div id='head' class="head pos_re umar-at2" style="margin-top:3em;">
+                
+                    </div>
+                    <div id='expertAvatar' class="umar-at1 white"  style="width: 5em;height: 5em;">
+
+                    </div>
+                    <div id='expertName' class="umar-at1 white textb2">
+                    </div>
+                </div>
+
+                <div class="ub-f1 ub ub-pe">
+
+                    <!--<div class="share round ub ub-ac ub-pc" style="">
+                        <i class="fa fa fa-external-link fa-1x" style="color: #746E6E"></i>
+
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="ub ub-pc c-wh" style="margin-top: 1em;">
+            <div class='ub  ub-f1 c-org ub-ver' style="padding: .4em 2.9em .4em 1.9em">
+                <div class="ub">单位</div>
+                <div class="sc-bg-active uinput ub ub-f1  textb2 gery ubt bc-border1" style="margin: .5em 0em;padding:.5em 0em; ">
+                    <span id="expertCompany"></span>
+                </div>
+            </div>
+        </div>
+        <div class="ub ub-pc c-wh umar-t">
+            <div class='ub ub-f1 c-org ub-ver' style="padding: .4em 2.9em .4em 1.9em">
+               <div class="ub">职称 </div>
+                <div class="sc-bg-active uinput ub ub-f1  textb2 gery ubt bc-border1" style="margin: .5em 0em;padding:.5em 0em;">
+                    <span id="expertZc"></span>
+                </div>
+            </div>
+        </div>
+        <div class="ub ub-pc c-wh umar-t">
+            <div class='ub ub-f1 c-org ub-ver' style="padding: .4em 2.9em .4em 1.9em">
+              <div class="ub">擅长</div>
+                <div class="sc-bg-active uinput ub ub-f1   textb2 gery ubt bc-border1" style="margin: .5em 0em;padding:.5em 0em; ">
+                    <span id="expertType"></span>
+                </div>
+            </div>
+        </div>
+        <div class="ub ub-pc c-wh umar-t">
+            <div class='ub ub-f1 c-org ub-ver' style="padding: .4em 2.9em .4em 1.9em">
+               <div class="ub">简历 </div>
+                <div class="sc-bg-active uinput ub ub-f1  textb2 gery ubt bc-border1" style="margin: .5em 0em;padding:.5em 0em; ">
+                    <span id="expertDesc"></span>
+                </div>
+            </div>
+        </div>
+        <div class="ub ub-pc c-wh umar-t" style="margin-bottom: 5em;">
+            <div class='ub ub-f1 c-org ub-ver' style="padding: .4em 2.9em .4em 1.9em">
+                <div class="ub">收费 </div>
+                <div class="sc-bg-active uinput ub ub-f1 ub-ver  textb2 gery ubt bc-border1" style="margin: .5em 0em;padding:.5em 0em; ">
+                    <div class=" ub ub-f1  gery">
+                   随机专家鉴定： <span >2</span>元/次
+                </div>
+                <div class=" ub ub-f1  gery" >
+          指定专家鉴定： <span id="identifyPrice"></span>元/次
+                </div>
+                </div>
+                
+            </div>
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            loadCon();
+            expertDetail();
+        });
+        foreignId = appcan.locStorage.getVal('userId');
+        function loadCon() {
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "user/ValidateFollow",
+                data : {
+                    type : 2,
+                    foreignId : foreignId,
+                    token : getToken()
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        $('.addFollow').css("color", "red").addClass('p-liking').removeClass('p-like');
+                        $('.addFollow').html(" 已关注");
+                    }
+                },
+            });
+
+        }
+           function expertDetail() {
+               userId = appcan.locStorage.getVal('userId');
+            var getUserUrl = getUrl("user/getuserbyid");
+            var data = {
+                userId  : userId
+            }
+
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    expertAvatar = "<img src="+gerImgThumbUrl(data.ExpertAvatar)+">"
+                    expertName = data.ExpertName
+                    expertCompany = data.ExpertCompany;
+                    expertZc = data.ExpertZc;
+                    var expertType = data.ExpertType;
+                    expertDesc = data.ExpertDesc;
+                    identifyPrice  = data.IdentifyPrice;
+                    $("#expertAvatar").html(expertAvatar);
+                    $("#expertName").html(expertName);
+                    if(expertCompany == '' || expertCompany == null){
+                         $("#expertCompany").html('暂无内容');
+                    }else{
+                         $("#expertCompany").html(expertCompany);
+                    }
+                    if(expertZc == '' || expertZc == null){
+                         $("#expertZc").html('暂无内容');
+                    }else{
+                         $("#expertZc").html(expertZc);
+                    }
+                     if(expertType == '' || expertType == null){
+                         $("#expertType").text('暂无内容');
+                    }else{
+                         $("#expertType").text(expertType);
+                    }
+                     if(expertDesc == '' || expertDesc == null){
+                         $("#expertDesc").html('暂无内容');
+                    }else{
+                         $("#expertDesc").html(expertDesc);
+                    }
+                    $("#identifyPrice").html(identifyPrice);
+                }
+            }
+
+            getRequestAjax2(getUserUrl, data, callback);
+        }
+
+    
+
+    </script>
+</html>

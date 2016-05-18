@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <form method="post" >
+            <div id ='sliderShow' class="uinput ub-f1" style="display:none">
+                <div id="slider" class="slider"></div>
+            </div>
+            <div class="umar-t-ec3" id="imgListShow" style="display:none">
+                <div id="imgList">
+                    <img id="addimg" class='uwh-bg umar-r-ect' src='../img/addImg.png'>
+                </div>
+            </div>
+            <div class="ub ub-ver">
+
+                <div class="ub ubt bc-border bc-bg gery umar-t" >
+                    <div class="sc-bg-active  ub ub-f4 bc-text" style="padding:.5em 1em .5em .6em;">
+                        <div id='changeCategory' class=" sc-bg-active ub ub-f1 bc-border uinn">
+                            <div id="CategoryName"  class='gery' style="float: left;font-size: .85em;">
+                                <a id="big">请选择藏品分类</a><a id="small"></a>
+                            </div>
+                            <div  class=' textb2' style="position:absolute;right:0;">
+                                <i class="fa fa-angle-right ulev2 sc-text"></i></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="ub ubt bc-border bc-bg   white " >
+
+                    <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                        <input id="title" placeholder="请输入藏品名称" type="text" class="ub-f1  ">
+                    </div>
+
+                </div>
+
+                <div class="ub ubt bc-border bc-bg   white " >
+
+                    <div class="sc-bg-active uin-input ub ub-f1 ub-ac uinn">
+                        <input id="price" placeholder="请输入藏品价格" type="number" class="ub-f1  ">
+                    </div>
+
+                </div>
+
+                <div class="ub ubt bc-border bc-bg white" >
+                    <div class="sc-bg-active uinput ub ub-f1 ub-ac ub-pc uinn" style="padding: 0.4em 0.8em 1.4em 1.1em;">
+                        <textarea id="content" placeholder="请描述你的藏品" type="text" class="ub-f1  w-full" style="height: 8em;"></textarea>
+                    </div>
+                </div>
+                <input id="token" id="token"  type="text" value=""  style="display: none">
+            </div>
+        </form>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    <script>
+        var Token = ''
+        Token = getToken();
+        var tempData = [];
+        var imgObj = [];
+        var imgCount = 0;
+        var fileNames = [];
+        var repositoryId = appcan.locStorage.getVal('repositoryId');
+        var identify = appcan.locStorage.getVal('identifyYN');
+        appcan.ready(function() {
+            if (identify == 'false') {
+                $("#sliderShow").css('display', 'none')
+                $("#imgListShow").css('display', 'block').addClass('ub')
+            } else if (identify == 'true') {
+                $("#sliderShow").css('display', 'block')
+                $("#imgListShow").css('display', 'none')
+            }
+
+            getRepository();
+        });
+        function getRepository() {
+            var getUserUrl = getUrl("Repository/GetRepository");
+
+            var data = {
+                repositoryId : repositoryId,
+                Token : Token
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    var iconArr = data.Icon.join('|');
+                    var imgCacheArr = iconArr.split('|');
+                    for (var i = 0; i < imgCacheArr.length; i++) {
+                        tempData.push(imgNormalUrl + imgCacheArr[i]);
+                        fileNames.push(imgCacheArr[i]);
+                        imgCount++;
+                    }
+                    var str = "";
+                    for (var i = 0; i < fileNames.length; i++) {
+                        str += "<img flag='img' loading='true' onclick='deleteImg(this)' data='" + fileNames[i] + "' class='uwh-bg umar-r-ect' src='" + (imgThumbUrl + fileNames[i]) + "'>";
+                    }
+                    $(str).insertBefore($("#addimg"));
+                    iconArr = data.Icon;
+                    var iconData = [];
+                    for (var i = 0; i < iconArr.length; i++) {
+                        iconData.push({
+                            img : imgNormalUrl + iconArr[i]
+                        });
+                    }
+                    categoryId = data.CategoryId
+                    Repositorytitle = data.Title;
+                    RepositoryPrice = data.Price;
+                    RepositoryContent = data.Content;
+                    RepositoryCategoryName = "/" +data.CategoryName;
+                    parentCategoryName = data.ParentCategoryName;
+                    if (Repositorytitle) {
+                        $("#title").val(Repositorytitle)
+                    }
+                    if (RepositoryCategoryName) {
+                        $("#big").text(parentCategoryName)
+                    }
+                    if (parentCategoryName) {
+                        $("#small").text(RepositoryCategoryName)
+                    }else{
+                        $("#big").text('请选择藏品分类')
+                    }
+                    if (RepositoryPrice) {
+                        $("#price").val(RepositoryPrice)
+                    }
+                    if (RepositoryContent) {
+                         var str=RepositoryContent;
+                         var reg=new RegExp("<br/>","g"); 
+                         content= str.replace(reg,"\r\n"); 
+                         $("#content").val(content);
+                    }
+                    var slider = appcan.slider({
+                        selector : '#slider',
+                        aspectRatio : 6 / 16,
+                        hasLabel : true,
+                        index : 0,
+                        aspectRatio : 0.8,
+                        auto : 4000
+                    });
+                    slider.set(iconData);
+                    slider.on("clickItem", function(index, data) {
+                    });
+                }
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+
+        appcan.button("#nav-left", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+
+        $('#changeCategory').click(function() {
+            appcan.locStorage.setVal('repository', 'edit');
+            appcan.openWinWithUrl("repository_push", "repository_push.html");
+        })
+
+        $("#content").on("input", function() {
+            var contentText = 150 - $(this).val().length
+            if (contentText >= 0) {
+                $("#remain").html(contentText);
+            } else if (contentText < 0) {
+                var str = '<font color="red">' + contentText + '</font>';
+                $("#remain").html(str);
+            }
+        });
+        function addImg() {
+            uexWindow.cbActionSheet = function(opId, dataType, data) {
+                if (data == 0) {
+                    cameraOpen();
+                }
+                if (data == 1) {
+                    fileOpen();
+                }
+            }
+            var value = "拍照上传;从手机相册选择";
+            var mycars = value.split(";");
+            uexWindow.actionSheet("", "取 消", mycars);
+        }
+
+        function deleteImg(obj) {
+            var src = $(obj).attr('data');
+
+            if (src) {
+                for (var i = 0; i < fileNames.length; i++) {
+                    if (fileNames[i] == src) {
+                        fileNames.splice(i, 1);
+                    }
+                }
+            }
+            imgCount--;
+            $(obj).remove();
+
+            $("#addimg").show();
+        }
+
+        function cameraOpen() {
+            uexCamera.cbOpen = function(opCode, dataType, data) {
+
+                imgObj.push(data);
+
+                imgCount++;
+                var str = "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+
+                $(str).insertBefore($("#addimg"));
+
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+            }
+            uexCamera.open(0, 10);
+        }
+
+        function fileOpen() {
+            uexImageBrowser.cbPick = function(opCode, dataType, data) {
+                if (data == "") {
+                    return;
+                }
+
+                arr = data.split(',');
+
+                if (imgCount + arr.length > 9) {
+                    uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                    return;
+                }
+
+                var str = "";
+                for (var i = 0; i < arr.length; i++) {
+                    imgCount++;
+                    imgObj.push(arr[i]);
+                    str += "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+                }
+
+                $(str).insertBefore($("#addimg"));
+
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+
+                var price1 = $("#price1")
+                var price2 = $("#price2")
+
+                if (price1.text().trim() || price2.text().trim()) {
+                    $("#payBtn").css('background', 'red')
+                }
+            }
+            uexImageBrowser.pickMulti(9);
+        }
+
+        function upload(imgPath) {
+
+            var uploadHttp = http + "common/uploadicon";
+            randOpId = Math.floor(Math.random() * (1000 + 1));
+
+            uexUploaderMgr.onStatus = function(opCode, fileSize, percent, serverPath, status) {
+                switch (status) {
+
+                case 0:
+                    //uexWindow.toast("1", "5", percent + "%", "0");
+                    break;
+                case 1:
+
+                    uexUploaderMgr.closeUploader(opCode);
+                    uexWindow.closeToast();
+
+                    var json = eval("(" + serverPath + ")");
+
+                    if (json.Success) {
+                        fileNames.push(json.Data);
+                        /* appcan.locStorage.val('imgcache', fileNames.join('|'));*/
+                        $("#imgList img[loading='true']").last().attr("data", json.Data).attr("src", imgThumbUrl + json.Data).removeAttr("loading");
+                    }
+                    //uexWindow.toast("0", "5", "图片成功上传！", "2000");
+                    uploadImg();
+                    break;
+                case 2:
+                    uexWindow.closeToast();
+                    // uexWindow.toast('0', '5', "图片上传失败", "2000");
+                    uexUploaderMgr.closeUploader(opCode);
+                    uploadImg();
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            uexUploaderMgr.cbCreateUploader = function(opCode, dataType, data) {
+                if (data == 0) {
+                    var path = imgPath;
+                    var inCompress = 1;
+                    if (uexWidgetOne.platformName == "iOS") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                    if (uexWidgetOne.platformName == "android") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                } else {
+                    uexWindow.closeToast();
+                    var strimg2 = "图片上传失败";
+                    uexWindow.toast('0', '5', '图片上传失败', 3000);
+                }
+            }
+            //var strimg2 = "开始上传图片";
+            //uexWindow.toast('1', '5', strimg2, '');
+            uexUploaderMgr.createUploader(randOpId, uploadHttp);
+        }
+
+        function uploadImg() {
+            if (imgObj.length == 0)
+                return;
+
+            var first = imgObj.shift();
+            upload(first);
+        }
+
+
+        $("#addimg").on("click", function() {
+            if (imgCount >= 9) {
+                uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                return;
+            }
+            addImg();
+        });
+        function saveRepository() {
+            if ($("#content").val().length > 150) {
+                alert("不能超过150字");
+                return;
+            }
+
+            if (imgCount > 0) {
+                if (imgCount != fileNames.length) {
+                    uexWindow.toast("0", "5", "等待图片上传！", "2000");
+                    return;
+                }
+            } else {
+                uexWindow.toast("0", "5", "请上传图片！", "2000");
+                return;
+            }
+
+            var title = $("#title").val();
+            var price = $("#price").val();
+            var repositoryId = appcan.locStorage.getVal('repositoryId');
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "Repository/AddRepository",
+                data : {
+                    token : getToken(),
+                    title : title,
+                    content : $('#content').val(),
+                    icon : fileNames.join('|'),
+                    price : price,
+                    categoryId : categoryId,
+                    repositoryId : repositoryId
+
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        uexWindow.toast("0", "5", '成功保存', "2000");
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+            uexWindow.evaluatePopoverScript('repository_detail', 'content', "Refresh()");
+
+        };
+        function changeSmallBig(fatherName, childrenName, childrenId) {
+            categoryId = childrenId;
+            $('#big').text(fatherName);
+            $('#small').text('/' + childrenName);
+        }
+    </script>
+</html>

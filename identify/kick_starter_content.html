@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+
+        <div id="tabview" class="uf sc-bg ubb bc-border" id=""></div>
+        <div class="kick ub ub-ver uinn-a1">
+
+            <div class="umh1"></div>
+            <div class="ub ub-ver c-wh uc-a1">
+                <div class="ub">
+                    <div class="ub ub-fh uh-pic3 pos_re">
+                        <div class="ub ub-fh ub-fv ub-img uh-pic2" style="background-image:url('../img/pic1.png');"></div>
+
+                    </div>
+                </div>
+                <div class="ub ub-ac uinn-a7">
+                    <div class="ub ub-ver ub-f1 umar-b-pic3">
+                        <div class="ub umar-t ub-pc">
+                            和田玉名家精品典藏专场
+                        </div>
+                        <div class="ub umar-t ub-pc">
+                            -------------------众筹中。。。
+                        </div>
+                        <div class="umar-t ub ub-ver">
+                            <div class='uinn2   ub '>
+                                <div class=' umw3  ub-f1 ub ub-ac ub-pc ub-ver ubr' >
+                                    <p class="ub uc-a1 "  >
+                                        920%
+                                    </p>
+                                    <p class="ub ulev-4 ">
+                                        已达
+                                    </p>
+                                </div>
+                                <div class='umw3 ub-f1 ub ub-ac ub-pc ub-ver ubr'>
+                                    <p class="uc-a1"  >
+                                        $1839170
+                                    </p>
+                                    <p class="ub ulev-4 ">
+                                        已筹集
+                                    </p>
+                                </div>
+                                <div class='umw3 ub-f1 ub ub-ac ub-pc ub-ver'>
+                                    <p class="uc-a1"  >
+                                        50天
+                                    </p>
+                                    <p class="ub ulev-4 ">
+                                        剩余时间
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.tab.js"></script>
+
+    <script>
+      appcan.button(".kick", "ani-act", function() {
+            appcan.window.open({
+                name : 'kick',
+                data : 'join_kick.html',
+                dataType : 0,
+                aniId:8,
+                 type:128
+            });
+        });
+        window.uexOnload = function(type) {
+            if (!type) {
+                uexWindow.setBounce("1");
+                uexWindow.showBounceView("0", "rgba(255,255,255,0)", "0");
+                uexWindow.showBounceView("1", "rgba(255,255,255,0)", "0");
+            };
+        }
+        var tabview = appcan.tab({
+            selector : "#tabview",
+            hasIcon : false,
+            hasAnim : true,
+            hasLabel : true,
+            hasBadge : false,
+            data : [{
+                label : "人气",
+            }, {
+                label : "时间",
+            }, {
+                label : "价格",
+            }]
+        });
+        tabview.on("click", function(obj, index) {
+
+        });
+           var Token = ''
+        Token = getToken();
+        function getexpertlist() {
+            var getUserUrl = getUrl("user/GetProjectList");
+            var data = {
+                pageindex : 1,
+                pagesize : 10,
+                token : Token
+            }
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success) {
+
+                    var arrData = [];
+
+                    $.each(result.Data, function(index, row) {
+                        arrData.push({
+                            "Id" : row.Id,
+                            "Title " : row.Title ,
+                            "Icon " : row.Icon ,
+                            "Content " : row.Content ,
+                            "Price" : row.Price,
+                        });
+                    });
+
+                    var listData = [];
+                    for (var i = 0,
+                        len = arrData.length; i < len; i++) {
+                        var list = {
+                            id : arrData[i].id,
+                            title : '<div class="bold  ">' + arrData[i].Username + '</div>',
+                            icon : arrData[i].Username,
+                            count : arrData[i].Username,
+                            describe : '<div class="textb bold gery umar-at2 ">浙江嘉兴</div>'
+                        }
+                        listData.push(list);
+                    }
+                    var lv1 = appcan.listview({
+                        selector : "#expertList",
+                        type : "thickLine",
+                        hasIcon : true,
+                        hasAngle : false,
+                        hasSubTitle : false,
+                        multiLine : 1,
+                        hasRadiobox : false,
+                        align : 'left'
+                    });
+                    lv1.set(listData);
+
+                    lv1.on("click", function(obj, data) {
+                        appcan.openWinWithUrl('expertDetail', 'expertDetail.html');
+                    });
+                }
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+    </script>
+</html>

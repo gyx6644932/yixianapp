@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg " ontouchstart>
+        <div id="page_0" class="up ub ub-ver " tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="sys_setting nav-btn textbs3 gery" id="nav-left">
+                    <i class="fa fa-bars gery" style="font-size: 1.4em;"></i>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">我的一线</h1>
+                <div class="nav-btn textbs3 gery" id="nav-left">
+                    <h2 class="gery"></h2>
+                </div>
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l t-bla">
+
+            </div>
+            <!--content结束--><!--footer开始-->
+            <div id="footer" class="ub ubt bc-border1 textb2 gery2" style="background: #F8F7F7;">
+                <div class='index ub-f1 c-org ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/home.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                主页
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='product ub-f1 c-blu2  ub ub-pc nav  umar-t '>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/markt.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                市场
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='identify ub-f1 c-org  ub ub-pc  nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+
+                        <div class="ub ub-pc">
+                            <img src="../img/ident.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                鉴定
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='auction ub-f1 c-blu2  ub ub-pc nav  umar-t'>
+                    <div class='uinn21  ub ub-ver'>
+                        <div class="ub ub-pc"><img src="../img/auction.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                拍卖
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='person ub-f1 c-org  ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="../img/my2.png"/>
+                            <div id="redDot2" class="redDot2" style="display: none"></div>
+                        </div>
+                        <div class='ub ub-pc red1'>
+                            <p>
+                                我的
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--footer结束-->
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.tab.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var titHeight = 0;
+        appcan.ready(function() {
+            titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "person_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+            if (getToken() != null) {
+                changeNew()
+            }
+        })
+        function changeNew() {
+            function getJsonGuide(jsonGuide){
+                 if(jsonGuide['allFlag']){
+                      $("#redDot2").css('display', 'block !important');
+                 }else{
+                      $("#redDot2").css('display', 'none !important');
+                 }
+           
+            }
+            getGuide(getJsonGuide);
+            setTimeout("changeNew()", 4000);
+        }
+
+
+        $(".sys_setting").click(function() {
+            appcan.window.open({
+                name : 'sys_setting',
+                data : 'sys_setting.html',
+                dataType : 0
+            });
+        })
+        $(".index").click(function() {
+            appcan.window.open({
+                name : 'index',
+                data : '../index.html',
+                dataType : 0
+            });
+        })
+        $(".product").click(function() {
+            appcan.window.open({
+                name : 'searchType',
+                data : '../product/searchType.html',
+                dataType : 0
+            });
+        })
+
+        $(".identify").click(function() {
+            appcan.window.open({
+                name : 'identify-list',
+                data : '../identify/identify-list.html',
+                dataType : 0,
+                type : 256,
+                aniId : 12
+            });
+        })
+
+        $(".auction").click(function() {
+            uexWindow.evaluatePopoverScript('person', 'content', 'openAuction()');
+        })
+
+        $(".person").click(function() {
+            appcan.window.open({
+                name : 'person',
+                data : 'person.html',
+                dataType : 0
+            });
+        })
+
+    </script>
+</html>

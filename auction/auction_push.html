@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp" style="background-color:rgba(0, 0, 0, 0.3);" ontouchstart>
+       <div id="close" class="close ub ub-fv ub-fh urel  ub-pc "></div>
+        <div class="ub ub-ac ub-pc" id="pushBody" style="position: absolute;top:30%;width:100%;z-index:2; ">
+             
+         </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var ticketUseStatus=false;
+        
+        appcan.ready(function() {
+            
+          var auctionPushType=appcan.locStorage.val('auctionPushType');
+          if(auctionPushType == 'auction_ticket') {
+              auctionTicket();
+          }
+          
+        });
+        
+         $('#close').click(function(){
+                 appcan.window.close(-1);             
+         })
+           
+        function auctionTicket(){
+              
+              var albumTicket=getLocalStorageParme('AlbumTicket');
+               var strAlbumTicket='<div class="ub ub-ac ub-pc" style="height:3em;width:50%;background-color:red;color:#ffffff;" id="ticketBtn">门票进入</div>';
+              if(albumTicket == null){
+                    albumTicket =0;
+                    strAlbumTicket='<div class="ub ub-ac ub-pc" style="height:3em;width:50%;background-color:#BEBEBE;color:#ffffff;" id="ticketBtn">门票进入</div>';
+              }
+                  
+              var str="<div class='ub ub-ac ub-ver popWindow' style='border:0.1em solid #E0E0E0'>"
+                                   
+                                   +"<div class='ub ub-ac ub-ver' style='width:100%;'>"
+                                             +'<div class="ub ub-ac ub-pc ub-pc" style="height:4em;width:100%;" >我的场次票有:&nbsp;&nbsp;<font color="red">'+albumTicket+'</font>&nbsp;&nbsp;张'     
+                                             +'</div>'
+                                             
+                                   +"</div>"
+                                    +"<div class='ub ub-ac ub-pj' style='width:90%;margin:2em auto;'>"
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn1' id='ticketBtn'>使用门票</div>"
+                                      
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn2' id='ticketBuy' >购买门票</div>"
+                                   +"</div>"
+                       +"</div>";
+                     
+               $("#pushBody").html(str);
+                  
+        /*      var str="<div class='ub ub-ac ub-ver popWindow' style='border:0.1em solid #E0E0E0'>"
+                                   
+                                   +"<div class='ub ub-ac ub-ver' style='width:100%;'>"
+                                             +'<div class="ub ub-ac ub-pc ub-pc" style="height:4em;width:100%;" >我的场次票有:&nbsp;&nbsp;<font color="red">'+albumTicket+'</font>&nbsp;&nbsp;张'     
+                                             +'</div>'
+                                             
+                                   +"</div>"
+                                    +"<div class='ub ub-ac ub-pj' style='width:100%;padding:2em 0em;'>"
+                                       +"<div class='ub ub-ac ub-pc ub-f1 uc-a' id='ticketBtn' style='padding:0.6em 0em;color:#6495ED;'>使用门票</div>"
+                                      
+                                       +"<div class='ub ub-ac ub-pc ub-f1 uc-a' id='ticketBuy' style='padding:0.6em 0em;color:#6495ED;'>购买门票</div>"
+                                   +"</div>"
+                       +"</div>";
+                     
+               $("#pushBody").html(str);
+         */      
+               
+               $("#ticketBtn").click(function(){
+                   
+                    var albumId=appcan.locStorage.val('albumId');
+                    var validateTicketUrl=getUrl('auction/validateticket');
+                    var data={
+                            albumid : albumId,
+                            Token  : getToken()
+                    }
+                    function callback(result){
+                             //已使用门票
+                            if(result.Success){
+                                 uexWindow.toast("0", "5", '该专场已开通,无需使用门票', "2000");
+                                 
+                            }else{
+                                   var type='0';
+                                   
+                                   var data={
+                                       type : type,
+                                       albumId :albumId,
+                                       Token  : getToken()
+                                   }
+                                   var useTicketUrl =getUrl('auction/useticket');
+                                   function callback(result){
+                                       if(result.Success){
+                                           var albumTicket=result.Data;
+                                           setLocalStorageParme('AlbumTicket',albumTicket);
+                                           uexWindow.toast("0", "5", '门票使用完成', "2000");
+                                           
+                                           var auctionHasTicket=true;
+                                           var disTicket=false;
+                                           uexWindow.evaluateScript('auction_list',0,' AList('+auctionHasTicket+','+disTicket+')');
+                                           
+                                           var selectDate=appcan.locStorage.val('auctionStartDay');
+                                           var readyIn=true;
+                                           var nowPageIndex=1;
+                                           var nowEndFlag=false;
+                                           uexWindow.evaluatePopoverScript('auction_index','content','getAlbumList("'+selectDate+'","'+readyIn+'","'+nowPageIndex+'","'+nowEndFlag+'")');
+                                           
+                                           appcan.window.close(-1);  
+                                       }else{
+                                           uexWindow.toast("0", "5", result.Message, "2000");
+                                       }
+                                   }
+                                   getRequestAjax(useTicketUrl,data,callback);
+                            }
+                    }
+                    getRequestAjax(validateTicketUrl,data,callback);
+               })
+               
+               $("#ticketBuy").click(function(){
+                    appcan.window.close(-1);
+                    appcan.openWinWithUrl("buy_ticket","../common/buy_ticket.html");
+               })        
+               
+        }
+
+    </script>
+</html>

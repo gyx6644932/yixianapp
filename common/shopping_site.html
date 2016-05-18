@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="header" class="uh bc-text-head ub bc-head">
+            <div class="nav-btn" id="nav-left">
+                <div class="fa fa-angle-left fa-2x" ></div>
+            </div>
+            <h1 class="ut ub-f1 ulev-3  tx-c" tabindex="0">选择收货地址</h1>
+            <div class="nav-btn" id="addressBtn">
+                                                               
+            </div>
+        </div>
+        <div class="ub ub-ver">
+          
+              <div class="ub ubt bc-border bc-bg uinn umar-t">
+                
+                    <div class="ub-f4  ub ub-ver" >
+                        <div class="ub " >
+                            <div class="ub-f1 textb bold" >
+                                收货人:小郭
+                            </div>
+                            <div class="ub-f1 ub ub-pe uinn-a7" >
+                                电话:13258987456
+                            </div>
+                        </div>
+                        <div class="ub-f4 textb2 umar-t" >
+                            <a class="red">【默认】</a>收货地址：浙江省嘉兴市南湖区城南路福地广场509室
+                        </div>
+                    </div>
+                    <div class="ub-f1 ub ub-ac red">
+                        <i class="fa fa-check-circle-o fa-2x"></i>
+                    </div>
+                </div>
+                
+                 <div class="ub ubt bc-border bc-bg uinn umar-t">
+                
+                    <div class="ub-f4  ub ub-ver" >
+                        <div class="ub " >
+                            <div class="ub-f1 textb bold" >
+                                收货人
+                            </div>
+                            <div class="ub-f1 ub ub-pe uinn-a7" >
+                                13258987456
+                            </div>
+                        </div>
+                        <div class="ub-f4 textb2 umar-t" >
+                            收货地址：浙江省嘉兴市海盐县
+                        </div>
+                    </div>
+                    <div class="ub-f1 ub ub-ac red">
+                       
+                    </div>
+                </div>
+                
+                 <div class="ub ubt bc-border bc-bg uinn umar-t">
+                
+                    <div class="ub-f4  ub ub-ver" >
+                        <div class="ub " >
+                            <div class="ub-f1 textb bold" >
+                                收货人
+                            </div>
+                            <div class="ub-f1 ub ub-pe uinn-a7" >
+                                13258987456
+                            </div>
+                        </div>
+                        <div class="ub-f4 textb2 umar-t" >
+                            收货地址：浙江省嘉兴市海盐县
+                        </div>
+                    </div>
+                    <div class="ub-f1 ub ub-ac red">
+                       
+                    </div>
+                </div>
+            </div>
+            
+         
+      
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script>
+        appcan.ready(function() {
+            appcan.initBounce();
+            
+        });
+
+        appcan.switchBtn(".switch", function(obj, value) {
+
+        })
+        
+        $('#addressBtn').click(function(){
+            appcan.openWinWithUrl("addShoppingSite","../user/addShoppingSite.html");
+        })
+    </script>
+</html>

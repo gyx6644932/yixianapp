@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="tablist" class="ub" style="height: 2.5em;font-size: .9em;">
+            <div id="mine1" class="mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de" >
+                随机专家鉴定
+            </div>
+            <div id="mine2" class="mine ub-f1 ub ub-ac ub-pc" >
+                指定专家鉴定
+            </div>
+        </div>
+        <div class="umar-t-ec2">
+            <div class="c-wh uinn-ec1 uh-ect">
+                <div class="uinput-Noborder ub ub-f1">
+                    <textarea id="content" name="content" placeholder="把你想问专家关于这件藏品的问题写在这儿吧！" type="text" class="ub-f1 uba bc-border"></textarea>
+                </div>
+                <div class="t-wh-c7 ulev-2 ub-pe ub-ae tx-r umar-tt umar-bb">
+                    还可以输入<span id="remain">150</span>个字
+                </div>
+            </div>
+        </div>
+        <div class="ub umar-t-ec3">
+            <div id="imgList" >
+                <img id="addimg" class='uwh-bg umar-r-ect' src='../img/addImg.png' style="display:none">
+            </div>
+        </div>
+        <div class="ubt bc-border ubb c-wh umar-at1 uinn-a7" id="rand">
+            <ul>
+                <li id="randExpert" class="ub  bc-border bc-text ub-ac lis expert ">
+                    <i class="fa fa-yelp"></i>
+                    <div id="expertName" class="ub lv_title ub-f1 marg-l ub ut-m line1">
+                        <div class="name ub-f1 ub ub-ac textb2">
+                            选择专家分类，为您随机推送
+                        </div>
+                        <div class="price ub-f1 ub ub-pe ub-ae uinn-a7 textb2 red" id="price1">
+
+                        </div>
+                        <div class="fa fa-angle-right ulev2 sc-text"></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="ubt bc-border ubb c-wh umar-at1 uinn-a7" id="exp" style="display: none;">
+            <ul>
+                <li id="expert" class="ub bc-border bc-text ub-ac lis expert">
+                    <i class="fa fa-male"></i>
+                    <div id="expertinfo" class="ub lv_title ub-f1 marg-l ub ut-m line1 textb2">
+                        <div class="name ub-f1 ub ub-ac">
+                            选择专家
+                        </div>
+                        <div class="count ub-f1 ub ub-pc ub-ae uinn-a7 textb2 red"></div>
+                        <div class="price ub-f1 ub ub-pc ub-ae uinn-a7 textb2 red" id="price2"></div>
+                        <div class="fa fa-angle-right ulev2 sc-text"></div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div id="submit" class="submit">
+            <div class="btn ub ub-ac bc-text2 ub-pc b-gery uc-a1" id="payBtn">
+                我要鉴定
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/uploadImg.js"></script>
+    </body>
+    <script>
+        var Token = getToken();
+        var imgObj = [];
+        var imgCount = 0;
+        var fileNames = [];
+        var tempData = [];
+        var expertid = '';
+        var Typeid = '';
+        var identifyStatus = null;
+        var pageName = appcan.locStorage.getVal('Appraisal');
+        var identifyStatus = appcan.locStorage.getVal("status");
+        var payType = appcan.locStorage.getVal('payType');
+        appcan.ready(function() {
+            if (pageName == 'exp') {
+                $("#mine1").removeClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de').addClass('mine ub-f1 ub ub-ac ub-pc');
+                $("#mine2").removeClass('mine ub-f1 ub ub-ac ub-pc').addClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de');
+                $('#rand').css('display', 'none');
+                $('#exp').css('display', 'block');
+            }
+            loadEdit();
+        });
+
+        function paySuccess() {
+            imgCount = 0;
+            fileNames = [];
+            $("#imgList img[flag='img']").remove();
+            $('#content').val('');
+            expertid = '';
+            ePrice = '';
+            Typeid = '';
+            $("#expertinfo .name").text('选择专家');
+            $("#expertinfo .price").text('');
+            $("#expertName .name").text('选择专家分类，为您随机推送');
+            $("#expertName .price").text('');
+            uexWindow.evaluateScript("checkReply", 0, "closeWindow()");
+        }
+
+        function loadEdit() {
+            if (payType == 'payIdentifyWaitpay' || payType == 'payIdentifyFinish') {
+                var appraisalId = appcan.locStorage.getVal("appraisalId");
+                var loadEditUrl = getUrl('identify/GetIdentifyById');
+                var data = {
+                    identifyId : appraisalId,
+                    Token : Token
+                }
+            } else if (payType == 'payIdentifyProduct' || payType == 'payIdentifyPer' || payType == 'payIdentifyIndex') {
+                var productId = appcan.locStorage.getVal("productId");
+                var loadEditUrl = getUrl('product/GetProduct');
+                var data = {
+                    productId : productId
+                }
+            } else if (payType == 'payIdentifyRepository') {
+                var repositoryId = appcan.locStorage.getVal("repositoryId");
+                var loadEditUrl = getUrl('Repository/GetRepository');
+                var data = {
+                    repositoryId : repositoryId,
+                    Token : Token
+                }
+            } else if (payType == 'payIdentifyAuction') {
+                var auctionId = appcan.locStorage.getVal("auctionId");
+                var loadEditUrl = getUrl('auction/getauction');
+                var data = {
+                    auctionid : auctionId
+                }
+            }
+
+            function callback(result) {
+                if (result.Success) {
+                    data = result.Data;
+                    if (payType == 'payIdentifyWaitpay') {
+                        $('#content').html(data.Content);
+                        expertid = data.ExpertId;
+                        if (pageName == 'exp') {
+                            $("#expertinfo .name").html(data.ExpertName);
+                            $("#expertinfo .price").html("鉴定费用：￥" + data.Price);
+                            ePrice = data.Price;
+                        }
+                        $("#payBtn").css('background', '#E55847');
+                    }
+                    var iconArr = data.Icon.join('|');
+                    var imgCacheArr = iconArr.split('|');
+                    for (var i = 0; i < imgCacheArr.length; i++) {
+                        tempData.push(imgNormalUrl + imgCacheArr[i]);
+                        fileNames.push(imgCacheArr[i]);
+                    }
+                    var str = "";
+                    if (payType == 'payIdentifyFinish' || payType == 'payIdentifyProduct' || payType == 'payIdentifyRepository' || payType == 'payIdentifyPer' || payType == 'payIdentifyIndex' || payType == 'payIdentifyAuction') {
+                        for (var i = 0; i < fileNames.length; i++) {
+                            imgCount++;
+                            str += "<img loading='true' id='openImg' class='uwh-bg umar-r-ect' src='" + (imgThumbUrl + fileNames[i]) + "'>";
+                        }
+                        $("#imgList").click(function() {
+                            appcan.locStorage.val('showimage', tempData.join('|'));
+                            appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                        });
+                    } else if (payType == 'payIdentifyWaitpay') {
+                        $("#addimg").css('display', 'block')
+                        for (var i = 0; i < fileNames.length; i++) {
+                            imgCount++;
+                            str += "<img flag='img' loading='true' onclick='deleteImg(this)' data='" + fileNames[i] + "' class='uwh-bg umar-r-ect' src='" + (imgThumbUrl + fileNames[i]) + "'>";
+                        }
+                    }
+                    $(str).insertBefore($("#addimg"));
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            };
+            getRequestAjax2(loadEditUrl, data, callback);
+        }
+
+
+        $("#content").on("input", function() {
+            content = $("#content").val();
+            /*    appcan.locStorage.val('ideContent', content);*/
+            var contentText = 150 - $(this).val().length
+            if (contentText >= 0) {
+                $("#remain").html(contentText);
+            } else if (contentText < 0) {
+                var str = '<font color="red">' + contentText + '</font>';
+                $("#remain").html(str);
+            }
+
+        })
+
+        $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de') {
+                    $(this).removeClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de').addClass('mine ub-f1 ub ub-ac ub-pc');
+                }
+            });
+
+            var TA = event.target;
+            if (TA.className == 'mine ub-f1 ub ub-ac ub-pc') {
+                $(TA).removeClass('mine ub-f1 ub ub-ac ub-pc').addClass('mine-checked ub-f1 ub ub-ac ub-pc bc-border bc-bg ubr uinn-r-de');
+                $("#payBtn").css('background', '#BABBBB')
+            }
+
+            if (TA.id == 'mine1') {
+                $('#rand').css('display', 'block');
+                $('#exp').css('display', 'none');
+                var price1 = $("#price1")
+                if (price1.text().trim()) {
+                    $("#payBtn").css('background', '#E55847')
+                }
+                appcan.locStorage.setVal('Appraisal', 'rand');
+                $(".price").empty();
+                $(".name").html('选择专家分类，为您随机推送');
+                $(".count ").empty();
+                Typeid = '';
+            }
+            if (TA.id == 'mine2') {
+                $('#rand').css('display', 'none');
+                $('#exp').css('display', 'block')
+                var price2 = $("#price1")
+                if (price2.text().trim()) {
+                    $("#payBtn").css('background', '#E55847')
+                }
+                appcan.locStorage.setVal('Appraisal', 'exp');
+                $(".price").empty();
+                $(".name").html("选择专家");
+                $(".count ").empty();
+                expertid = '';
+            }
+
+        });
+        function addImg() {
+            uexWindow.cbActionSheet = function(opId, dataType, data) {
+                if (data == 0) {
+                    cameraOpen();
+                }
+                if (data == 1) {
+                    fileOpen();
+                }
+            }
+            var value = "拍照上传;从手机相册选择";
+            var mycars = value.split(";");
+            uexWindow.actionSheet("", "取 消", mycars);
+        }
+
+        function deleteImg(obj) {
+            var src = $(obj).attr('data');
+
+            if (src) {
+                for (var i = 0; i < fileNames.length; i++) {
+                    if (fileNames[i] == src) {
+                        fileNames.splice(i, 1);
+                    }
+                }
+            }
+            imgCount--;
+            $(obj).remove();
+
+            $("#addimg").show();
+        }
+
+        function cameraOpen() {
+            uexCamera.cbOpen = function(opCode, dataType, data) {
+
+                imgObj.push(data);
+
+                imgCount++;
+                var str = "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+
+                $(str).insertBefore($("#addimg"));
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+            }
+            uexCamera.open(0, 10);
+        }
+
+        function fileOpen() {
+            uexImageBrowser.cbPick = function(opCode, dataType, data) {
+                if (data == "") {
+                    return;
+                }
+
+                arr = data.split(',');
+
+                if (imgCount + arr.length > 9) {
+                    uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                    return;
+                }
+
+                var str = "";
+                for (var i = 0; i < arr.length; i++) {
+                    imgCount++;
+                    imgObj.push(arr[i]);
+                    str += "<img flag='img' loading='true' onclick='deleteImg(this)' class='uwh-bg umar-r-ect' src='../img/loading.png'>";
+                }
+
+                $(str).insertBefore($("#addimg"));
+                if (imgCount == 9) {
+                    $("#addimg").hide();
+                }
+
+                uploadImg();
+
+                var price1 = $("#price1")
+                var price2 = $("#price2")
+
+                if (price1.text().trim() || price2.text().trim()) {
+                    $("#payBtn").css('background', '#E55847')
+                }
+            }
+            uexImageBrowser.pickMulti(9 - imgCount);
+        }
+
+        function upload(imgPath) {
+
+            var uploadHttp = http + "common/uploadicon";
+            randOpId = Math.floor(Math.random() * (1000 + 1));
+
+            uexUploaderMgr.onStatus = function(opCode, fileSize, percent, serverPath, status) {
+                switch (status) {
+
+                case 0:
+                    //uexWindow.toast("1", "5", percent + "%", "0");
+                    break;
+                case 1:
+
+                    uexUploaderMgr.closeUploader(opCode);
+                    uexWindow.closeToast();
+
+                    var json = eval("(" + serverPath + ")");
+
+                    if (json.Success) {
+                        fileNames.push(json.Data);
+                        /* appcan.locStorage.val('imgcache', fileNames.join('|'));*/
+                        $("#imgList img[loading='true']").last().attr("data", json.Data).attr("src", imgThumbUrl + json.Data).removeAttr("loading");
+                    }
+                    //uexWindow.toast("0", "5", "图片成功上传！", "2000");
+                    uploadImg();
+                    break;
+                case 2:
+                    uexWindow.closeToast();
+                    // uexWindow.toast('0', '5', "图片上传失败", "2000");
+                    uexUploaderMgr.closeUploader(opCode);
+                    uploadImg();
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            uexUploaderMgr.cbCreateUploader = function(opCode, dataType, data) {
+                if (data == 0) {
+                    var path = imgPath;
+                    var inCompress = 1;
+                    if (uexWidgetOne.platformName == "iOS") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                    if (uexWidgetOne.platformName == "android") {
+                        uexUploaderMgr.uploadFile(opCode, path, "file", inCompress, 720);
+                    }
+                } else {
+                    uexWindow.closeToast();
+                    var strimg2 = "图片上传失败";
+                    uexWindow.toast('0', '5', '图片上传失败', 3000);
+                }
+            }
+            //var strimg2 = "开始上传图片";
+            //uexWindow.toast('1', '5', strimg2, '');
+            uexUploaderMgr.createUploader(randOpId, uploadHttp);
+        }
+
+        function uploadImg() {
+            if (imgObj.length == 0)
+                return;
+
+            var first = imgObj.shift();
+            upload(first);
+        }
+
+
+        $("#expert").on("click", function() {
+            appcan.locStorage.setVal('selectExpert', 'identify2');
+            uexWindow.open("identify_push", "0", "../identify/identify_push.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+
+        $("#addimg").on("click", function() {
+            if (imgCount >= 9) {
+                uexWindow.toast("0", "5", "上传图片不能超9张！", "2000");
+                return;
+            }
+            addImg();
+        });
+        $("#submit").click(function() {
+            var pageName = appcan.locStorage.getVal('Appraisal');
+            var Token = getToken();
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            if (Token == expertid) {
+                uexWindow.toast("0", "5", '不能选择您自己,请重新选择！', "2000");
+                return;
+            }
+            var content = $("#content").val();
+            if (content == '') {
+                content = '用户未描述该藏品';
+            }
+            if (content.length > 150) {
+                uexWindow.toast("0", "5", "不能超过150字！", "2000");
+                return;
+            }
+            if (imgCount > 0) {
+                if (imgCount != fileNames.length) {
+                    uexWindow.toast("0", "5", "等待图片上传！", "2000");
+                    return;
+                }
+            } else {
+                uexWindow.toast("0", "5", "请上传图片！", "2000");
+                return;
+            }
+                if (pageName == 'exp') {
+                    if (expertid == '') {
+                        uexWindow.toast("0", "5", "请选择专家！", "2000");
+                        return;
+                    }
+                    if (payType == 'payIdentifyWaitpay' || payType == 'payIdentifyFinish') {
+                        var appraisalId = appcan.locStorage.getVal("appraisalId");
+                        var tempHttp1 = getUrl('identify/AddExpertIdentify');
+                        if (payType == 'payIdentifyFinish') {
+                            var tempHttp1 = getUrl('identify/ToExpertIdentify');
+                        }
+                        var data1 = {
+                            token : Token,
+                            content : content,
+                            icon : fileNames.join('|'),
+                            expertId : expertid,
+                            identifyId : appraisalId
+                        }
+                    } else if (payType == 'payIdentifyProduct' || payType == 'payIdentifyPer' || payType == 'payIdentifyIndex') {
+                        var productId = appcan.locStorage.getVal("productId");
+                        var tempHttp1 = getUrl('product/ToExpertIdentify');
+                        var data1 = {
+                            token : Token,
+                            content : content,
+                            expertId : expertid,
+                            productId : productId
+                        }
+                    } else if (payType == 'payIdentifyRepository') {
+                        var repositoryId = appcan.locStorage.getVal("repositoryId");
+                        var tempHttp1 = getUrl('repository/ToExpertIdentify');
+                        var data1 = {
+                            token : Token,
+                            content : content,
+                            expertId : expertid,
+                            repositoryId : repositoryId
+                        }
+                    } else if (payType == 'payIdentifyAuction') {
+                        var auctionId = appcan.locStorage.getVal("auctionId");
+                        var tempHttp1 = getUrl('auction/ToExpertIdentify');
+                        var data1 = {
+                            token : Token,
+                            content : content,
+                            expertId : expertid,
+                            auctionId : auctionId
+                        }
+                    }
+
+                    appcan.request.ajax({
+                        type : 'POST',
+                        url : tempHttp1,
+                        data : data1,
+                        dataType : 'json',
+                        timeout : 300,
+                        success : function(result) {
+                            if (result.Success) {
+                                uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                appcan.locStorage.setVal('payTypeWay', 'exp');
+                                appcan.locStorage.setVal('orderId', result.Data);
+                                appcan.locStorage.setVal('fee', ePrice);
+                                appcan.locStorage.setVal('realFee', ePrice);
+                                appcan.openWinWithUrl('select_pay', 'select_pay.html');
+                            } else {
+                                uexWindow.toast("0", "5", result.Message, "2000");
+                            }
+                        }
+                    });
+
+                } else if (pageName == 'rand') {
+                    if (Typeid == '') {
+                        uexWindow.toast("0", "5", "请选择专家类型！", "2000");
+                        return;
+                    }
+                    if (payType == 'payIdentifyWaitpay' || payType == 'payIdentifyFinish') {
+                        var appraisalId = appcan.locStorage.getVal("appraisalId");
+                        var tempHttp2 = getUrl('identify/AddRandomIdentify');
+                        if (payType == 'payIdentifyFinish') {
+                            var tempHttp2 = getUrl('identify/ToRandomIdentify');
+                        }
+                        var data2 = {
+                            token : Token,
+                            content : content,
+                            icon : fileNames.join('|'),
+                            expertTypeId : Typeid,
+                            identifyId : appraisalId
+                        }
+                    } else if (payType == 'payIdentifyProduct' || payType == 'payIdentifyPer' || payType == 'payIdentifyIndex') {
+                        var productId = appcan.locStorage.getVal("productId");
+                        var tempHttp2 = getUrl('product/ToRandomIdentify');
+                        var data2 = {
+                            token : Token,
+                            content : content,
+                            expertTypeId : Typeid,
+                            productId : productId
+                        }
+                    } else if (payType == 'payIdentifyRepository') {
+                        var repositoryId = appcan.locStorage.getVal("repositoryId");
+                        var tempHttp2 = getUrl('repository/ToRandomIdentify');
+                        var data2 = {
+                            token : Token,
+                            content : content,
+                            expertTypeId : Typeid,
+                            repositoryId : repositoryId
+                        }
+                    } else if (payType == 'payIdentifyAuction') {
+                        var auctionId = appcan.locStorage.getVal("auctionId");
+                        var tempHttp2 = getUrl('auction/ToRandomIdentify');
+                        var data2 = {
+                            token : Token,
+                            content : content,
+                            expertTypeId : Typeid,
+                            auctionId : auctionId
+                        }
+                    }
+                    appcan.request.ajax({
+                        type : 'POST',
+                        url : tempHttp2,
+                        data : data2,
+                        dataType : 'json',
+                        timeout : 300,
+                        success : function(result) {
+                            if (result.Success) {
+                                uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                appcan.locStorage.setVal('payTypeWay', 'rand');
+                                appcan.locStorage.setVal('orderId', result.Data);
+                                appcan.locStorage.setVal('fee', 2);
+                                appcan.locStorage.setVal('realFee', 2);
+                                appcan.openWinWithUrl('select_pay', 'select_pay.html');
+                            } else {
+                                uexWindow.toast("0", "5", result.Message, "2000");
+                            }
+                        }
+                    });
+                }
+
+        });
+        function closepop(title, price, id) {
+            expertid = id;
+            ePrice = price;
+            $("#expertinfo .name").html(title);
+            $("#expertinfo .price").html("鉴定费用：￥" + price);
+            $("#expertinfo").show();
+            $("#payBtn").css('background', '#E55847');
+        }
+
+
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        });
+        $("#randExpert").on("click", function() {
+            appcan.locStorage.setVal('selectExpertType', 'identify2');
+            uexWindow.evaluateScript("pullAddAppraisal", 0, "openRandExpert()");
+        });
+        function closepop2(title, id) {
+            Typeid = id;
+            $("#expertName .name").html(title);
+            $("#expertName .price").html('鉴定费用：   ￥<a id="randPrice">2</a>');
+            $("#expertName").show();
+            $("#payBtn").css('background', '#E55847');
+        }
+
+        function openImageGallery() {
+            uexImageBrowser.open(paths);
+        }
+    </script>
+</html>

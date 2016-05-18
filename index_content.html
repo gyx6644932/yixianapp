@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="css/ui-box.css">
+    <link rel="stylesheet" href="css/ui-base.css">
+    <link rel="stylesheet" href="css/ui-color.css">
+    <link rel="stylesheet" href="css/appcan.icon.css">
+    <link rel="stylesheet" href="css/appcan.control.css">
+    <link rel="stylesheet" href="css/main.css"></head>
+<body class="um-vp bc-bg2" ontouchstart>
+    <div id="hotPart">
+        <div id="slider" class="slider umar-b ubb bc-border1" ></div>
+        <div id="searchType"></div>
+        <div id="hotlist"></div>
+    </div>
+    <div id="showlist" class="uinn"></div>
+    <script src="js/appcan.js"></script>
+    <script src="js/appcan.control.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/appcan.slider.js"></script>
+</body>
+    <script>
+        flag = false;
+        Token = getToken();
+        appcan.ready(function() {
+            getIndexTopList();
+            load = true;
+            pageindex = 1;
+            loadTo();
+            loadSearch();
+            uexWindow.setBounce(1);
+            initBounce(mes1, mes2);
+
+        });
+
+        function loadTo() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadWay = appcan.locStorage.val('loadWay');
+            if (loadWay == 'careList') {
+                $("#hotPart").css('display', 'none')
+                $("#showlist").css('display', 'block')
+                loadData(load);
+                return;
+            } else {
+                $("#hotPart").css('display', 'block')
+                $("#showlist").css('display', 'none')
+                loadHot(load);
+                return;
+            }
+        }
+
+        function mes1() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadData(load);
+            loadHot(load);
+            getIndexTopList();
+        }
+
+        function mes2() {
+            pageindex = pageindex + 1;
+            if (!flag) {
+                load = false;
+                str = loadData(load);
+                loadHot(load);
+            } else {
+                return;
+            }
+        }
+
+
+        $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'mine-checked ub-f1 ub ub-pc ubr bc-border') {
+                    $(this).removeClass('mine-checked ub-f1 ub ub-pc ubr bc-border').addClass('mine ub-f1 ub ub-pc ubr bc-border');
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'mine ub-f1 ub ub-pc ubr bc-border') {
+                $(TA).removeClass('mine ub-f1 ub ub-pc ubr bc-border').addClass('mine-checked ub-f1 ub ub-pc ubr bc-border');
+            }
+        });
+        function loadHot(load) {
+            var loadHotUrl = getUrl('common/getrecommendlist');
+            var data;
+            data = {
+                pageindex : pageindex,
+                pagesize : 20,
+                token : Token
+            }
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    var data = result.Data;
+                    var str = "";
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDivHot(data[i]);
+                        }
+                        if (data.length < 20) {
+                            flag = true;
+                            str += templateDivEnd();
+                        }
+                    } else {
+                        flag = true;
+                        str += templateDivEnd();
+                    }
+
+                    if (load) {
+                        $('#hotlist').html(str);
+                    } else {
+                        $('#hotlist').append(str);
+                    }
+                    $(".mgjimg img").on("load", function() {
+                        var parent = $(this).parent();
+                        var imgCount = parent.find("img").length;
+                        var pW = parent.offset().width - 3 * imgCount;
+
+                        if (imgCount <= 4) {
+                            var imgW = Math.ceil(pW / 2) - 1;
+                            $(this).css({
+                                "width" : imgW + "px",
+                                "height" : imgW + "px"
+                            })
+                        } else {
+                            var imgW = Math.ceil(pW / 3) - 1;
+                            $(this).css({
+                                "width" : imgW + "px",
+                                "height" : imgW + "px"
+                            })
+                        }
+                        $(this).show();
+                    });
+                    $(".add").click(function() {
+                        var productId = this.id;
+                        appcan.locStorage.setVal('productId', productId);
+                        appcan.locStorage.setVal('Appraisal', 'rand');
+                        appcan.locStorage.setVal('payType', 'payIdentifyIndex');
+                        appcan.openWinWithUrl('pullAddAppraisal', 'common/pullAddAppraisal.html');
+                    })
+                    $('.addFollow').click(function() {
+                             Token = getToken();
+                        if (Token != null) {
+                            productId = this.id;
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 0,
+                                        foreignId : productId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.' + productId + '').css("color", "red").addClass('p-staring').removeClass('p-star').removeClass('fa-plus');
+                                            $('.' + productId + '').html(" 已关注");
+                                            uexWindow.toast("0", "5", "关注成功", "2000");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            var selectVal = 'followProduct';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        } else {
+                                            uexWindow.toast("0", "5", '已下架，喜欢请联系卖家', "4000");
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 0,
+                                            foreignId : productId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.' + productId + '').css("color", "#686B6D").removeClass('p-staring').addClass('p-star').addClass('fa-plus');
+                                                $('.' + productId + '').html(" 关注");
+                                                uexWindow.toast("0", "5", "取消成功", "2000");
+                                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                                var selectVal = 'followProduct';
+                                                var readyIn = true;
+                                                var nowPageIndex = 1;
+                                                var nowEndFlag = false;
+                                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                                return;
+                                            } else {
+                                                uexWindow.toast("0", "5", '已下架，喜欢请联系卖家', "4000");
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+
+                    $('.addFollowPer').click(function() {
+                        Token = getToken();
+                        if (Token != null) {
+                            userId = this.id;
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 2,
+                                        foreignId : userId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.' + userId + '').attr("src", 'img/per_add.png').removeClass('p-star').addClass('p-staring');
+                                            uexWindow.toast("0", "5", "关注成功", "2000");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            var selectVal = 'followUser';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 2,
+                                            foreignId : userId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.' + userId + '').attr("src", 'img/per_unadd.png').removeClass('p-staring').addClass('p-star');
+                                                uexWindow.toast("0", "5", "取消成功", "2000");
+                                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                                var selectVal = 'followUser';
+                                                var readyIn = true;
+                                                var nowPageIndex = 1;
+                                                var nowEndFlag = false;
+                                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                                return;
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $(".market_details").click(function() {
+                        appcan.openWinWithUrl('market_details', 'product/market_details.html');
+                        appcan.locStorage.setVal('productId', this.id);
+                    })
+                    $(".userinfo_content").click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', 'user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("root", 0, "userinfo()");
+                            uexWindow.evaluateScript("index", 0, "userinfo()");
+                        }
+                    })
+                    $('.talk').click(function() {
+                        if (getToken() != null) {
+                            var talkProductId = $(this).attr('talkProductId');
+                            var talkUserId = $(this).attr('userId');
+                            getmessage(talkUserId, 'product', talkProductId);
+                            appcan.openWinWithUrl('talk', 'common/talk.html');
+                        } else {
+                            uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $(".moreComment").click(function() {
+                        appcan.locStorage.setVal('productId', this.id)
+                        appcan.openWinWithUrl('commentList', 'product/commentList.html');
+                    });
+                } else {
+                    flag = true;
+                    var str = templateDivError('img/error.png');
+                    $('#hotlist').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    })
+                }
+            };
+            getRequestAjax2(loadHotUrl, data, callback);
+        };
+
+        function templateDivHot(data) {
+            var str = "";
+            var type = data.Type;
+            if (type == 0) {
+                var product = data.Product;
+                var comments = data.Comments;
+                var avatar = gerImgThumbUrl(product.Avatar);
+                var GreateDate = new Date(formatDate(data.CreateDate))
+                var oldMonth = GreateDate.format("d");
+                var oldDate = GreateDate.format("M月d日");
+                var oldTime = GreateDate.format("hh:mm");
+                var myDate = new Date();
+                var nowMonth = myDate.getDate();
+                if (oldMonth == nowMonth) {
+                    dateS = '今天';
+                } else if (parseInt(oldMonth) + 1 == nowMonth) {
+                    dateS = '昨天';
+                } else {
+                    dateS = oldDate;
+                }
+                str += "   <div class='makertOrder ub ub-ac bc-bg' style='padding:.4em 0em .2em .5em;'>";
+                str += "      <img class='umar-ll umar-t' src='img/diamond.PNG'/><div class='ub-f1 ub ub-ac umar-l gery2 textb2 '>一线官方推荐</div>";
+                str += "  </div>";
+                str += "<ul ontouchstart='appcan.touch(\'btn-act\')' class='ubb ub bc-border lis'>";
+                str += "<div  class='userinfo_content makertUser uh-app3 uw-app3  ub-img mar-ar1 ub ub-ver  umar-ll'  id=" + product.UserId + "> <img src='" + avatar + "'/></div>";
+                str += "  <li class='ub-f1 ub ub-ver' >";
+                str += "    <div  class=' ub ub-f1 ub-ac' >";
+                str += "      <div id=" + product.Id + " class='market_details ub-f4 bold'> <a style='width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>" + product.Nicename + "</a></div>";
+                str += "    </div>";
+                str += "    <div class='ub umar-t'>";
+                str += "    <div  class='ub ub-f1 textb2 gery ' ><div id=" + product.Id + "  class='ub-f4 market_details'><i class='fa fa-clock-o' style='color:#8F8F8F'></i> <a class='textb3'>" + dateS + " " + oldTime + "</a></div>";
+
+                str += "    <div class='ub-f1 ub ub-pc'></div> </div> </div> ";
+
+                if (product.Content == '您的宝贝暂无描述') {
+                    str += " <div id=" + product.Id + "  class='market_details t-bla ulev-4 ub-f1 uinn umar-t' style='line-height: .9;'></div>";
+                } else {
+                    str += " <div id=" + product.Id + "  class='market_details t-bla ulev-4 ub-f1 uinn umar-t'  style='line-height: 1.2;'>" + product.Content + "</div>";
+
+                }
+
+                str += "<div id=" + product.Id + " class='market_details mgjimg'>";
+                for (var j = 0; j < product.Icon.length; j++) {
+                    str += "<img src='" + imgThumbUrl + product.Icon[j] + "'/>";
+                }
+                str += "</div>";
+                str += "<div class='ub ub-f1'>";
+                str += "<div id=" + product.Id + "  class='market_details ub-f1 red1 bold  umar-b uinn textb2' style='width:50%' >";
+                if (product.Price != 0) {
+                    str += "  价格：￥" + product.Price + "";
+                }
+                str += " </div>";
+                str += "<div id=" + product.Id + "  class='ub-f1 gery umar-b uinn ub ub-pc textb2' style='width:50%'><i class='fa fa-eye'></i> " + product.View + "</div>";
+
+                if (getToken() != product.UserId) {
+                    str += "</div><div class='ub umar-b uinn-1  ubb bc-border1' style='padding-bottom:1.3em;'><div id='" + product.Id + "' class='add ub ub-f1 umar-rr red uinn  ub ub-ac textb4 ub-pc uba bc-border uc-a1'><i class='fa fa-search'></i> 鉴定</div><div class='ub ub-f1 umar-rr ub-pc ub-ac uinn uba bc-border gery talk textb4' talkProductId='" + product.Id + "' userId='" + product.UserId + "'><i class='fa fa-comment-o'></i> 私聊</div>";
+                }
+
+                if (getToken() != product.UserId) {
+                    if (product.IsFollow == true) {
+                        str += " <div style='' class='" + product.Id + " addFollow p-staring ub ub-ac ub-f1 ub-pc textb4 uinn uba bc-border5 gery fa red' id=" + product.Id + ">已关注</div> ";
+                    } else {
+                        str += " <div style='' class='" + product.Id + " addFollow p-star ub ub-ac ub-f1 ub-pc textb4 uinn uba bc-border5 gery fa fa-plus ' style='color:#686B6D;'  id=" + product.Id + ">关注</div>";
+                    }
+                }
+                str += " </div></div>";
+
+                if (comments.length < 3) {
+                    len = comments.length;
+                } else {
+                    len = 3;
+                    str += " <div id='" + product.Id + "' class='moreComment ub-f1 ub gery2 textb2' style='margin:.5em 0em;'>查看所有<a>" + product.CommentCount + "</a>条评论</div>";
+                }
+                for (var i = 0; i < len; i++) {
+                    str += " <div class='ub-f1 ub textb2 gery' style='margin-top:.1em;margin-bottom:.1em;'>" + comments[i].Nicename + " : <a id='" + product.Id + "' class='moreComment gery2' style='width:16em;display:block;overflow: hidden;word-wrap:break-word;white-space: nowrap;text-overflow: ellipsis;'>" + comments[i].Content + "</a></div>";
+                }
+                //str += " <div class='ub-f1 ub textb2 umar-t uinn-a7'>沫沫爸 <a class='gery'>回复 </a>奥特们:<a class='gery'>XXXX</a></div>";
+                str += "</li></ul>";
+
+            } else if (type == 1) {
+                var user = data.User;
+                var id = user.Id;
+                var avatar = gerImgThumbUrl(user.Avatar);
+                var signature = user.Signature;
+                if (signature == null) {
+                    signature = '';
+                }
+                var nicename = user.Nicename;
+                str += "   <div  class='makertOrder  ub ub-ac bc-bg' style='padding:.4em 0em .6em .5em;'>";
+                str += "      <img class='umar-ll umar-t' src='img/diamond.PNG'/><div class='ub-f1 ub ub-ac umar-l gery2 textb2'>一线官方推荐</div>";
+                str += "  </div>";
+                str += "   <div class='ub open gery bc-bg  ubb bc-border ' style='padding:0em 0em .6em .5em;'>";
+                str += "   <div id='" + id + "' class='userinfo_content makertUser ub ub-pc  umar-rr  umar-ll'>";
+                str += "      <img src='" + avatar + "'/>";
+                str += "  </div>";
+                str += "    <div id='" + id + "' class='userinfo_content makertUser ub ub-f1 ub-ver textb2'>";
+                str += "        <div class='ub ub-f1'></div>";
+                str += "        <div class='ub ub-f1'>";
+                str += "            <div class='ub-f1 black textb'>";
+                str += "               <a style='width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>" + nicename + "</a>";
+                str += "            </div>";
+                str += "       </div>";
+                str += "        <div class='ub ub-f1'>";
+                str += "            <div class='ub-f1'>";
+                str += "                <a style='width:16em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>" + signature + "</a>";
+                str += "            </div>";
+                str += "       </div>";
+                str += "   </div>";
+                str += "   <div class='ub-f1 ub ub-ac'>";
+                str += "      <div class='ub ub-ac ub-f1 ub-pe textb4 gery '>";
+                str += "          <div class='add-per uba bc-border umar-rr red1'>";
+                if (getToken() != id) {
+                    if (user.IsFollow == true) {
+                        str += "<img id='" + id + "' class='" + id + " addFollowPer p-staring ' style='padding:.2em 1.3em .1em 1.3em;' src='img/per_add.png'/>";
+                    } else {
+                        str += "<img id='" + id + "' class='" + id + " addFollowPer p-star' style='padding:.2em 1.3em .1em 1.3em;color:red;' src='img/per_unadd.png'/>";
+                    }
+                }
+                str += "          </div>";
+                str += "      </div>";
+                str += "   </div>";
+                str += " </div>";
+            }
+            return str;
+        }
+
+        function loadSearch() {
+            str = "";
+            str += "    <div class='ub uinn' style='padding:.4em 1em;'>";
+            str += "      <div class='sc-bg-active uin-input ub ub-f1 bRadius'>";
+            str += "         <div class='uinn fa fa-search sc-text'></div>";
+            str += "         <input placeholder='请输入想要的搜索' type='text' class='ub-f1' onfocus='jump()'>";
+            str += "      </div>";
+            str += "     <div class='searchType nav-btn gery textb2 bc-bg bRadius' id='nav-right' style='margin-left: .8em;'>";
+            str += " <i class='fa fa-bars red-bg'></i> 分类";
+            str += " </div>";
+            str += " </div>";
+            str += " </div>";
+            $('#searchType').html(str);
+            $(".searchType").click(function() {
+                appcan.openWinWithUrl('searchType', 'product/searchType.html');
+            });
+        }
+
+        function loadData(load) {
+            var loadDataUrl = getUrl('product/GetUserFollowProductList');
+            var data;
+            Token = getToken();
+            if (Token != null) {
+                data = {
+                    pageindex : pageindex,
+                    pagesize : 20,
+                    token : Token
+                }
+            } else {
+                data = {};
+                str = templateDivEmpty();
+                $('#showlist').html(str);
+                $("#product").click(function() {
+                    appcan.locStorage.setVal('Appraisal', 'rand');
+                    appcan.locStorage.setVal('appraisalId', '');
+                    appcan.locStorage.setVal('sendAgin', '');
+                    appcan.locStorage.setVal('EditContent', '');
+                    appcan.locStorage.setVal('EditIcon', '');
+                    appcan.openWinWithUrl('addAppraisalOnLine', 'identify/addAppraisalOnLine.html');
+                })
+            }
+            function callback(result) {
+                //uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    if (data.length > 0) {
+                        str = "";
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i]);
+                        }
+                        if (data.length < 0) {
+                            flag = true;
+                            str += templateDivEnd();
+                        }
+                    } else {
+                        flag = true;
+                        if (pageindex == 1) {
+                            str = templateDivEmpty();
+                        } else {
+                            str = templateDivEnd();
+                        }
+                    }
+                    if (load) {
+                        $('#showlist').html(str);
+                    } else {
+                        $('#showlist').append(str);
+                    }
+                    $("#product").click(function() {
+                        appcan.openWinWithUrl('identify-list', 'product/searchType.html');
+                    })
+                    $(".market_details").click(function() {
+                        appcan.openWinWithUrl('market_details', 'product/market_details.html');
+                        appcan.locStorage.setVal('productId', this.id);
+                    })
+                    $(".userinfo_content").click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', 'user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("root", 0, "userinfo()");
+                            uexWindow.evaluateScript("index", 0, "userinfo()");
+                        }
+                    })
+                    $('.addFollow').click(function() {
+                        Token = getToken();
+                        if (Token != null) {
+                            productId = this.id;
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 0,
+                                        foreignId : productId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.' + productId + '').css("color", "red").addClass('p-staring').removeClass('p-star').removeClass('fa-plus');
+                                            $('.' + productId + '').html(" 已关注");
+                                            uexWindow.toast("0", "5", "关注成功", "2000");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            var selectVal = 'followProduct';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 0,
+                                            foreignId : productId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.' + productId + '').css("color", "#686B6D").removeClass('p-staring').addClass('p-star').addClass('fa-plus');
+                                                $('.' + productId + '').html(" 关注");
+                                                uexWindow.toast("0", "5", "取消成功", "2000");
+                                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                                var selectVal = 'followProduct';
+                                                var readyIn = true;
+                                                var nowPageIndex = 1;
+                                                var nowEndFlag = false;
+                                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                                return;
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $(".add").click(function() {
+                        var productId = this.id
+                        var productContent = $(this).attr('Content');
+                        var productIcon = $(this).attr('Icon');
+                        appcan.locStorage.val('productId', productId);
+                        appcan.locStorage.val('productContent', productContent);
+                        appcan.locStorage.val('productIcon', productIcon);
+                        appcan.locStorage.setVal('Appraisal', 'rand');
+                        appcan.locStorage.setVal('payType', 'payIdentifyIndex');
+                        appcan.openWinWithUrl('pullAddAppraisal', 'common/pullAddAppraisal.html');
+                    })
+                } else {
+                    flag = true;
+                    Token = getToken();
+                    if (Token != null) {
+                        var str = templateDivError('img/error.png');
+                        $('#showlist').html(str);
+                    }
+
+                    $("#error").click(function() {
+                        Refresh();
+                    });
+                }
+            };
+            getRequestAjax2(loadDataUrl, data, callback);
+        };
+
+        function templateDiv(data) {
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var thumb = gerImgThumbUrl(data.Thumb);
+            var GreateDate = new Date(formatDate(data.CreateDate));
+            var oldTime = GreateDate.format('M月d日 hh:mm');
+            var w = $(document).width() * .9 + 'px';
+            var str = '';
+            str += "<div class='ub followUser uinn umar-t bc-bg'>";
+            str += "<div id='" + data.UserId + "' class='userinfo_content textb3 ub ub-ac  ub-pc'>";
+            str += "<img src='" + avatar + "'/></div>";
+            str += "<div class='ub ub-ver' >";
+            str += "<div class='textb ub-f2 ub ub-ac uinn'>" + data.Nicename + "</div>";
+            str += "<div class='ub-f3 textb3 ub ub-ac ub-pe gery uinn-a7'><i class='fa fa-clock-o' style='color:#8F8F8F'></i>  " + oldTime + "</div>";
+            str += "</div>";
+            str += "</div>";
+            str += "<div class='ub w-full' >";
+            str += "<div class='bc-bg ubb' style='color:#ccc;width:100%;'><div id=" + data.Id + "  class='market_details ub-f fallowimg ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + thumb + "'/></div>";
+            str += "     <div class='ub ub-f1 ub-ac ub-pc textb2 blod gery2' style='margin:0 3em;'>";
+            str += "       <a style='width:16em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;text-align: center;'>" + data.Content + "</a>  ";
+            str += "      </div>";
+            str += "<div class='ub black umar-t' style='height:3em;'>";
+            if (data.Price != 0) {
+                str += "<div class='ub-f1 textbbs ub ub-ac  bold '>";
+                str += "<div id='" + data.Id + "' class='market_details uinn  umar-ll umar-b gery red1'>￥" + data.Price + "</div>";
+                str += "</div>";
+            }
+            if (data.IsFollow == true) {
+                str += "<div class='ub-f1 textb2 ub ub-ac ub-pc '><div id='" + data.Id + "'  class='" + data.Id + " addFollow p-staring uinn uba bc-border umar-rr umar-b fa red1' style='width:4em;text-align: center;'>已关注</div></div>";
+            } else {
+                str += "<div class='ub-f1 textb2 ub ub-ac ub-pc '><div id='" + data.Id + "'  class='" + data.Id + " addFollow p-star uinn uba bc-border umar-rr umar-b fa fa-plus' style='width:4em;text-align: center;color:#686B6D;'>关注</div></div>";
+            }
+            str += "<div class='ub-f1 textb2 ub ub-ac ub-pc '><div id='" + data.Id + "'  class='add uinn uba bc-border umar-rr umar-b red1' style='width:4em;text-align: center;'>送鉴定</div></div>";
+            str += "</div></div></div>";
+
+            return str;
+        }
+
+        function changeDetail(change) {
+            $("." + change).click(function() {
+                appcan.openWinWithUrl(change, change + '.html');
+            })
+        }
+
+        function templateDivEnd() {
+            var str = '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-ac ub-pc" style="color:#d3d3d3;margin:0.5em;">没有更多' + '</div>' + '</div>';
+            return str;
+        }
+
+        function templateDivError() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="img/error.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub gery uinn bold">' + '数据加载失败' + '</div>' + '<div  class="ub gery uinn textb2">' + '请检查您的手机是否联网，点击按钮重新加载' + '</div>' + '<div id="error" class="ub white uinn btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1">' + '重新加载' + '</div>' + '</div>' + '</div>'
+            return str
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="img/img1/logo.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub gery uinn">' + '你还没有任何关注' + '</div>' + '<div id="product" class="ub white uinn btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1">' + '我要去关注' + '</div>' + '</div>' + '</div>'
+            return str
+        }
+
+        function openImageGallery() {
+            uexImageBrowser.open(paths);
+        }
+
+        function saveImg() {
+            var pic = document.getElementById('saveImgSrc').value;
+            uexImageBrowser.save(pic);
+        }
+
+        function Refresh() {
+            getIndexTopList();
+            loadTo();
+            return;
+        }
+
+        //初始拍卖时间并跳转到拍卖页面
+        function openAuction() {
+
+            var date = new Date().format("yyyy-MM-dd");
+            uexWindow.evaluateScript('auction_index', 0, 'writeDay("' + date + '")');
+            appcan.locStorage.val('auctionStartDay', date);
+            appcan.window.open({
+                name : 'auction_index',
+                data : 'auction/auction_index.html',
+                dataType : 0
+            });
+
+        }
+
+        function jump() {
+            appcan.window.open({
+                name : 'search',
+                data : 'product/search.html',
+                dataType : 0,
+                aniId : 5
+            });
+            loadSearch();
+            return;
+        }
+
+        //获取广告信息
+
+        function getIndexTopList() {
+
+            var getIndexTopListUrl = getUrl("common/getadlist");
+            var data = {
+
+                pageindex : '1',
+                pagesize : 10
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data
+                    var sliderArray = [];
+                    for (var i = 0; i < data.length; i++) {
+                        sliderArray.push({
+                            img : imgNormalUrl + data[i].Icon,
+                            id : data[i].Id
+                        });
+                    }
+
+                    var slider = appcan.slider({
+                        selector : '#slider',
+                        aspectRatio : 6 / 16,
+                        hasLabel : true,
+                        aspectRatio : 0.5,
+                        index : 0
+                    });
+
+                    slider.set(sliderArray);
+
+                    slider.on("clickItem", function(index, data) {
+                        appcan.locStorage.val('adId', data.id);
+                        appcan.openWinWithUrl('ad', 'common/ad.html');
+
+                    })
+                }
+            }
+
+            getRequestAjax2(getIndexTopListUrl, data, callback);
+        }
+
+    </script></html>

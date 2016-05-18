@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+         <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        .checkDiv {
+             background-color: #E8E8E8
+        }
+       .childrenDiv :hover{
+            background-color: #fff;
+        }
+        .fatherDiv :hover{
+            background-color: #fff;
+        }
+    </style>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div id="page_0" class="up ub ub-ver" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh bc-text-head ub bc-head">
+                <div class="close nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">选择专家</h1>
+                <div class="nav-btn nav-bt" id="nav-right"></div>
+            </div>
+            <!--header结束--><!--content开始-->
+          <div id="content" class="ub-f1 tx-l"  style="" >
+                <div id="close" class="close" style="position:absolute;height:100%;width:100%;background-color:rgba(0, 0, 0, 0.3);"></div>
+
+                <div class="ub ub-pc" style="background-color: #FFFFFF;z-index:100;width:100%;">
+                    <div class="ub ub-ac ub-ver" style="width:50%;" id="rootList">
+
+                    </div>
+                    <div class="ub ub-ac ub-ver ub-f1" id="childrenList" style="background-color:#E8E8E8; border-right: 0.1em solid #C9C9C9">
+
+                    </div>
+                </div>
+            </div>
+            <!--content结束-->
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            getExpertTypeList()
+        });
+        function getExpertTypeList() {
+             var str = '<div class="ub ub-ac ub-pj " style="height:2em;width:100%;">' + '<div style="margin:0em 1em">所有专家</div>' + '<div style="margin:0em 1em"><i class="fa fa-angle-right"></i></div>' + '</div>'
+                   
+            var getExpertTypeListUrl = getUrl("user/getexperttypelist");
+            var data = {
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var str = ''
+                    var data = result.Data
+                    if (data.length != 0) {
+                        rootJson = data;
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateRootListDiv(data[i], i);
+                        }
+                        $("#rootList").html(str)
+                        $(".changeChildDiv").click(function() {
+                            var id = this.id;
+                            getChildrenList(id);
+                        })
+                        getChildrenList(0);
+                    } else {
+
+                    }
+                } else {
+                    alert(result.Message);
+                }
+            }
+
+            getRequestAjax(getExpertTypeListUrl, data, callback)
+
+        }
+
+        function templateRootListDiv(dataJson, i) {
+            var str = '<div class="ub ub-ac ub-pj changeChildDiv" id=' + i + ' style="height:2em;width:100%;">' + '<div style="margin:0em 1em">' + dataJson.Name + '</div>' + '<div style="margin:0em 1em"><i class="fa fa-angle-right"></i></div>' + '</div>'
+            return str;
+        }
+
+        function getChildrenList(i) {
+            $('#rootList').find('.checkDiv').each(function() {
+                $(this).removeClass('checkDiv')
+            })
+            $('#' + i + '').addClass('checkDiv');
+            fatherJson = rootJson[i]
+            var fatherId = fatherJson.Id;
+            var fatherName = fatherJson.Name;
+             var str = '<div data=0 class="ub ub-ac ub-pj fatherDiv" id =' + fatherId + ' style="height:2em;width:100%;">' + '<div class="ub ub-ac" style="width:100%;height:100%">&nbsp;&nbsp;&nbsp;&nbsp;全部</div>' + '</div>'
+            var childrenList = fatherJson.Children;
+
+            for (var j = 0; j < childrenList.length; j++) {
+                str += '<div data=1 class="ub ub-ac ub-pj childrenDiv" Name=' + childrenList[j].Name + '  id =' + childrenList[j].Id + ' style="height:2em;width:100%;">' + '<div class="ub ub-ac" style="width:100%;height:100%">&nbsp;&nbsp;&nbsp;&nbsp;' + childrenList[j].Name + '</div>' + '</div>';
+            }
+            $("#childrenList").html(str);
+            $('.fatherDiv').click(function() {
+                appcan.locStorage.setVal('fatherName', fatherName);
+                appcan.locStorage.setVal('childrenId','');
+                appcan.locStorage.setVal('childName', '');
+                appcan.locStorage.setVal('fatherId', this.id);
+                appcan.locStorage.setVal('fatherdata', 0);
+                uexWindow.open("selectExpert", "0", "selectExpert.html", "", 0, 0, 0, 0, '', "0", 0);
+            })
+            $('.childrenDiv').click(function() {
+                var childName = $(this).attr('Name');
+                appcan.locStorage.setVal('childName', childName);
+                appcan.locStorage.setVal('childrenId', this.id);
+                appcan.locStorage.setVal('fatherName', fatherName);
+                appcan.locStorage.setVal('fatherId', fatherId);
+                appcan.locStorage.setVal('fatherdata', 1);
+                uexWindow.open("selectExpert", "0", "selectExpert.html", "", 0, 0, 0, 0, '', "0", 0);
+            })
+        }
+
+        function close() {
+            appcan.window.close(-1);
+        }
+
+
+        appcan.button(".close", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+
+    </script>
+</html>

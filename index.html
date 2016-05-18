@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="css/ui-box.css">
+        <link rel="stylesheet" href="css/ui-base.css">
+        <link rel="stylesheet" href="css/ui-color.css">
+        <link rel="stylesheet" href="css/appcan.icon.css">
+        <link rel="stylesheet" href="css/appcan.control.css">
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+    <body class="um-vp" ontouchstart >
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh bc-text-head ub bc-head" style="font-size: 1.1em;">
+                <div class="nav-btn" id="nav-left">
+                    <div class="Tag" id="chartTag" style="color:red;margin-right: .8em;"></div>
+                    <div class="Tag" id="msgTag" style="color:red;margin-right: .8em;"></div>
+                </div>
+                <div class="ub ub-f1 ub-pc" id='tablist'>
+                    <div id = "hotList" class="tab_viewOn" tabindex="0">
+                                                                                        热门
+                    </div>
+                    <div id= "careList" class="tab_viewOff" tabindex="0">
+                                                                                           关注
+                    </div>
+                </div>
+                <div class="msg ub ub-ac floatr" id="nav-right">
+        <!--        <div class="chartTag Tag" id="chartTag" style="color:red;margin-right: .8em;margin-top: .5em;">
+                        <img src="img/chart1.png" style="height:1.5em;width:1.5em;"/>
+                    </div>  -->
+                    <div class="msgTag Tag2"  style="color:red;margin-right: 1.5em;margin-top: .5em;">
+                        <img src="img/msg2.png" style="height:1.5em;width:1.5em;"/>
+                        <div id="NewMessage" class="redDot3" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l"></div>
+            <!--content结束-->
+            <div id="footer" class="ub ubt bc-border1 textb2 gery2" style="background: #F8F7F7;">
+                <div class='index ub-f1 c-org ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver'>
+                        <div class="ub ub-pc"><img src="img/home2.png"/>
+                        </div>
+                        <div class='ub ub-pc red1'>
+                            <p>
+                                主页            
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='product ub-f1 c-blu2 ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="img/markt.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                市场
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='identify ub-f1 c-org  ub ub-pc  nav umar-t'>
+                    <div class='uinn21  ub ub-ver'>
+                        <div class="ub ub-pc">
+                            <img src="img/ident.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                鉴定
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='auction ub-f1 c-blu2  ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver'>
+                        <div class="ub ub-pc"><img src="img/auction.png"/>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                拍卖
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='person ub-f1 c-org  ub ub-pc nav umar-t'>
+                    <div class='uinn21  ub ub-ver '>
+                        <div class="ub ub-pc"><img src="img/my.png"/>
+                            <div id="redDot2" class="redDot2" style="display: none"></div>
+                        </div>
+                        <div class='ub ub-pc'>
+                            <p>
+                                                                                                    我的
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="js/appcan.js"></script>
+        <script src="js/appcan.control.js"></script>
+        <script src="js/common.js"></script>
+        <script src="js/appcan.tab.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "index_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+            
+            if (getToken() != null) {
+                changeNew();
+            }
+            
+            loadWay = appcan.locStorage.val('loadWay');
+            if (loadWay == 'careList') {
+                $("#careList").removeClass('tab_viewOff').addClass('tab_viewOn');
+                $("#hotList").removeClass('tab_viewOn').addClass('tab_viewOff');
+            }
+            
+        });
+
+        $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'tab_viewOn') {
+                    $(this).removeClass('tab_viewOn').addClass('tab_viewOff');
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'tab_viewOff') {
+                $(TA).removeClass('tab_viewOff').addClass('tab_viewOn');
+            }
+            if (TA.id == 'hotList') {
+                appcan.locStorage.val('loadWay', 'hotList');
+                uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+            } else if (TA.id == 'careList') {
+                appcan.locStorage.val('loadWay', 'careList');
+                uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+            }
+        });
+        function userinfo() {
+            appcan.openWinWithUrl('userinfo', 'common/userinfo.html');
+        }
+
+        function Refresh() {
+            loadWay = appcan.locStorage.val('loadWay');
+            if (loadWay == 'careList') {
+                $("#careList").removeClass('tab_viewOff').addClass('tab_viewOn');
+                $("#hotList").removeClass('tab_viewOn').addClass('tab_viewOff');
+            }
+        }
+
+        function changeNew() {
+            
+            function getJsonGuide(jsonGuide){
+                
+                if(jsonGuide['NewMessage']){
+                      $("#NewMessage").css('display', 'block !important');
+                       jsonGuide['NewMessage']=true;
+                 }else{
+                      $("#NewMessage").css('display', 'none !important');
+                 }
+                 
+                 if(jsonGuide['allFlag']){
+                      $("#redDot2").css('display', 'block !important');
+                 }else{
+                      $("#redDot2").css('display', 'none !important');
+                 }
+           
+            }
+            getGuide(getJsonGuide);
+            setTimeout("changeNew()", 4000);
+        }
+
+
+        $(".index").click(function() {
+            appcan.window.open({
+                name : 'index',
+                data : 'index.html',
+                dataType : 0
+            });
+        })
+        $(".product").click(function() {
+            appcan.window.open({
+                name : 'searchType',
+                data : 'product/searchType.html',
+                dataType : 0
+            });
+        })
+        $(".identify").click(function() {
+            appcan.window.open({
+                name : 'identify-list',
+                data : 'identify/identify-list.html',
+                dataType : 0,
+                type : 256,
+                aniId : 12
+            });
+        })
+        $(".auction").click(function() {
+            uexWindow.evaluatePopoverScript('root', 'content', 'openAuction()');
+            uexWindow.evaluatePopoverScript('index', 'content', 'openAuction()');
+        })
+        $(".person").click(function() {
+            appcan.window.open({
+                name : 'person',
+                data : 'user/person.html',
+                dataType : 0
+            });
+        })
+        $(".chartTag").click(function() {
+            appcan.locStorage.val('orderType', 'buyOrderWait');
+            if (getToken() != null) {
+                appcan.window.open({
+                    name : 'PerBuy_details',
+                    data : 'user/buy/PerBuy_details.html',
+                    dataType : 0
+                });
+            } else {
+                uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+        $(".msgTag").click(function() {
+            if (getToken() != null) {
+                $("#NewMessage").css('display', 'none !important');
+                appcan.locStorage.val('messageType', 'chat');
+                appcan.openWinWithUrl('message', 'common/message.html');
+            } else {
+                uexWindow.open("login", "0", "user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+    </script>
+
+</html>

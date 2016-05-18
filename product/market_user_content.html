@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+         <div class="bc-bg uinn-a7" id="expertList" style="border-radius: 0em 0em 0.3em 0.3em;" id="expertList"></div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var selectItem = {};
+        var expertTypeId = ''
+        appcan.ready(function() {
+            getexpertlist()
+        });
+        function getexpertlist() {
+            fatherId = appcan.locStorage.getVal('fatherId');
+            flag = appcan.locStorage.getVal('fatherdata');
+            childrenId = appcan.locStorage.getVal('childrenId');
+            if (childrenId != '' && childrenId != null) {
+                $('#openMore').css('display', 'block');
+            }
+            if (flag == 0) {
+                expertTypeId = fatherId
+            } else if (flag == 1) {
+                expertTypeId = childrenId
+            }
+            var data2 = {
+                pageindex : 1,
+                pagesize : 40
+            }
+            if (flag == 0) {
+                data2.ExpertTypeId = expertTypeId;
+            }
+            if (flag == 1) {
+                data2.SubExpertTypeId = expertTypeId;
+            }
+            var token = getToken();
+            if (token != null) {
+                data2.userId = token;
+            }
+
+            var getUserUrl = getUrl("user/getexpertlist");
+            var data = data2;
+            function callback(result) {
+                if (result.Success) {
+                    if (result.Data.length > 0) {
+                        data = result.Data;
+                        var str = '';
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i]);
+                        }
+                        $('#expertList').html(str);
+                    } else {
+                        $('#openMore').css('display', 'none');
+                        str = templateDivEmpty();
+                        $('#expertList').html(str);
+                    }
+
+                    $(".expert").click(function() {
+                        expertId = this.id;
+                        appcan.locStorage.setVal('userId', expertId);
+                        uexWindow.open("expertDetail", "0", "expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+                    })
+       
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    uexWindow.evaluateScript("selectExpert", 0, "One()");
+                    $('#expertList').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    });
+                }
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+
+        $(".openClose").click(function() {
+            uexWindow.evaluateScript("selectExpert", 0, "closeWindow()");
+        })
+          function templateDiv(data) {
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var id = data.Id;
+            var niceName = data.Nicename;
+            var signature = data.Signature;
+            str = "";
+            str += "       <div id='" + id + "' nicename='" + niceName + "' class='ub open  uinn gery bc-bg  ubb bc-border1 umar-b textb2'>";
+            str += "        <div id='" + id + "' class='makertUser ub umar-r'>";
+            str += "            <img src='" + avatar + "' />";
+            str += "        </div>";
+            str += "        <div class='ub ub-f1 ub-ver'>";
+            str += "            <div class='ub ub-f1'>";
+            str += "                " + niceName + "";
+            str += "            </div>";
+            str += "            <div class='ub ub-f1'>";
+            str += "                    <div class='ub-f1'>";
+            str += "                     个性签名：  11 ";
+            str += "                    </div>";
+            str += "            </div>";
+            str += "       </div>";
+            str += "   <div class='ub-f1 ub ub-ac'>";
+            str += "      <div class='addFollow p-star ub ub-ac ub-f1 ub-pe textb4 gery '>";
+            str += "          <div class='add-per uba bc-border umar-rr red1'>";
+            if (getToken() != id) {
+                if (data.IsFollow == true) {
+                    str += "<img id='" + id + "' class='" + id + " addFollowPer p-staring ' style='padding:.2em 1.3em .1em 1.3em;' src='../img/per_add.png'/>";
+                } else {
+                    str += "<img id='" + id + "' class='" + id + " addFollowPer p-star' style='padding:.2em 1.3em .1em 1.3em;color:red;' src='../img/per_unadd.png'/>";
+                }
+            }
+            str += "          </div>";
+            str += "      </div>";
+            str += "   </div>";
+
+            str += "      </div>";
+            return str;
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div><div class="ub gery uinn">专家正在加入中！</div><div id="openClose" class="openMore ub white uinn btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1">选择更多专家</div></div></div>'
+            return str
+        }
+
+        function fatherRefresh() {
+            $('#openMore').css('display', 'none');
+            uexWindow.evaluateScript("selectExpert", 0, "Two()");
+            appcan.locStorage.setVal('childrenId', '');
+            appcan.locStorage.setVal('fatherdata', 0);
+            getexpertlist();
+            return;
+        }
+
+        function Refresh() {
+            getexpertlist();
+            return;
+        }
+
+        function closepop(flag, id) {
+            expertTypeId = id;
+            appcan.closePopover("identify_push");
+            getexpertlist();
+            return;
+
+        }
+    </script>
+</html>

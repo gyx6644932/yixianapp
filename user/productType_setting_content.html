@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+        #contentDiv{
+            width:98%;
+            margin: 1em auto;
+        }
+        .circleDiv{
+            width:33.33%;
+            float:left;
+            margin:1em 0em;
+        }
+        
+        .circle {
+             margin:auto;
+             width: 6em;
+             height:6em;
+             border:0.1em solid #FFFFFF;
+             -moz-border-radius: 5em;
+             -webkit-border-radius: 5em;
+             border-radius: 5em;       
+        }
+        
+        .circleChild {
+             width: 5em;
+             height:5em;
+             background-color:#FFFFFF;
+             -moz-border-radius: 5em;
+             -webkit-border-radius: 5em;
+             border-radius: 5em; 
+             color:#29abe2;      
+        }
+        
+        .circle2 {
+             width: 6em;
+             height:6em;
+             border:0.1em solid #62ccf8;
+             -moz-border-radius: 5em;
+             -webkit-border-radius: 5em;
+             border-radius: 5em;       
+        }
+        
+        .circleChild2 {
+             width: 5em;
+             height:5em;
+             background-color:#62ccf8;
+             -moz-border-radius: 5em;
+             -webkit-border-radius: 5em;
+             border-radius: 5em; 
+             color:#ffffff;      
+        }
+        
+    </style>
+    <body class="um-vp bc-bg2"   ontouchstart>
+        <div id="contentDiv" >
+          
+        </div>
+        
+       
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var count=0;
+        appcan.ready(function() {
+            getExpertTypeList()
+        });
+        
+        
+        function getExpertTypeList() {
+            var getExpertTypeListUrl = getUrl("user/getexperttypelist");
+            var data = {
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var str = ''
+                    var data = result.Data
+                    if (data.length != 0) {
+                        
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i]);
+                        }
+                        $("#contentDiv").html(str);
+                        
+                        $(".change").click(function(){
+                            if($(this).hasClass("circle")){
+                                if(count < 3){
+                                    count++;
+                                    uexWindow.evaluateScript('productType_setting',0,'changeImg("'+count+'")');
+                                    $(this).removeClass("circle").addClass("circle2");
+                                    $(this).find(".circleChild").removeClass("circleChild").addClass("circleChild2");
+                                }else{
+                                    uexWindow.toast("0", "5", '您最多只能选三个分类！', "2000");
+                                }
+                            }else{
+                                count--;
+                                if(count == 0){
+                                    uexWindow.evaluateScript('productType_setting',0,'changeImg("'+count+'")');
+                                }
+                                $(this).removeClass("circle2").addClass("circle");
+                                $(this).find(".circleChild2").removeClass("circleChild2").addClass("circleChild");
+                            }
+                            
+                        })
+                    } else {
+
+                    }
+                } else {
+                    alert(result.Message);
+                }
+            }
+            getRequestAjax(getExpertTypeListUrl, data, callback)
+        }
+        
+        function templateDiv(dataJson){
+            var str='';
+            if(dataJson.Name != '其它'){
+                str='<div class="ub ub-ac ub-pc circleDiv" >'
+                         +' <div class="change circle ub ub-ac ub-pc" id='+dataJson.Id+'>'
+                                +'<div class="circleChild ub ub-ac ub-pc">'
+                                      +dataJson.Name
+                                +'</div>'                                                       
+                            +'</div>'
+                    +'</div>';
+            }
+            return str;
+        }
+        
+        function addlike(){
+            var addLikeUrl=getUrl("user/addlike");
+            var categoryId=[];
+            $(".circle2").each(function(){
+                categoryId.push(this.id);
+            })
+            
+            if(categoryId.length == 0){
+                 uexWindow.toast("0", "5", '请至少选一样宝贝', "2000");
+                 return ;
+            }
+            
+            
+            var data={
+                 categoryId : categoryId,
+                 token :getToken()
+            }
+            function callback(result){
+                if(result.Message){
+                    
+                     uexWindow.toast("0", "5", '操作完成', "2000");
+                     appcan.openWinWithUrl('person_infor', 'person_infor.html');
+                }else{
+                    
+                }
+            }
+             getRequestAjax(addLikeUrl, data, callback)
+        }
+        
+        
+        
+
+    </script>
+</html>

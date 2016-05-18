@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart >
+        <div id="Payment" class="ubb bc-border uinn bc-bg " >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <img src="../img/identify/1.png" style="margin-left: .5em;"/>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac" >
+                    待付款
+                </div>
+                <div id='IdentifyWaitPay' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+
+            </div>
+        </div>
+        <div id="Refund" class="ubb bc-border uinn bc-bg" >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <img src="../img/identify/2.png" style="margin-left: .5em;"/>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac" >
+                    待退款
+                </div>
+                <div id='IdentifyRefunding' class="ub-f1 ub ub-ac ub-pe per-infor gery" >
+
+                </div>
+            </div>
+        </div>
+        <div id="Refunded" class="ubb bc-border uinn bc-bg" >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <img src="../img/identify/3.png" style="margin-left: .5em;"/>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac" >
+                    已退款
+                </div>
+                <div id='IdentifyRefunded' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+            </div>
+        </div>
+
+        <div class="c-wh umar-at2">
+            <div id="Unidentify" class="ubb bc-border uinn bc-bg" >
+                <div class="ub" >
+                    <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                        <img src="../img/identify/4.png" style="margin-left: .5em;"/>
+                    </div>
+                    <div class="ub-f1 uinn-a1 ub ub-ac" >
+                        待鉴定
+                    </div>
+                    <div id='IdentifyWaitCheck' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+                </div>
+            </div>
+        </div>
+        <div class="c-wh">
+            <div id="Identifyed" class="ubb bc-border uinn bc-bg" >
+                <div class="ub" >
+                    <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                        <img src="../img/identify/5.png" style="margin-left: .5em;"/>
+                    </div>
+                    <div class="uinn-a1 ub ub-ac" >
+                        已鉴定
+                    </div>
+                    <div  id="NewIdentifyComplete" class="uinn-a1 ub-ac" style="display: none">
+                        <img src="../img/identify/new.png" style="width:2em;"/>
+                    </div>
+                    <div id='IdentifyComplete' class="ub-f1 ub ub-ac ub-pe per-infor gery" ></div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+
+    </body>
+    <script>
+        appcan.ready(function() {
+            appcan.initBounce();
+              if(getToken() !=null){
+                expertCount();
+            }
+        });
+        function expertCount() {
+            var getUserUrl = getUrl("user/GetUserWithCount");
+            var data = {
+                token : getToken(),
+                type : 0
+            }
+
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    IdentifyWaitPay = data.IdentifyWaitPay;
+                    IdentifyRefunding = data.IdentifyRefunding;
+                    IdentifyRefunded = data.IdentifyRefunded;
+                    IdentifyWaitCheck = data.IdentifyWaitCheck;
+                    IdentifyComplete = data.IdentifyComplete;
+                    NewIdentifyComplete = data.NewIdentifyComplete;
+                    if (NewIdentifyComplete == true) {
+                        $("#NewIdentifyComplete").css('display', 'block').addClass('ub')
+                    } else {
+                        $("#NewIdentifyComplete").css('display', 'none').removeClass('ub')
+                    }
+                    $("#IdentifyWaitPay").text(IdentifyWaitPay)
+                    $("#IdentifyRefunding").text(IdentifyRefunding)
+                    $("#IdentifyRefunded").text(IdentifyRefunded)
+                    $("#IdentifyWaitCheck").text(IdentifyWaitCheck)
+                    $("#IdentifyComplete").text(IdentifyComplete)
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+
+            getRequestAjax2(getUserUrl, data, callback);
+            setTimeout("expertCount()", 6000);
+        }
+
+
+        $("#Payment").click(function() {
+            var Token = getToken();
+            appcan.locStorage.setVal('myAppraisalIndex', 0);
+            appcan.locStorage.setVal('myYN', 'false');
+            appcan.openWinWithUrl('myAppraisal', 'myAppraisal.html');
+        })
+        $("#Refund").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('myAppraisalIndex', "2,6");
+            appcan.locStorage.setVal('myYN', 'false');
+            appcan.openWinWithUrl('myAppraisal', 'myAppraisal.html');
+        })
+        $("#Refunded").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('myAppraisalIndex', 3);
+            appcan.locStorage.setVal('myYN', 'false');
+            appcan.openWinWithUrl('myAppraisal', 'myAppraisal.html');
+        })
+        $("#Unidentify").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('myAppraisalIndex', 1);
+            appcan.locStorage.setVal('myYN', 'false');
+            appcan.openWinWithUrl('myAppraisal', 'myAppraisal.html');
+        })
+
+        $("#Identifyed").click(function() {
+            $("#NewIdentifyComplete").css('display', 'none').removeClass('ub')
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+            appcan.locStorage.setVal('myAppraisalIndex', 4);
+            appcan.locStorage.setVal('myYN', 'false');
+            appcan.openWinWithUrl('myAppraisal', 'myAppraisal.html');
+        })
+    </script>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div id="afterSale" style="position:relative;">
+            <div class="ub ub-ac ub-pc" style="position: absolute;top:30%;width:100%;">
+                <div class="ub ub-ac ub-pc ub-ver">
+                    <div class="ub-img1">
+                        <img src="../img/img1/empty.png" style="width:4em;height:4em;">
+                    </div>
+                    <div class="ub uinn">
+                                                                                 您还没有相关订单
+                    </div>
+                    <div class="ub ulev-1 bc-text3 uinn">
+                                                                               可以去看看有哪些想买的
+                    </div>
+                    <div>
+                        <div class="ub ub-ac ub-pc ulev-1 uba uc-a1" id="indexBtn" style="padding:0.3em 1em;">
+                                                                                                  随便逛逛
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            var afterSale=$("#afterSale")
+            afterSale.css('height',$(document).height());
+            afterSale.css('width',$(document).width()); 
+        });
+        
+        appcan.button("#indexBtn", "btn-act", function() {
+            appcan.openWinWithUrl('index','index.html');
+        })
+
+    </script>
+</html>

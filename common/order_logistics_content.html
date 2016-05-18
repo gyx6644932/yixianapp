@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+       <div class="ub ub-ac ub-ver" id="contentDiv">
+           
+       </div>
+        
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+     <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var orderId= appcan.locStorage.val('orderId');
+        appcan.ready(function(){
+            function actionTop() {
+                getOrderTrackList()
+                return;
+            }
+            
+            
+           initBounce(actionTop,0);
+            getOrderTrackList();
+            
+        });
+        
+        function getOrderTrackList(){
+            var getOrderTrackListUrl=getUrl('auction/GetOrderTrackList');
+            var data={
+                orderid : orderId,
+                token : getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    var str='';
+                    if(data.status == "200"){
+                        str=templateDiv(data);
+                        
+                    }else{
+                        str=templateDivEmpty('查无物流');
+                    }
+                    $("#contentDiv").html(str);
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+            getRequestAjax(getOrderTrackListUrl, data, callback)
+        }
+        
+        function templateDiv(dataJson){
+            var codenumber=dataJson.nu;
+            var name=dataJson.name;
+            var data=dataJson.data;
+            
+            var str="<div class='ub ub-ac ub-pc' style='background-color:#C6E2FF;color:#ffffff;width:100%;padding:0.5em 0em;'>"
+                       +'<div class="ub ub-pc ub-ac" style="width:30%;">'+name+'</div>'
+                       +'<div class="ub ub-pc ub-ac" style="width:70%;">'+codenumber+'</div>'
+                    +'</div>'
+            var context='',time='';
+                   
+            for(var i=0;i<data.length;i++){
+                context=data[i].context;
+                time=data[i].time;
+                if(i==0){
+                   str+="<div class='ub ub-ac ub-pc' style='width:100%;border-bottom:0.1em solid #A1A1A1;color:red;'>"
+                         +'<div class="ub ub-ac" style="width:30%;border-right:0.05em solid #A1A1A1">'+time+'</div>'
+                         +'<div class="ub ub-ac" style="width:70%;border-left:0.05em solid #A1A1A1">'+context+'</div>'
+                      +"</div>"  
+                }else{
+                    str+="<div class='ub ub-ac ub-pc' style='width:100%;border-bottom:0.1em solid #A1A1A1'>"
+                         +'<div class="ub ub-ac" style="width:30%;border-right:0.05em solid #A1A1A1">'+time+'</div>'
+                         +'<div class="ub ub-ac" style="width:70%;border-left:0.05em solid #A1A1A1">'+context+'</div>'
+                      +"</div>" 
+                }
+                  
+            } 
+              
+            return str;
+        }
+
+    </script>
+</html>

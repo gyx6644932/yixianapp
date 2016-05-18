@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+         <div class="ub ub-ac ub-ver" style="width:100%;padding:0.5em 0em;" id="contentDiv">
+            
+         </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+        var messageType=appcan.locStorage.val('messageType');
+        appcan.ready(function() {
+            
+            changeDiv(messageType,true,1,false);
+            function actionTop(){
+                changeDiv(messageType,true,1,false);
+               
+            }
+           
+            function actionBottom(){
+              
+                var newPageIndex2 = pageIndex + 1;
+                if(!endFlag){
+                     changeDiv(messageType,false,nowPageIndex2,endFlag);
+                }else{
+                      return ;  
+                } 
+            }
+            initBounce(actionTop,actionBottom);   
+        });
+        
+        function changeDiv(selectType,nowReadyIn,nowPageIndex,nowEndFlag){
+            messageType=selectType//如果是选项卡路口就要重新赋值
+            readyIn=nowReadyIn;
+            if(typeof readyIn !="boolean"){
+                readyIn = (readyIn == "true");
+            }
+            pageIndex=nowPageIndex;
+            endFlag=nowEndFlag;
+            if(typeof endFlag !="boolean"){
+                endFlag = (endFlag == "true");
+            }
+            
+            if(selectType == 'notice'){
+                
+            }else if(selectType == 'chat'){
+                getMessageList(readyIn,nowPageIndex,nowEndFlag)
+            }else if(selectType == 'product'){
+                
+            }
+        }
+        
+        function getMessageList(readyIn,nowPageIndex,nowEndFlag){
+            
+            var getMessageListUrl=getUrl('message/GetMessageList');
+            var data={
+                token :getToken()
+            }
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    var str="";
+                    if(data.length !=0){
+                       for(var i=0;i<data.length;i++){
+                            str+=templateDiv(data[i]);
+                        }
+                        if(data.length < 10){
+                            endFlag=true;
+                            str+=templateDivEnd();
+                        } 
+                    }else{
+                        if(pageIndex == 1){
+                            endFlag=true;
+                            str = templateDivEmpty('无聊天藏友');
+                        }else{
+                            endFlag = true;
+                            str=templateDivEnd();
+                        }
+                        
+                    }
+                    
+                    if(readyIn){
+                        $('#contentDiv').html(str);
+                    }else{
+                        $('#contentDiv').append(str); 
+                    }
+                    $(".inTalk").click(function(){
+                           var receiverId=this.id
+                           
+                           //区别出 产品聊天进来或拍得进来
+                           appcan.locStorage.val('openPageType','');
+                           var messageId=$(this).attr('messageId');
+                           appcan.locStorage.val('talkUserId',receiverId);
+                           appcan.locStorage.val('messageId',messageId);
+                           appcan.openWinWithUrl('talk','../common/talk.html');   
+                    })
+                }else{
+                    uexWindow.toast("0", "5",result.Message, "2000");
+                }
+           }     
+          getRequestAjax(getMessageListUrl, data, callback); 
+          
+          function templateDiv(dataJson){
+            var lastChatDateStr=formatDate(dataJson.LastChatDate);
+            var lastChatDate=new Date(lastChatDateStr).format('MM-dd');
+            var avatar=gerImgThumbUrl(dataJson.Avatar);
+            var str='<div class="ub ub-pc inTalk" style="width:96%;background-color:#ffffff;border-bottom:0.05em solid #D9D9D9;padding:0.3em 0em;" id='+dataJson.ReceiverId+' messageId='+dataJson.Id+'>'
+                        +' <div class="ub ub-img1" style="margin:0em 1em 0em 0.5em;">'
+                              +'<img src='+avatar+' style="width:3em;height:3em;border-radius:2em;">'
+                        +'</div>'
+                        +'<div class="ub ub-f1 ub-ver" style="margin:0em;">'
+                            +'<div class="ub ub-ac">'+dataJson.Nicename+'</div>'
+                            +'<div class="ut-s" style="color:#C9C9C9;margin:0.6em 0em 0em 0em;width:100%;font-size:0.9em;">'+dataJson.Content+'</div>'
+                        +'</div>'
+                        +'<div class="ub ub-pc" style="margin:0em 1em;color:#C9C9C9;font-size:0.85em;">'
+                             +lastChatDate
+                        +'</div>'
+                    +'</div>'
+            return str;
+        
+        }
+         
+        }
+        
+        
+
+    </script>
+</html>

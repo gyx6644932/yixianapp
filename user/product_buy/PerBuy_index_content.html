@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main.css">
+        <link rel="stylesheet" href="../../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+
+        <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;" >
+
+            <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;width:100%;" >
+                <div class="ub ub-ac ub-pj listDiv2" id="buyOrderWait" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_buy1.png">
+
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            待付款
+                            <div  id="NewBuyOrderWaitPay"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+
+                        <div class="ub ub-ac ub-pc" style="margin-right:1.5em;color:#9e9e9e;" id="buyOrderWaitTag"></div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pj listDiv2" id="buyOrderNoSend" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_buy2.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            待发货
+                            <div  id="NewBuyOrderNoSend"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="buyOrderNoSendTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pj listDiv2" id="buyOrderSend" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_buy3.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+
+                            待收货
+                            <div id="NewBuyOrderSend"   style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc"  style="margin-right:1.5em;color:#9e9e9e;" id="buyOrderSendTag"></div>
+                    </div>
+                </div>
+
+                <div class="ub ub-ac ub-pj listDiv2" id="buyOrderComplete" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_buy4.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            已收货
+                            <div  id="NewBuyOrderComplete"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="buyOrderCompleteTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="ub ub-ac ub-ver" style="margin-top:1em;background-color:#FFFFFF;" >
+            <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;width:100%;" >
+                <div class="ub ub-ac ub-pj listDiv2" id="buyOrderRefund" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_buy5.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            退款管理
+                            <div  id="NewBuyOrderRefund"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="buyOrderRefundTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+
+            function actionTop() {
+
+                setUserState();
+            }
+
+            setUserState();
+
+            initBounce(actionTop, 0);
+
+        });
+
+        function changeNew() {
+            function getJsonGuide(jsonGuide) {
+                for (key in jsonGuide) {
+                    if (jsonGuide[key])
+                        $("#" + key + "").attr('style', 'display:block !important;');
+                }
+            }
+
+            getGuide(getJsonGuide);
+        }
+
+        function setUserState() {
+            changeNew();
+            var localStorage = window.localStorage;
+            var getUserUrl = getUrl("user/GetUserWithCount");
+            var data = {
+                token : getToken(),
+                type : 2
+            }
+            function callback(result) {
+                for (key in result.Data) {
+                    if (key == 'Avatar') {
+                        localStorage.setItem(key, gerImgThumbUrl(result.Data[key]));
+                    } else {
+                        localStorage.setItem(key, result.Data[key]);
+                    }
+                }
+
+                $('#buyOrderWaitTag').text(localStorage.getItem("BuyOrderWaitPay"));
+                $('#buyOrderNoSendTag').text(localStorage.getItem("BuyOrderNoSend"));
+                $('#buyOrderSendTag').text(localStorage.getItem("BuyOrderSend"));
+                $('#buyOrderCompleteTag').text(localStorage.getItem("BuyOrderComplete"));
+                $('#buyOrderRefundTag').text(localStorage.getItem("BuyOrderRefund"));
+
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+
+        }
+
+
+        $("#buyOrderWait").click(function() {
+            $("#NewBuyOrderWaitPay").attr('style', 'display:none !important;');
+           
+            appcan.locStorage.val('orderType', 'buyOrderWait');
+            appcan.openWinWithUrl('PerBuy_details', 'PerBuy_details.html');
+
+        })
+
+        $("#buyOrderNoSend").click(function() {
+            $("#NewBuyOrderNoSend").attr('style', 'display:none !important;');
+           
+            appcan.locStorage.val('orderType', 'buyOrderNoSend');
+            appcan.openWinWithUrl('PerBuy_details', 'PerBuy_details.html');
+        })
+
+        $("#buyOrderSend").click(function() {
+            $("#NewBuyOrderSend").attr('style', 'display:none !important;');
+           
+            appcan.locStorage.val('orderType', 'buyOrderSend');
+            appcan.openWinWithUrl('PerBuy_details', 'PerBuy_details.html');
+        })
+
+        $("#buyOrderComplete").click(function() {
+            $("#NewBuyOrderComplete").attr('style', 'display:none !important;');
+            
+            appcan.locStorage.val('orderType', 'buyOrderComplete');
+            appcan.openWinWithUrl('PerBuy_details', 'PerBuy_details.html');
+        })
+
+        $("#buyOrderRefund").click(function() {
+            $("#NewBuyOrderRefund").attr('style', 'display:none !important;');
+           
+            appcan.locStorage.val('buyRefundType', 'waitRefund');
+            appcan.openWinWithUrl('PerBuy_refund', 'PerBuy_refund.html');
+        })
+
+    </script>
+</html>

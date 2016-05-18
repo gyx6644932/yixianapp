@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main.css">
+        <link rel="stylesheet" href="../../css/main1.css">
+    </head>
+    <style type="css/text">
+        
+    </style>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="allTypeDiv" >
+
+        </div>
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+       
+        var nowClearingVal='';
+        var arrayOrder=[];
+        
+        var orderType= appcan.locStorage.val('orderType');
+        var Clearing= appcan.locStorage.val('Clearing');
+        appcan.ready(function() {
+            changeDiv(Clearing,true,1,false)  
+          
+            function actionTop(){
+                readyIn=true;
+                newPageIndex=1;
+                newEndFlag=false; 
+                nowClearing=false;
+                changeDiv(nowClearingVal,readyIn,newPageIndex,newEndFlag);
+                return ;
+            }
+           
+            function actionBottom(){
+                var newPageIndex = pageIndex + 1;
+                if(!endFlag){
+                     readyIn=false;
+                     changeDiv(nowClearingVal,readyIn,newPageIndex,endFlag);
+                }else{
+                      return ;  
+                } 
+            }
+            initBounce(actionTop,actionBottom);   
+        });
+      
+
+        function changeDiv(nowClearing,readyIn,newPageIndex,newEndFlag){
+            
+            nowClearingVal=nowClearing;
+            pageIndex=newPageIndex;
+            endFlag=newEndFlag;
+            if(typeof endFlag !="boolean"){
+                endFlag = (endFlag == "true");
+            }
+             if(typeof nowClearingVal !="boolean"){
+                nowClearingVal = (nowClearingVal == "true");
+            }
+            var getBuyOrderListUrl=getUrl('auction/GetSellOrderList');
+            var data={
+                pageindex : pageIndex,
+                pagesize :'10',
+                Token : getToken()
+            };
+
+            data['status']='3';
+            
+            
+            function callback(result){
+               
+                if(result.Success){
+                     uexWindow.evaluateScript('person',0,'changeNew()');
+                     uexWindow.evaluatePopoverScript('person','content','setUserState()');
+            
+                    var data=result.Data
+                    var str='';
+                    if(data.length !=0){
+                        for(var i=0;i<data.length;i++){
+                            str+=templateDiv(data[i],i,nowClearingVal);
+                        }
+                        
+                        
+                        
+                        if(str.length == 0){
+                           str=templateDivEmpty2('无卖家订单') 
+                        }
+                        
+                       /*
+                        if(data.length < 10){
+                                                   endFlag=true;
+                                                   str+=templateDivEnd2();
+                                               }
+                                               */
+                       
+                    }else{
+                         if(pageIndex == 1){
+                             endFlag=true;
+                             str=templateDivEmpty2('无卖家订单');
+                        }else{
+                            endFlag = true;
+                            str=templateDivEnd2();   
+                        } 
+                    }
+                
+                    if(readyIn){
+                        $('#allTypeDiv').html(str);
+                    }else{
+                        $('#allTypeDiv').append(str); 
+                    }
+                    
+                }else {
+                    
+                }
+            }
+            getRequestAjax(getBuyOrderListUrl,data,callback);
+        }
+        
+       function templateDiv(dataJson,i,nowClearingVal){
+            var statuVal='';
+            bottomStr='';
+            var str='';
+            arrayOrder[i]=dataJson;
+            var avatar=getImgNormalUrl(dataJson.Avatar);
+            var buyerAvatar=getImgNormalUrl(dataJson.BuyerAvatar);
+            var thumb=gerImgThumbUrl(dataJson.Thumb);
+           
+                if(nowClearingVal == dataJson.Clearing){
+                    var str='';
+                    if(nowClearingVal == dataJson.Clearing){
+                        if(nowClearingVal){
+                            statuVal='已结算';
+                        }else{
+                            statuVal='未结算';
+                        }
+                         
+                         str='<div class="ub ub-ac ub-pc ub-ver" style="width:100%;background-color:#ffffff;margin-top:1em;">'
+                                    +'<div class="ub ub-pc" style="width:95%;border-bottom:0.05em solid #dcdcdc;">'
+                                         +'<div class="ub ub-img1">'
+                                              +'<img src='+buyerAvatar+' onclick="buyerInfo('+i+')" style="width:3em;height:3em;border-radius: 3em;" >'
+                                         +'</div>'
+                                         +'<div class="ub ub-f1" style="margin:.8em 0.5em;">'
+                                                          +dataJson.BuyerNicename
+                                         +'</div>'
+                                         +'<div class="ub  ub-pc" style="color:red;">'
+                                                           +statuVal
+                                         +'</div>'
+                                    +'</div>'
+                                    +'<div class="ub ub-pc" onclick=selOrd_details('+i+') style="width:95%;margin-top:0.5em;">'
+                                       +'<div class="ub ub-img1" style="width:20%;">'
+                                          +'<img src='+thumb+' style="width:100%;height:4em;" >'
+                                       +'</div>'
+                                       +'<div class="ut-t3" style="margin:0em 0.5em;width:80%;">'
+                                          +dataJson.Content
+                                       +'</div>'
+                                    +'</div>'
+                                    +'<div class="ub ub-ac ub-pe t-gra" style="width:95%;margin:0.5em 0em;border-bottom:0.05em solid #dcdcdc;">'
+                                        +'<div>共 1件藏品</div>'
+                                        +'<div style="margin:0em 1em;">运费：买家承担</div>'
+                                        +'<div >合计：￥<font class="blod">'+dataJson.Price+'</font></div>'
+                                    +'</div>'
+                            +'</div>';
+                    }
+                }
+
+            var avatar=getImgNormalUrl(dataJson.Avatar);
+            var thumb=gerImgThumbUrl(dataJson.Thumb);
+            return str; 
+        }
+        
+      
+        
+         function selOrd_details(i){
+            var dataJson=arrayOrder[i];
+            var orderId=dataJson.Id;
+            var status=dataJson.Status;
+            appcan.locStorage.val('orderStatus',status);
+            if(status == '0'){
+                if(getLocalStorageParme('Alipay') == "false"){
+                     uexWindow.toast("0", "5", '请先完善支付宝账号', "2000");
+                     appcan.openWinWithUrl("accout_safe","../accout_safe.html"); 
+                }
+                appcan.locStorage.val('orderId',orderId);
+                appcan.openWinWithUrl("SelOrd_details","SelOrd_details.html"); 
+            }else if(status == '1'){
+                appcan.locStorage.val('orderId',orderId);
+                appcan.openWinWithUrl("OrdSen","OrdSen.html"); 
+            }else if(status == '2'){
+                appcan.locStorage.val('orderId',orderId);
+                appcan.openWinWithUrl("SelOrd_details","SelOrd_details.html"); 
+            }else if(status == '3'){
+                 appcan.locStorage.val('orderId',orderId);
+                appcan.openWinWithUrl("SelOrd_details","SelOrd_details.html"); 
+            }
+        }
+      
+       
+   
+ </script>
+</html>

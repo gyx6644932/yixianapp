@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../../css/ui-box.css">
+        <link rel="stylesheet" href="../../css/ui-base.css">
+        <link rel="stylesheet" href="../../css/ui-color.css">
+        <link rel="stylesheet" href="../../css/appcan.icon.css">
+        <link rel="stylesheet" href="../../css/appcan.control.css">
+        <link rel="stylesheet" href="../../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <!--
+        <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;" >
+        <div class="ub ub-ac ub-pc" style="color:red;width:60%;margin:auto;">
+        <div class="ub ub-ac ub-ver ub-f1" style="border-right:0.1em solid #9e9e9e;">
+        <div class="ub ub-ac ub-pc" style="font-size: 2em;"><span id="todayAuctionOrder"></span></div>
+        <div class="ub ub-ac ub-pc">今日订单</div>
+        </div>
+        <div class="ub ub-ac ub-ver ub-f1">
+        <div class="ub ub-ac ub-pc" style="font-size: 2em;">￥<span id="todayAuctionIncome"></span></div>
+        <div class="ub ub-ac ub-pc">今日销量</div>
+        </div>
+        </div>
+        </div>
+        -->
+
+        <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;" >
+
+            <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;width:100%;" >
+                <div class="ub ub-ac ub-pj listDiv2" id="sellOrderWait" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_sel1.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            待付款
+
+                            <div  id="NewSellOrderWaitPay"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" style="margin-right:1.5em;color:#9e9e9e;" id="sellOrderWaitTag"></div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pj listDiv2" id="sellOrderNoSend" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_sel2.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            待发货
+                            <div  id="NewSellOrderNoSend"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="sellOrderNoSendTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+                <div class="ub ub-ac ub-pj listDiv2" id="sellOrderSend" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_sel3.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            待收货
+                            <div  id="NewSellOrderSend"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc"  style="margin-right:1.5em;color:#9e9e9e;" id="sellOrderSendTag"></div>
+                    </div>
+                </div>
+
+                <div class="ub ub-ac ub-pj listDiv2" id="sellOrderComplete" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_sel4.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            已收货
+                            <div  id="NewSellOrderComplete"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="sellOrderCompleteTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="ub ub-ac ub-ver" style="margin-top:1em;background-color:#FFFFFF;" >
+            <div class="ub ub-ac ub-ver" style="background-color:#FFFFFF;width:100%;" >
+                <div class="ub ub-ac ub-pj listDiv2" id="sellOrderRefund" >
+                    <div class="ub  ub-img1" style="width:10%;">
+                        <img class="totileImg" src="../../img/img2/per_sel5.png">
+                    </div>
+                    <div class="ub ub-ac ub-pj" style="width:87%;padding:0em 0em 0.6em 0em;">
+                        <div class="ub ub-ac">
+                            退款管理
+                            <div  id="NewSellOrderRefund"  style="display:none">
+                                &nbsp;&nbsp;<img src="../../img/identify/new.png" style="width:2em;"/>
+                            </div>
+                        </div>
+                        <div class="ub ub-ac ub-pc" id="sellOrderRefundTag" style="margin-right:1.5em;color:#9e9e9e;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </body>
+    <script src="../../js/appcan.js"></script>
+    <script src="../../js/appcan.control.js"></script>
+    <script src="../../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+
+            function actionTop() {
+                setUserState()
+
+            }
+
+            setUserState();
+            initBounce(actionTop, 0);
+
+        });
+
+        function changeNew() {
+            function getJsonGuide(jsonGuide) {
+                for (key in jsonGuide) {
+                    if (jsonGuide[key])
+                        $("#" + key + "").attr('style', 'display:block !important;');
+                }
+            }
+
+            getGuide(getJsonGuide);
+        }
+
+        function setUserState() {
+            changeNew();
+            var localStorage = window.localStorage;
+            var getUserUrl = getUrl("user/GetUserWithCount");
+            var data = {
+                token : getToken(),
+                type : 3
+            }
+            function callback(result) {
+                for (key in result.Data) {
+                    if (key == 'Avatar') {
+                        localStorage.setItem(key, gerImgThumbUrl(result.Data[key]));
+                    } else {
+                        localStorage.setItem(key, result.Data[key]);
+                    }
+                }
+
+                $('#sellOrderWaitTag').text(localStorage.getItem("SellOrderWaitPay"));
+                $('#sellOrderNoSendTag').text(localStorage.getItem("SellOrderNoSend"));
+                $('#sellOrderSendTag').text(localStorage.getItem("SellOrderSend"));
+                $('#sellOrderCompleteTag').text(localStorage.getItem("SellOrderComplete"));
+                $('#sellOrderRefundTag').text(localStorage.getItem("SellOrderRefund"));
+                $('#todayAuctionOrder').text(localStorage.getItem("TodayAuctionOrder"));
+                $('#todayAuctionIncome').text(localStorage.getItem("TodayAuctionIncome"));
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+
+        $("#sellOrderWait").click(function() {
+            $("#NewSellOrderWaitPay").attr('style', 'display:none !important;');
+            uexWindow.evaluateScript('person', 0, 'changeNew()');
+            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+            appcan.locStorage.val('orderType', 'sellOrderWait');
+            appcan.openWinWithUrl('PerSel_details', 'PerSel_details.html');
+
+        })
+
+        $("#sellOrderNoSend").click(function() {
+            $("#NewSellOrderNoSend").attr('style', 'display:none !important;');
+            uexWindow.evaluateScript('person', 0, 'changeNew()');
+            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+            appcan.locStorage.val('orderType', 'sellOrderNoSend');
+            appcan.openWinWithUrl('PerSel_details', 'PerSel_details.html');
+        })
+
+        $("#sellOrderSend").click(function() {
+            $("#NewSellOrderSend").attr('style', 'display:none !important;');
+            uexWindow.evaluateScript('person', 0, 'changeNew()');
+            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+            appcan.locStorage.val('orderType', 'sellOrderSend');
+            appcan.openWinWithUrl('PerSel_details', 'PerSel_details.html');
+        })
+
+        $("#sellOrderComplete").click(function() {
+
+            $("#NewSellOrderComplete").attr('style', 'display:none !important;');
+            uexWindow.evaluateScript('person', 0, 'changeNew()');
+            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+            appcan.locStorage.val('orderType', 'sellOrderComplete');
+            appcan.locStorage.val('Clearing', false);
+            appcan.openWinWithUrl('PerSel_clearing', 'PerSel_clearing.html');
+        })
+
+        $("#sellOrderRefund").click(function() {
+            $("#NewSellOrderRefund").attr('style', 'display:none !important;');
+
+            appcan.locStorage.val('selRefundType', 'waitRefund');
+            appcan.openWinWithUrl('PerSel_refund', 'PerSel_refund.html');
+        })
+
+    </script>
+</html>

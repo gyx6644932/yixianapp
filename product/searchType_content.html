@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="rootList" style='margin: .5em .7em;'></div>
+        <div id='addProduct' style="position:fixed;right: 6%;bottom: 3%;">
+            <img src="../img/inProduct.png" style="width: 3em;height:3em;"/>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            getExpertTypeList();
+
+        });
+        $('#addProduct').click(function() {
+            if (getToken() == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            } else {
+
+                appcan.openWinWithUrl('product_publish', 'product_publish.html');
+
+            }
+
+        })
+        function getExpertTypeList() {
+            var getExpertTypeListUrl = getUrl("product/GetCategoryList");
+            var data = {
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var str = '';
+                    var data = result.Data;
+                    if (data.length > 0) {
+                        rootJson = data;
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateRootListDiv(data[i]);
+                        }
+                        $("#rootList").html(str);
+                        $(".openMarket").click(function() {
+                            var categoryId = this.id;
+                            var fatherName = $(this).attr('fatherName');
+                            appcan.locStorage.setVal('fatherdata', 0);
+                            appcan.locStorage.setVal('childrenId', '');
+                            appcan.locStorage.setVal('childName', '');
+                            appcan.locStorage.setVal('fatherName', fatherName);
+                            appcan.locStorage.setVal('fatherId', categoryId);
+                            appcan.openWinWithUrl('market', 'market.html');
+                        })
+                    }
+                } else {
+                    var str = '';
+                    str = templateDivError('../img/error.png');
+                    $('#rootList').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    })
+                }
+            }
+
+            getRequestAjax2(getExpertTypeListUrl, data, callback);
+            setTimeout("getExpertTypeList()", 4000);
+        }
+
+        function templateRootListDiv(data) {
+            var name = data.Name;
+            var content = data.Content;
+            var productCount = data.ProductCount;
+            var id = data.Id;
+            var icon = gerImgThumbUrl(data.Icon);
+            var str = '';
+            str += "  <div id='" + id + "' fatherName='" + data.Name + "' class='openMarket ub uinn gery bc-bg textb2 ubb bc-border1'>";
+            str += " <div class='searchImg ub ub-pc umar-ll umar-rr'>";
+            str += "    <img src='" + icon + "'/>";
+            str += " </div>";
+            str += "  <div class='ub ub-f1 ub-ver textb' style='padding-left:1em;'>";
+            str += "     <div class='ub ub-f1 ub-ac textbs blod'>";
+            str += "        " + name + " ";
+            str += "      </div>";
+            //str += "     <div class='ub ub-f1 ub-ac textb2 blod gery2'>";
+            //str += "        " + content + " ";
+            //str += "      </div>";
+            str += "      <div class='ub ub-f1'>";
+            str += "         <div class='ub-f1'>";
+            str += "              " + productCount + "件藏品";
+            str += "        </div>";
+            str += "    </div>";
+            str += "  </div>";
+            str += " <div class='ub-f1 ub ub-ac ub-pe fa fa-angle-right angle' style='font-size:1.5em;'>";
+            str += "  </div>";
+            str += "  </div>";
+            str += "  </div>";
+            return str;
+        }
+
+        function openAuction() {
+            var date = new Date().format("yyyy-MM-dd");
+            appcan.locStorage.val('auctionStartDay', date);
+            uexWindow.evaluateScript('auction_index', 0, 'writeDay("' + date + '")');
+            appcan.window.open({
+                name : 'auction_index',
+                data : '../auction/auction_index.html',
+                dataType : 0
+            });
+        }
+
+        function Refresh() {
+            getExpertTypeList();
+            return;
+        }
+
+    </script>
+</html>

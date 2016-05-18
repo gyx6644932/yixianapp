@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="bc-bg2" ontouchstart>
+        <!-- <div class="uinn-a7 ub  bc-bg ">
+        <div class="textbbs uinn">
+        反馈类型
+        </div>
+        </div>
+        <div class="bc-bg ubb bc-border uinn" style="height: 8em;">
+
+        <div class="ub-f1 uinn-sea3-2 uba-sea3 mar-ar1 umar-at1 uc-a1 ufl t-gra-82 ulev-1 ">
+        功能不好用
+        </div>
+        <div class="ub-f1 uinn-sea3-2 uba-sea3 mar-ar1 umar-at1 uc-a1 ufl t-gra-82 ulev-1 ">
+        页面不好看
+        </div>
+        <div class="ub-f1 uinn-sea3-2 uba-sea3 mar-ar1 umar-at1 uc-a1 ufl t-gra-82 ulev-1 ">
+        你的新需求
+        </div>
+        <div class="ub-f1 uinn-sea3-2 uba-sea3 mar-ar1 umar-at1 uc-a1 ufl t-gra-82 ulev-1 ">
+        操作意见
+        </div>
+        <div class="ub-f1 uinn-sea3-2 uba-sea3 mar-ar1 umar-at1 uc-a1 ufl t-gra-82 ulev-1 ">
+        其他
+        </div>
+        </div>
+        <div class="clear"></div>
+        -->
+        <div class="sc-bg-active uinput ub ub-ver ub-f1">
+            <div class="uinn-a7 ub  bc-bg ubb bc-border uinn-a7">
+                <div class="textbbs uinn ">
+                    反馈内容
+                </div>
+            </div>
+            <div class="uinn umar-a">
+                <div class="uba bc-border uinput ub ub-f1">
+                    <textarea placeholder="我们衷心的感谢所有提出宝贵建议的用户,谢谢大家！" id='content' type="text" class="ub-f1 bc-bg uinn"></textarea>
+                </div>
+
+            </div>
+        </div>
+        <div class="uinn-at1 uinn">
+            <div class="btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1 b-red" id="submit">
+                提交反馈
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    <script>
+        appcan.ready(function() {
+        });
+        var Token = '';
+        Token = getToken();
+        $("#submit").click(function() {
+            var content = $("#content").val();
+            if (content == 0) {
+                uexWindow.toast("0", "5", "请输入反馈内容！", "2000");
+                return;
+            }
+            var getUserUrl = getUrl("common/addsuggest");
+
+            var data = {
+                content : content,
+                token : Token
+            }
+            function callback(result) {
+                appcan.window.alert({
+                    title : "提示",
+                    content : "提交成功"
+                });
+                uexWindow.evaluatePopoverScript("person", "content", "setUserState()")
+                appcan.openWinWithUrl("person", 'person.html');
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        });
+
+
+    </script>
+</html>
+<!-- <div class="ub bc-bg" >
+<div class="ub-f1 ub ub-ver ub-pc ub-ac help_border blue help_width" >
+<div class="ub" >
+<img src=""/>
+</div>
+<div class="ub" >
+账户
+</div>
+<div class="ub more" >
+更多>
+</div>
+</div>
+<div class="ub ub-f4 " >
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+支付宝绑手机
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+修改一线密码
+</div>
+</div>
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+修改一线手机
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+找回支付密码
+</div>
+</div>
+</div>
+</div>
+<div class="ub bc-bg umar-t" >
+<div class="ub-f1 ub ub-ver ub-pc ub-ac help_border green help_width" >
+<div class="ub" >
+<img src=""/>
+</div>
+<div class="ub" >
+退款&售后
+</div>
+<div class="ub more" >
+更多>
+</div>
+</div>
+<div class="ub ub-f4 " >
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+退款/退货
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+联系不上卖家
+</div>
+</div>
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+查看已退钱款
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+未收到货
+</div>
+</div>
+</div>
+</div>
+<div class="ub bc-bg umar-t" >
+<div class="ub-f1 ub ub-ver ub-pc ub-ac help_border green2 help_width" >
+<div class="ub" >
+<img src=""/>
+</div>
+<div class="ub" >
+支付
+</div>
+<div class="ub more" >
+更多>
+</div>
+</div>
+<div class="ub ub-f4 " >
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+付款不成功
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+支付宝被锁定
+</div>
+</div>
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+付款方式
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+关闭免密支付
+</div>
+</div>
+</div>
+</div>
+<div class="ub bc-bg umar-t" >
+<div class="ub-f1 ub ub-ver ub-pc ub-ac help_border orange help_width" >
+<div class="ub" >
+<img src=""/>
+</div>
+<div class="ub" >
+物流
+</div>
+<div class="ub more" >
+更多>
+</div>
+</div>
+<div class="ub ub-f4 " >
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+催卖家发货
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+查看物流信息
+</div>
+</div>
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+物流跟踪异常
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+快递公司电话
+</div>
+</div>
+</div>
+</div>
+<div class="ub bc-bg umar-t" >
+<div class="ub-f1 ub ub-ver ub-pc ub-ac help_border purple help_width"  >
+<div class="ub" >
+<img src=""/>
+</div>
+<div class="ub" >
+选购
+</div>
+<div class="ub more" >
+更多>
+</div>
+</div>
+<div class="ub ub-f4 " >
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+修改收货地址
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+延长收货时间
+</div>
+</div>
+<div class="ub ub-f1 ub-ver" >
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+购买流程介绍
+</div>
+<div class="ub-f1 ubl ubb bc-border uinn1 ub ub-pc ub-ac" >
+运费险理赔
+</div>
+</div>
+</div>
+</div>-->

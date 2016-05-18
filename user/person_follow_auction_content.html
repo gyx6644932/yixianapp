@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ac ub-ver" id='auctionDiv'>
+            
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+      
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+           
+        appcan.ready(function() {
+            
+            getFollowList(true,1,false);
+           
+            
+            function actionTop(){
+                    
+                readyIn=true;
+                var newPageIndex1=1;
+                var newEndFlag1=false;  
+                getFollowList(readyIn,newPageIndex1,newEndFlag1);
+                return ;
+               
+            }
+           
+           
+            function actionBottom(){
+                var newPageIndex2 = pageIndex + 1;
+                if(!endFlag){
+                     readyIn=false;
+                     getFollowList(readyIn,newPageIndex2,endFlag);
+                }else{
+                      return ;  
+                } 
+               
+            }
+            initBounce(actionTop,actionBottom); 
+        });
+        
+         function getFollowList(readyIn,newPageIndex,newEndFlag){
+            
+            pageIndex=newPageIndex;
+            endFlag=newEndFlag;
+ 
+            var getFollowUrl=getUrl('user/getfollowlist');
+            
+            var data={
+                pageindex : pageIndex,
+                pagesize : '10',
+                followtype : '1',
+                token : getToken()
+            }
+            
+            function callback(result){
+                if(result.Success){
+                    var data=result.Data;
+                    if(data.length != 0){
+                        var str='';
+                        for(var i=0;i<data.length;i++){
+                                
+                                str += templateDiv(data[i]);  
+                        }
+                        if(data.length < 10){
+                            endFlag=true;
+                            str+=templateDivEnd();
+                        }
+                    }else{
+                         
+                        if(pageIndex == 1){
+                             endFlag=true;
+                            str=templateDivEmpty('无关注拍品')
+                        }else{
+                            endFlag = true;
+                            str=templateDivEnd();   
+                        } 
+                        
+                     }
+                        
+                     if(readyIn){
+                         $('#auctionDiv').html(str);
+                     }else{
+                         $('#auctionDiv').append(str); 
+                     }
+                        
+                     $('.toAuction').click(function(){
+                             var date=$(this).attr('date'); 
+                             appcan.locStorage.val('auctionId',this.id);
+                             appcan.openWinWithUrl("auction_details","../auction/auction_details.html");
+                             
+                     })
+                 
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+
+            }
+            
+            getRequestAjax(getFollowUrl,data,callback);
+        }
+        
+        
+        function templateDiv(dataJson){
+            
+                                
+            var thumb=gerImgThumbUrl(dataJson.Thumb);                    
+            var str='<div class="ub ub-pc toAuction" id='+dataJson.ForeignId+'  style="width:96%;margin:auto;border-bottom:0.05em solid #C9C9C9;color:#8F8C8C;">'
+                       +'<div class="ub-img1" style="padding:0.2em;width:30%;height:5em;">' 
+                           +'<img style="width:100%;height:100%;" src='+thumb+'>' 
+                       +'</div>' 
+                       +'<div class="ub ub-ver ub-f1" style="margin:0em 0.5em;height:5em;">' 
+                            +'<div style="color:red;margin-bottom:0.5em;">￥'+dataJson.Price+'</div>' 
+                            +'<div  style="width:100%;">'+dataJson.Title+'</div>'
+                        +'</div>' 
+                     //   +'<div class="ub ub-ac ub-pc" style="padding-right:0.5em;">'
+                      //        +'<div class="fa fa-angle-right fa-2x"></div>'
+                     //   +'</div>'    
+                    +'</div>'    
+            return str;
+        }
+        
+         
+
+    </script>
+</html>

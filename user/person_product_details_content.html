@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2"  ontouchstart>
+              <!--<div id="back" class="ub " style="position: fixed;top: 1em;left:.4em;z-index: 99;width: 4em;height: 4em;">
+                <div class="round  ub  ub-ac ub-pc" >
+                    <div class="fa fa-angle-left fa-2x" style="color: #746E6E;margin-right:.1em;"></div>
+                </div>
+            </div>-->
+            <div class="uinput ub ub-f1">
+                <div id="slider" class="slider"></div>
+
+            </div>
+    <div class="ub uinn bc-bg ub-ac" id='showTitle'>
+                <div class="ub-f1 ub ub-pc ub-ac uh-de2 textb2 bold ubr bc-border " id='Title'>
+
+                </div>
+
+            </div>
+            <div class="uinn bc-bg ub-ac" id='showDec'>
+                <div class="ub-f1 ub ub-pc textb2 ubr bc-border w-full " style="line-height: 1;display:block;word-break: break-all;word-wrap: break-word;" id='Content'>
+                    暂无描述
+                </div>
+            </div>
+            <div class="ub  ub-pc ub-ver bc-bg ubb bc-border" >
+                <div class="ub ub-ac ub-pc" id='showPrice'>
+                    <a class="t-red1" style="font-size: 1.5em;">￥</a><font class="textbs t-red1" style="font-size: 1.4em;" id='Price'></font>
+                </div>
+                <div class="ub ub-ac ub-pc ulev-4 gery umar-t ">
+                    <div class="ub-f1  uinn">
+                        被浏览<a id='view'></a>次
+                    </div>
+                </div>
+
+            </div>
+        <div id='ReplyTitle' class='open  uinn gery bc-bg ubb bc-border umar-t ' style="display: none;text-align: center">
+            专家鉴定报告
+        </div>
+        <div class="c-wh uinn-a7" id="like">
+            <div class=" uinn textb2 gery  bc-bg " id='ReplyItem' style="display: none">
+                <div id="ReplyExpertWay" class="ub ub-ac ub-f1 umar-a" >
+                    <div class='ub ub-ac ub-f1'>
+                        方式：<span id="ExpertWay" class="uinn-a7"></span>
+
+                    </div>
+                </div>
+                <div id="ReplyExpertPanel" class='ub ub-ac ub-f1 umar-a ' >
+                    <div class='ub-f1 ' >
+                        专家：<span id="ReplyExpert" style="padding-left: .4em;"></span>
+                    </div>
+                    <div class='expertDetail' >
+                        <img src="../img/identify/exp.png" style="width: 1.2em;height: 1.2em;"/>
+                    </div>
+                </div>
+
+                <!-- <div id="ReplyIdPanel" class='ub ub-ac ub-f1 uinn' >
+                    藏品分类：<span id="ReplyId" class="umar-l"><div id="ReplyBig"></div>/<div id="ReplySmall"></div></span>
+
+                </div>-->
+                <div id="ReplyNamePanel" class="ub ub-pc c-wh umar-a " style="background: #fff;">
+                    <div class='ub ub-ac ub-f1 c-org ' >
+                        名称：<a id="ReplyName" class="uinn-a7"></a>
+
+                    </div>
+                </div>
+
+                <div id="ReplyYearPanel" class='ub ub-ac ub-f1 umar-a ' >
+                    年代：<a id="ReplyYear" class="uinn-a7"></a>
+
+                </div>
+                <div id="ReplyPricePanel" class='ub ub-ac ub-f1 umar-a ' >
+                    估价：<a id="ReplyPrice" class="uinn-a7"></a>
+
+                </div>
+                <div id="ReplyDescPanel" class='ub ub-ac ub-f1 umar-a ' >
+                    评述：<a id="ReplyDesc" class="uinn-a7"></a>
+
+                </div>
+
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var tempData = [];
+        appcan.ready(function() {
+            getRely();
+        });
+        function getRely() {
+            var productId = appcan.locStorage.getVal("productId");
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "product/getproduct",
+                data : {
+                    productId : productId,
+                    pageIndex : 1,
+                    pageSize : 10,
+                    token : getToken()
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        var data = result.Data
+                        if (data.Title != '') {
+                         $("#Title").html('【'+data.Title+'】');
+                        } else {
+                            $("#showTitle").removeClass('ub').css('display','none');
+                        }
+
+                        if (data.Content != '') {
+                            $("#Content").html(data.Content);
+                        } else {
+                            $("#showDec").hide()
+                        }
+
+                        $("#view").html(data.View);
+                        if (data.Price != 0) {
+                            $("#Price").html(data.Price);
+                        } else {
+                            $("#showPrice").css("display", "none !important");
+                        }
+                        if (data.Identify != null) {
+                            if (data.Identify.ReplyName != null) {
+                                $("#ReplyTitle").css('display', 'block');
+                                $("#ReplyItem").css('display', 'block');
+                            }
+                            if (data.Identify.ExpertName == null) {
+                                $("#ExpertWay").html('随机专家鉴定');
+                            } else {
+                                $("#ExpertWay").html('指定专家鉴定');
+                                $("#ReplyExpert").html(data.Identify.ExpertName);
+                                appcan.locStorage.setVal("userId", data.Identify.ExpertId);
+                            }
+                            if (data.Identify.ReplyName == null) {
+                                $("#ReplyNamePanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyName").html(data.Identify.ReplyName);
+                            }
+
+                            if (data.Identify.ReplyYear == null) {
+                                $("#ReplyYearPanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyYear").html(data.Identify.ReplyYear);
+                            }
+                            if (data.Identify.CategoryId == null) {
+                                $("#ReplyIdPanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyBig").html(data.Identify.ParentCategoryName);
+                                $("#ReplySmall").html(data.Identify.CategoryName);
+                            }
+                            if (data.Identify.ReplyPrice == '' || data.Identify.ReplyPrice == null) {
+                                $("#ReplyPricePanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyPrice").html(data.Identify.ReplyPrice);
+                            }
+
+                            if (data.Identify.ReplyDesc == null) {
+                                $("#ReplyDescPanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyDesc").html(data.Identify.ReplyDesc);
+                            }
+                        }
+                        var iconArr = result.Data.Icon;
+                        var iconData = [];
+                        for (var i = 0; i < iconArr.length; i++) {
+                            iconData.push({
+                                img : imgNormalUrl + iconArr[i]
+                            });
+                            tempData.push(imgNormalUrl + iconArr[i]);
+                        }
+                        var slider = appcan.slider({
+                            selector : '#slider',
+                            aspectRatio : 6 / 16,
+                            hasLabel : true,
+                            index : 0,
+                            aspectRatio : 0.8,
+                            auto : 2000
+                        });
+                        slider.set(iconData);
+                        slider.on("clickItem", function(index, data) {
+                        });
+                        $("#slider").click(function() {
+                            appcan.locStorage.val('showimage', tempData.join('|'));
+                            appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                        });
+
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                },
+                offline : false
+            });
+        }
+
+        $(".expertDetail").click(function() {
+            uexWindow.open("expertDetail", "0", "../identify/expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+        function sendIdentify() {
+            appcan.locStorage.setVal('Appraisal', 'rand');
+            appcan.locStorage.setVal('payType','payIdentifyPer');
+            appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+        }
+       function sendAunction() {
+            var productId = appcan.locStorage.getVal("productId");
+            appcan.window.alert({
+                title : "提示",
+                content : "发布到拍卖，审核费用1元?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "product/ToAuction",
+                            data : {
+                                token : getToken(),
+                                productId : productId
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                    appcan.locStorage.val('fee', 1);
+                                    appcan.locStorage.val('realFee', 1);
+                                    appcan.locStorage.val('orderId', result.Data);
+                                    appcan.locStorage.val('payType', 'payAddAuctionProduct');
+                                    appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+        }
+           function sendRepository() {
+            var productId = appcan.locStorage.getVal("productId");
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "product/ToRepository",
+                data : {
+                    productId : productId,
+                    token : getToken()
+                },
+                dataType : 'json',
+                timeout : 300,
+                success : function(result) {
+                    if (result.Success) {
+                        appcan.window.alert({
+                            title : "提示",
+                            content : "入库成功"
+                        });
+                         appcan.locStorage.setVal('identifyYN', 'false');
+                        uexWindow.open("repository_index", "0", "../repository/repository_index.html", "", 0, 0, 0, 0, '', "0", 0);
+                        uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                        uexWindow.evaluateScript("person_product_details", 0, "closeWindow()");
+                        return;
+                    } else {
+                        uexWindow.toast("0", "5", result.Message, "2000");
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '网络异常!', "2000");
+                },
+                offline : false
+            });
+        }
+
+        appcan.button("#back", "btn-act", function() {
+            uexWindow.evaluateScript("person_product_details", 0, "closeWindow()");
+        })
+
+
+    </script>
+</html>

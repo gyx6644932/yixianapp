@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ac ub-ver" style="margin:0.5em 0em;">
+            <div class="ub ub-ac ub-pc" style="border-bottom:0.1em solid #EDEDED;width:95%;">
+                <div class="ub ub-ac ub-pc ub-img1" style="width:20%;">
+                    <img src="../img/img1/ticket.png" style="width:3.5em;height:1.8em;">
+                </div>
+                <div class="ub ub-ac ub-ver" style="width:50%;">
+                    <div class="ub ub-ac" style="margin:0em 0.5em;width:90%;">
+                        拍卖门票
+                    </div>
+                    <div class="ub ub-ac ulev-1" style="margin:0.5em;width:90%;color:#848484">
+                        需要拍卖出价时使用
+                    </div>
+
+                </div>
+                <div class="ub ub-ac" style="width:30%;">
+                    <div class="ub ub-ac ub-pe " style="width:90%;">
+                        <font id="albumTicket" style="color:red;">0</font>&nbsp;&nbsp;张
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            appcan.initBounce();
+            function actionTop() {
+
+                setAlbumTicket();
+                return;
+            }
+
+            initBounce(actionTop, 0);
+
+            setAlbumTicket();
+        });
+
+        function refresh() {
+            setAlbumTicket();
+        }
+
+        function setAlbumTicket() {
+
+            var getUserUrl = getUrl("user/getuser");
+
+            var data = {
+                token : getToken()
+            }
+
+            function callback(result) {
+                if(result.Success) {
+                    $("#albumTicket").text(result.Data.AlbumTicket);
+                }
+            }
+
+            getRequestAjax2(getUserUrl, data, callback);
+        }
+
+    </script>
+</html>

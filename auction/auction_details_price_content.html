@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg" id="bodyContent" ontouchstart>
+        <div class="ub ub-ac ub-pc ulev-1 ub-ver t-gra5 " id="priceList">
+            <table class="tx-c" style="width:100%;border:0em; border-collapse: collapse;background-color: #F8F8F8" id="tabContent" >
+              
+            </table>
+        </div>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+        var auctionId=appcan.locStorage.val('auctionId');
+        appcan.ready(function() {
+           
+            getBidList(true,1,false);
+            
+            function actionTop(){
+                
+                readyIn=true;
+                var nowPageIndex1=1;
+                var nowEndFlag1=false;  
+                getBidList(readyIn,nowPageIndex1,nowEndFlag1);
+                return ;
+            }
+           
+            function actionBottom(){
+               
+                var nowPageIndex2 = pageIndex + 1;
+                
+                if(!endFlag){
+                     readyIn=false; 
+                     getBidList(readyIn,nowPageIndex2,endFlag);
+                     return ;
+                }else{
+                      return ;  
+                } 
+            }
+
+            initBounce(actionTop,actionBottom); 
+            
+            
+        });
+        
+        function getBidList(readyIn,nowPageIndex,nowEndFlag){
+           
+            pageIndex=nowPageIndex;
+            endFlag=nowEndFlag;
+            var getBidListUrl=getUrl('auction/GetBidList');
+            var data={
+                pageindex:pageIndex,
+                pagesize:'10',
+                auctionid : auctionId
+            }
+            function callback(result){
+                
+                if(result.Success){
+                    var data=result.Data
+                    var str='';
+                    if(data.length !=0){
+                        for(var i=0;i<data.length;i++){
+                             str+=templateDiv(i,data[i]);
+                        }
+                        if(data.length < 10){
+                            
+                            endFlag=true;
+                            str+=templateDivEnd2();
+                        }
+                    }else{
+                        if(pageIndex == 1){
+                            endFlag=true;
+                            str=templateDivEmpty('无出价记录');
+                        }else{
+                            endFlag=true;
+                            str=templateDivEnd2();
+                        }
+                    }
+                    
+                    if(readyIn){
+                        $('#tabContent').html(str);
+                    }else{
+                        $('#tabContent').append(str); 
+                    }
+                }else{
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }
+            getRequestAjax(getBidListUrl,data,callback);
+        }
+        
+        function templateDiv(i,dataJson){
+            var len=dataJson.Nicename.length;
+            var name=dataJson.Nicename.substring(0,1)+'**'+dataJson.Nicename.substring(len-1,len);
+            var str=''
+            var date=formatDate(dataJson.CreateDate);
+            date=new Date(date).format("MM-dd hh:mm:ss");
+            if( i == 0 && pageIndex == 1){
+                str='<tr style="height:3em;">' 
+                          +'<td style="width:15%">状态</td>'
+                          +'<td style="width:15%">竞买号</td>'
+                          +'<td style="width:30%">价格</td>'
+                          +'<td style="width:40%">时间</td>'
+                     +'</tr>';
+                 str+='<tr class="tr-scuess" style="height:2em;">'
+                           +'<td><div class="firstDiv" style="margin:auto;">领先</div></td>'
+                           +'<td>'+name+'</td>'
+                           +'<td>￥'+dataJson.Price+'</td>'
+                           +'<td>'+date+'</td>'
+                      +'</tr>' 
+            }else if( i%2 == 0){
+                str='<tr class="tr-two" style="height:2em;">'
+                       +'<td><div class="twoDiv" style="margin:auto;">出局</div></td>'
+                       +'<td>'+name+'</td>'
+                       +'<td>￥'+dataJson.Price+'</td>'
+                       +'<td>'+date+'</td>'
+                    +'</tr>';
+            }else{
+                str='<tr style="height:2em;">'
+                       +'<td><div class="twoDiv" style="margin:auto;">出局</div></td>'
+                       +'<td>'+name+'</td>'
+                       +'<td>￥'+dataJson.Price+'</td>'
+                       +'<td>'+date+'</td>'
+                    +'</tr>';
+            }
+            return str;
+        }
+        
+        function templateDivEnd2(){
+            str='<tr style="height:2em;">'
+                       +'<td colspan="4"><div style="color:#d3d3d3;margin:auto;">没有更多</div></td>'
+                       
+                    +'</tr>';
+                    return str;
+        }
+        
+        
+        
+
+    </script>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div class="ub ub-ver ub-f1">
+            <div class="ub ub-ver"></div>
+        </div>
+        <div id="contentDiv"></div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        appcan.ready(function() {
+            document.getElementsByTagName('input').checked = true;
+            initBounce(actionTop, 0);
+            getRepositoryList();
+        });
+        function actionTop() {
+            appcan.window.evaluateScript("person_product", "Refresh()");
+            getRepositoryList();
+            return;
+        }
+
+        function getRepositoryList() {
+            var token = getToken();
+            var getRepositoryListUrl = getUrl('product/getuserproductlist');
+            var data = {
+                pageIndex : 1,
+                pageSize : 100,
+                userId : token
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    var str = '';
+                    if (data.length != 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            str += templateDiv(data[i], i);
+                        }
+                    } else {
+                        str = templateDivEmpty();
+                    }
+                    $('#contentDiv').html(str);
+
+                    $('.checkDetail').click(function() {
+                        appcan.locStorage.setVal('productId', this.id);
+                        appcan.openWinWithUrl('person_product_details', 'person_product_details.html');
+                    })
+                    $(".sendAgin").on("click", function() {
+                        var productId = this.id;
+                        appcan.locStorage.setVal('productId', productId);
+                        appcan.locStorage.setVal('Appraisal', 'rand');
+                        appcan.locStorage.setVal('payType', 'payIdentifyPer');
+                        appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+                    });
+                    $(".sendAunction").click(function() {
+                        var productId = this.id;
+                        appcan.window.alert({
+                            title : "提示",
+                            content : "发布到拍卖，审核费用1元?",
+                            buttons : ['确定', '取消'],
+                            callback : function(err, data, dataType, optId) {
+                                if (!err & data == "0") {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "product/ToAuction",
+                                        data : {
+                                            token : getToken(),
+                                            productId : productId
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                                appcan.locStorage.val('fee', 1);
+                                                appcan.locStorage.val('realFee', 1);
+                                                appcan.locStorage.val('orderId', result.Data);
+                                                appcan.locStorage.val('payType', 'payAddAuctionProduct');
+                                                appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+                                            } else {
+                                                uexWindow.toast("0", "5", result.Message, "2000");
+                                            }
+                                        },
+                                        error : function(xhr, type) {
+                                            uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                                        },
+                                        offline : false
+                                    });
+                                } else {false
+
+                                }
+                            }
+                        });
+
+                    })
+                    $(".pic").click(function() {
+                        if ($(this).hasClass('checkbox2')) {
+                            $(this).removeClass('checkbox2').addClass('checkbox1').css('background-color', 'rgba(0, 0, 0, 0.2)')
+                        } else if ($(this).hasClass('checkbox1')) {
+                            $(this).removeClass('checkbox1').addClass('checkbox2').css('background-color', 'rgba(0, 0, 0, 0)')
+                        }
+                    })
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    $('#contentDiv').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    });
+                }
+            }
+
+            getRequestAjax(getRepositoryListUrl, data, callback);
+        }
+
+        function templateDiv(dataJson, x) {
+            var w = $(document).width() * 9 / 20 + 'px';
+            var icon = gerImgThumbUrl(dataJson.Thumb);
+            str = "";
+            str += "<div class='ub uinn-ele3 floatl w-half' ><div class='ub ub-ver ub-f1 '>";
+            str += "<div class='bc-bg'>";
+            str += "<div id=" + dataJson.Id + "  class='checkDetail ub-f ub-fh ub ub-ac ub-pc'>";
+            str += " <img style='width:" + w + ";' src='" + icon + "'/>";
+            str += "</div>";
+            str += "<div class='sendButton ub umar-a7 bc-bg' style='height:2em;'>";
+            str += "<div class='sendAgin ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubl red' id=" + dataJson.Id + ">鉴定</div>";
+            str += "<div class='sendAunction ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubr ubl red' id=" + dataJson.Id + ">送拍</div></div></div></div>";
+            str += "<div id='" + dataJson.Id + "' class='pic checkbox2' x=" + x + " style='position:absolute;left: 0;width: 100%;height: 100%;z-index:99;display:none;'>";
+            str += "<input  type='checkbox' names='subChk'   name='f" + x + "'' value='" + dataJson.Id + "' style='position:absolute;right:20%;bottom:25%;z-index:-1'>";
+            str += "</div></div>";
+            return str;
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position: absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub gery uinn">' + '市场暂无您的藏品,请点击上传市场' + '</div></div>' + '</div>'
+            return str
+        }
+
+        function Refresh() {
+            getRepositoryList();
+            return;
+        }
+
+        function chkDelete() {
+            var checkedNum = $(".checkbox1").length;
+            if (checkedNum == 0) {
+                alert("请选择至少一项！");
+                return;
+            }
+            appcan.window.alert({
+                title : "提示",
+                content : "确定要将所选项目入库？",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        var checkedList = new Array();
+                        var text = "";
+                        $(".checkbox1").each(function() {
+                            checkedList.push(this.id);
+                        });
+                        Token = getToken();
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "product/ToRepositorys",
+                            data : {
+                                productIds : checkedList,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    getRepositoryList();
+                                    uexWindow.open("repository_index", "0", "../repository/repository_index.html", "", 0, 0, 0, 0, '', "0", 0);
+                                    uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                                    appcan.window.evaluateScript("person_product", "Refresh()");
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", result.Message, "2000");
+                            },
+                            traditional : true,
+                            offline : false
+                        });
+
+                    } else {false
+
+                    }
+                }
+            });
+
+        }
+
+        function edit() {
+            $(".sendButton").removeClass('ub').css("display", "none")
+            $(".pic").css("display", "block")
+        }
+
+        function finish() {
+            $(".sendButton").addClass('ub').css("display", "block")
+            $(".pic").css("display", "none")
+
+        }
+
+        function checkAll() {
+            appcan.window.evaluateScript("person_product", "cancelAll()");
+            if ($(".pic").hasClass('checkbox2')) {
+                $(".pic").removeClass('checkbox2').addClass('checkbox1').css('background-color', 'rgba(0, 0, 0, 0.2)');
+
+            }
+        }
+
+        function cancelAll() {
+            if ($(".pic").hasClass('checkbox1')) {
+                $(".pic").removeClass('checkbox1').addClass('checkbox2').css('background-color', 'rgba(0, 0, 0, 0)');
+
+            }
+        }
+
+    </script>
+</html>

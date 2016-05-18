@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="c-gra1 uinn-a1 ub ub-img7 ub ub-ver" style="background: #3099EC;">
+            <div class="ub ub-ac">
+                <div class="ub-f1 ">
+
+                </div>
+
+            </div>
+            <div class="ub ub-ac ub-ver">
+                <div class="ub-f1 ub ub-ac ub-pc">
+                    <div id='head' class="head pos_re umar-at2" style="margin-top:3em;">
+
+                    </div>
+
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pc">
+                    <div id='Nicename' class="umar-at1 white" style='word-wrap:break-word;width:7em;text-align: center'>
+
+                    </div>
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pc">
+                    <div id='Signature' class="umar-at1 white textb2">
+
+                    </div>
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pc">
+                    <div  class="umar-at1 white textb2">
+                        <a id='followMe'></a> 关注
+                    </div>
+                    <div class="umar-at1 white textb2 uinn-a7">
+                        |
+                    </div>
+                    <div class="umar-at1 white textb2">
+                        <a id='followUser'></a> 粉丝
+                    </div>
+                </div>
+                <div class="ub-f1 ub ub-pe">
+
+                    <div class="share round ub ub-ac ub-pc" style="display: none !important">
+                        <i class="fa fa fa-external-link fa-1x" style="color: #746E6E"></i>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="ub ub-ver ub-f1">
+            <div class="ubt bc-border c-wh uinn-a7" id="">
+                <div class="umar-t ub ub-ver">
+                    <div class='uinn2   ub '>
+                        <div class=' umw3   ub ub-pc' style="width: 50%" >
+                            <p class="addFollow p-like ub ub-ac ub-pc textb4 uinn uba bc-border5 gery fa fa-plus" style='color:#686B6D;margin-left: 4em;'>
+                                关注
+                            </p>
+                        </div>
+                        <div class='talk umw3  ub ub-pc' style="width: 50%">
+                            <p class="uc-a1 textb4 uinn uba bc-border5 gery fa fa-comment-o"  style='color:#686B6D;margin-right: 4em;'>
+                                私聊
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ub ub-ver ub-f1">
+            <div class="ubt ubb bc-border c-wh uinn-a7" id="">
+                <div class="umar-t ub ub-ver">
+
+                    <div class='uinn2 ub ub-pc' id="tablist">
+                        <div class="mine" id="mine-checked">
+                            TA发表的
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="showlist"></div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var userId = appcan.locStorage.getVal('userId');
+        appcan.ready(function() {
+            getMessage();
+            loadCon();
+            getUserById();
+        });
+
+        function loadCon() {
+            var getValidateFollowUrl = getUrl('user/ValidateFollow');
+            var data = {
+                type : 2,
+                foreignId : userId,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    $('.addFollow').css("color", "red").addClass('p-liking').removeClass('p-like').removeClass('fa-plus');
+                    $('.addFollow').html(" 已关注");
+                }
+            }
+
+            getRequestAjax(getValidateFollowUrl, data, callback);
+        }
+
+        function getUserById() {
+            var getUserByIdUrl = getUrl('user/getuserbyid');
+            var data = {
+                userid : appcan.locStorage.getVal('userId')
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var data = result.Data;
+                    $("#Nicename").html(data.Nicename);
+                    if(data.Signature == null ||data.Signature =='' ||data.Signature == 'null'){
+                      var signature = '';
+                    }else{
+                       signature = data.Signature;
+                    }
+                    $("#Signature").html(signature);
+                    $("#followMe").html(data.FollowUser);
+                    $("#followUser").html(data.FollowMe);
+                    $("#head").html('<img src="' + getImgNormalUrl(data.Avatar) + '"/>');
+                } else {
+
+                }
+            }
+
+            getRequestAjax2(getUserByIdUrl, data, callback);
+        }
+
+        function getMessage() {
+            Token = getToken();
+            userId = appcan.locStorage.getVal('userId');
+            data = {
+                pageindex : 1,
+                pagesize : 50,
+                token : Token,
+                userId : userId
+            }
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "/product/getuserproductlist",
+                data : data,
+                dataType : 'json',
+                timeout : 300,
+                beforeSend : function(xhr, settings) {
+                    uexWindow.toast("1", "5", "数据加载中...", "0");
+                },
+                success : function(result) {
+                    uexWindow.closeToast();
+                    if (result.Success === true) {
+                        data = result.Data;
+                        if (data.length > 0) {
+                            var str = "";
+                            var w = $(document).width() * 9 / 20 + 'px';
+                            for (var i = 0; i < data.length; i++) {
+                                var thumb = gerImgThumbUrl(data[i].Thumb);
+                                str += "<div class='ub uinn-ele3 floatl w-half' ><div class='ub ub-ver ub-f1 '>";
+                                str += "<div class='bc-bg'><div id=" + data[i].Id + "  class='market_details ub-f marketimg uwh-eleL ub-fh ub ub-ac ub-pc'  ><img style='width:" + w + ";margin-top:.5em;' src='" + thumb + "'/></div>";
+                                str += "<div class='ub umar-a7 b-black white' style='height: 2em;top: -1em;'>";
+                                if (data[i].Price != 0) {
+                                    str += "<div class='ub-f1 textb2 ub ub-ac ub-pc  bold'>￥" + data[i].Price + "</div>";
+                                } else {
+                                    str += "<div class='ub-f1 textb2 ub ub-ac ub-pc  bold'> </div>";
+
+                                }
+                                str += "<div class='ub-f1 textb2 ub ub-ac ub-pc '><i class='fa fa-eye'></i> " + data[i].View + "</div></div></div></div></div>";
+
+                            }
+                            $("#showlist").html(str);
+
+                            $(".market_details").click(function() {
+                                appcan.locStorage.setVal('productId', this.id);
+                                uexWindow.evaluatePopoverScript("market_details", "content", "Refresh()");
+                                appcan.openWinWithUrl('market_details', '../product/market_details.html');
+                            })
+                        } else {
+                            str = templateDivEnd();
+                            $("#showlist").html(str);
+
+                        }
+                    }
+                },
+                error : function(xhr, type) {
+                    uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                    //loadData(status);
+                },
+                offline : false
+            });
+        };
+
+        $('.addFollow').click(function() {
+            Token = getToken()
+            if (Token != null) {
+                var CNArray = this.classList;
+                for (var i = 0; i < CNArray.length; i++) {
+                    if (CNArray[i] == 'p-like') {
+                        var addFollowUrl = getUrl('user/addfollow');
+                        var data = {
+                            type : 2,
+                            foreignId : userId,
+                            token : Token
+                        }
+                        function callback(result) {
+                            if (result.Success) {
+                                $('.addFollow').css("color", "red").addClass('p-liking').removeClass('p-like').removeClass('fa-plus');
+                                $('.addFollow').html(" 已关注");
+                                uexWindow.toast("0", "5", "关注成功", "4000");
+                                Refresh();
+                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                var selectVal = 'followUser';
+                                var readyIn = true;
+                                var nowPageIndex = 1;
+                                var nowEndFlag = false;
+                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                return;
+                            }
+                        }
+
+                        getRequestAjax2(addFollowUrl, data, callback);
+                    } else if (CNArray[i] == 'p-liking') {
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "user/deletefollow",
+                            data : {
+                                type : 2,
+                                foreignId : userId,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    $('.addFollow').css("color", "#000").removeClass('p-liking').addClass('p-like').addClass('fa-plus');
+                                    $('.addFollow').html(" 关注");
+                                    uexWindow.toast("0", "5", "取消成功", "4000");
+                                    Refresh();
+                                    uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                    var selectVal = 'followUser';
+                                    var readyIn = true;
+                                    var nowPageIndex = 1;
+                                    var nowEndFlag = false;
+                                    uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                    return;
+                                }
+                            },
+                            offline : false
+                        });
+                        return;
+                    }
+                }
+            } else {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+
+        $("#tablist").click(function() {
+            $(this).children().each(function() {
+                if (this.className == 'mine-checked') {
+                    $(this).removeClass('mine-checked').addClass('mine');
+                }
+            });
+            var TA = event.target;
+            if (TA.className == 'mine') {
+                $(TA).removeClass('mine').addClass('mine-checked');
+            }
+
+            if (TA.id == 'mine-checked') {
+                $('#sub').css('display', 'block');
+                $('#like').css('display', 'none');
+            }
+            if (TA.id == 'mine') {
+                $('#sub').css('display', 'none');
+                $('#like').css('display', 'block')
+            }
+
+        });
+
+        appcan.button(".share", "ani-act", function() {
+            uexWindow.openPopover("share", "0", "share.html", "", 0, 0, 0, 0, '', "0", 0);
+        });
+
+        function Refresh() {
+            getUserById();
+            return;
+        }
+
+        function closepop3(reload) {
+            if (reload) {
+                loadData(0);
+            }
+            appcan.closePopover("share");
+        };
+        function templateDivEnd() {
+            var strEnd = '<div class="ub ub-ac ub-pc" style="position: absolute;top:3em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/nonthing.png" style="width:4em;height:4em;">' + '</div> ' + '<div class="ub gery uinn textb2">' + '抱歉，这位藏友' + '</div>' + '<div  class="ub gery uinn textb2">' + '比较懒，还没有发布东西哦！' + '</div></div>'
+            return strEnd;
+        }
+
+
+        $('.talk').click(function() {
+            if (getToken() != null) {
+                var talkUserId = appcan.locStorage.getVal('userId');
+                getmessage(talkUserId);
+                appcan.openWinWithUrl('talk', '../common/talk.html');
+            } else {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+    </script>
+</html>

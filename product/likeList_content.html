@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div id="likeCont"  style='margin: .5em .9em;'></div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+    <script>
+        flag = false;
+        var Token = '';
+        Token = getToken();
+        productId = appcan.locStorage.getVal('productId');
+        appcan.ready(function() {
+            load = true;
+            pageindex = 1;
+            loadLikeCont(load);
+            uexWindow.setBounce(1);
+            initBounce(mes1, mes2);
+        });
+        function mes1() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadLikeCont(load);
+            return;
+        }
+
+        function mes2() {
+            pageindex = pageindex + 1;
+            if (!flag) {
+                load = false;
+                str = loadLikeCont(load);
+            } else {
+                return;
+            }
+        }
+
+        function loadLikeCont(load) {
+            var loadLikeContUrl = getUrl('product/getfollowlist');
+            var data = {
+                pageindex : pageindex,
+                pagesize : 10,
+                productId : productId
+            };
+
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    var str = "";
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            str += likeCont(data[i]);
+                        }
+                        if (data.length < 10) {
+                            flag = true;
+                            str += templateDivEnd();
+                        }
+
+                    } else {
+                        flag = true;
+                        str = templateDivEnd2();
+                    }
+
+                    if (load) {
+                        $('#likeCont').html(str);
+                    } else {
+                        $('#likeCont').append(str);
+                    }
+                    $('.addFollowPer').click(function() {
+                        if (Token != null) {
+                            userId = this.id;
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 2,
+                                        foreignId : userId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.' + userId + '').attr("src", '../img/per_add.png').removeClass('p-star').addClass('p-staring');
+                                            uexWindow.toast("0", "5", "关注成功", "2000");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            var selectVal = 'followUser';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 2,
+                                            foreignId : userId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.' + userId + '').attr("src", '../img/per_unadd.png').removeClass('p-staring').addClass('p-star');
+                                                uexWindow.toast("0", "5", "取消成功", "2000");
+                                                uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                                var selectVal = 'followUser';
+                                                var readyIn = true;
+                                                var nowPageIndex = 1;
+                                                var nowEndFlag = false;
+                                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                                return;
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $('.makertUser').click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', '../user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("likeList", 0, "userinfo()");
+                        }
+
+                    })
+                }
+            };
+            getRequestAjax(loadLikeContUrl, data, callback);
+        }
+
+        function likeCont(data) {
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var id = data.Id;
+            var niceName = data.Nicename;
+            var signature = data.Signature;
+            str = "";
+            str += "       <div id='" + id + "' nicename='" + niceName + "' class='ub open  uinn gery bc-bg  ubb bc-border1 umar-b textb2'>";
+            str += "        <div id='" + id + "' class='makertUser ub umar-r'>";
+            str += "            <img src='" + avatar + "' />";
+            str += "        </div>";
+            str += "        <div class='ub ub-f1 ub-ver'>";
+            str += "            <div class='ub ub-f1'>";
+            str += "                " + niceName + "";
+            str += "            </div>";
+            str += "            <div class='ub ub-f1'>";
+            str += "                    <div class='ub-f1'>";
+            str += "                     个性签名： " + signature + "";
+            str += "                    </div>";
+            str += "            </div>";
+            str += "       </div>";
+            str += "   <div class='ub-f1 ub ub-ac'>";
+            str += "      <div class='addFollow p-star ub ub-ac ub-f1 ub-pe textb4 gery '>";
+            str += "          <div class='add-per uba bc-border umar-rr red1'>";
+            if (getToken() != id) {
+                if (data.IsFollow == true) {
+                    str += "<img id='" + id + "' class='" + id + " addFollowPer p-staring ' style='padding:.2em 1.3em .1em 1.3em;' src='../img/per_add.png'/>";
+                } else {
+                    str += "<img id='" + id + "' class='" + id + " addFollowPer p-star' style='padding:.2em 1.3em .1em 1.3em;color:red;' src='../img/per_unadd.png'/>";
+                }
+            }
+            str += "          </div>";
+            str += "      </div>";
+            str += "   </div>";
+
+            str += "      </div>";
+            return str;
+        }
+
+        function templateDivEnd() {
+            var strEnd = '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-ac ub-pc" style="color:#d3d3d3;margin:0.5em;">没有更多' + '</div>' + '</div>';
+
+            return strEnd;
+        }
+
+        function templateDivEnd2() {
+            var strEnd = '<div class="ub ub-ac ub-pc" style="position: absolute;top:3em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/nonthing.png" style="width:4em;height:4em;">' + '</div> ' + '<div class="ub gery uinn textb2">' + '暂时没有人喜欢' + '</div></div>'
+            return strEnd;
+        }
+
+        function Refresh() {
+            load = true;
+            flag = false;
+            pageindex = 1;
+            loadLikeCont(load);
+            return;
+        }
+
+    </script>
+</html>

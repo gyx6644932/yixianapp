@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+
+    <style type="text/css">
+        .input {
+            background-color: #FFFFFF;
+            border: none;
+            font-size: 1.2em;
+            width: 90%;
+            top: -.6em;
+            position: absolute;
+        }
+        .input:focus {
+            outline: none;
+            border: none;
+        }
+
+    </style>
+
+    <body class="um-vp bc-bg2" ontouchstart>
+        <!--      <div class="ub ub-ac ub-ver">
+        <div class="ub ub-ac ub-pc" style="margin-top:2em;">
+        <img src="../img/img2/log.png" style="width:4em;height:4em;">
+        </div>
+        <div class="ub ub-ac ub-pc" style="margin-top:1em;">
+        <img src="../img/img2/lgo_font.png" style="width:2.8em;height:1.4em;">
+        </div>
+        </div> -->
+        <div class="ub ub-ver uinn uinn-at1" style="padding-top:1.9em;">
+            <form method="post">
+
+                <div class="ub ub-ac ub-ver uc-a1 ">
+                    <div class="c-wh ub ub-ac ub-aj  uba b-gra3 " style="padding:0.5em 0em;width:99%;">
+                        <div style="padding:0.1em 1em;">
+                            <div class="fa fa-user" style="font-size:1.6em;color:#d7d7d7;"></div>
+                        </div>
+                        <div class="ub ub-ac" style="width:80%;">
+                            <input name="username" placeholder="手机号/昵称" type="text" class="input">
+                        </div>
+                    </div>
+
+                    <div class="c-wh ub ub-ac ub-aj ubb ubl ubr b-gra3" style="padding:0.5em 0em;width:99%;">
+                        <div style="padding:0.1em 1em;">
+                            <div class="fa fa-lock" style="font-size:1.6em;color:#d7d7d7;"></div>
+                        </div>
+                        <div class="ub ub-ac" style="width:80%;">
+                            <input name="password" placeholder=" 6-20位字母、数字和符号" type="password" class="input">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="ub ub-ver">
+
+                    <div class="uinn-at1" style="margin-top:1.9em;">
+                        <div class="btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1" id="submit" style="font-size: 1.2em;">
+                            登录
+                        </div>
+                    </div>
+
+                    <div class="uinn-at1" >
+                        <div class="btn ub ub-ac bc-text2 ub-pc uc-a1 reg" style="background-color: #00A1EA;font-size: 1.2em;" >
+                            注册一线账号
+                        </div>
+                    </div>
+
+                </div>
+                <div class=" umar-a uinn-at2 ub  sc-text-active ulev-4">
+                    <div class="ub-f1 ">
+
+                    </div>
+                    <div class="ub-f1 tx-r forget">
+                        忘记密码？
+                    </div>
+                </div>
+                <button type="submit"class="uinvisible"></button>
+            </form>
+
+        </div>
+
+        <div style="position: relative;width:94%;margin:auto;color:#989898">
+            <div style="position: absolute;top:0em;left:0em;width:35%;display:inline;text-align: center;">
+                <hr>
+            </div>
+            <div style="position: absolute;top:-0.7em;left:35%;width:30%;display:inline;text-align: center;font-size: 0.8em;">
+                第三方账号登录
+            </div>
+            <div style="position: absolute;top:0em;left:65%;width:35%;display:inline;text-align: center;">
+                <hr>
+            </div>
+        </div>
+        <div class="ub ub-ac ub-pj" style="margin:1.5em auto;width:40%;">
+            <div id="weixin">
+                <img src="../img/img2/weixin.png" style="width:3em;height:3em;">
+            </div>
+            <div id="QQ">
+                <img src="../img/img2/QQ.png" style="width:3em;height:3em;">
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        //QQ 参数
+        var appIdQQ = "1104692121";
+        //appIdQQ
+
+        //sina 授权参数
+        var appKeySina = "2130924509";
+        var appSecretSina = "0428a4fbf1e20144164df58909628894";
+        var registerUrlSina = "http://test.yx-app.com/api/common/connect?type=sina";
+
+        //weixin 参数
+        var appIdWX = "wx3fc9836dfc01e003";
+        var app_serectWX = "7aadf91a3a7e5cd68c70ce7c2054b221";
+        var app_keyWX = "FD3713980F6014B980D9FB057D544831";
+
+        var Token = '';
+        var localStorage = window.localStorage;
+        appcan.ready(function() {
+            var loginUrl = getUrl("user/login");
+            $("form").attr('action', loginUrl);
+
+            //QQ 登录监听回调
+            uexQQ.cbLogin = function(opId, dataType, data) {
+                var newData = JSON.parse(data);
+
+                if (newData.ret == 0) {
+                    var accessToken = newData.data.access_token;
+                    var openId = newData.data.openid;
+
+                    getRequestAjax2(getUrl("common/CheckConnect"), {
+                        type : 0,
+                        openId : openId
+                    }, function(result) {
+                        if (result.Success) {
+                            appcan.locStorage.setVal("Token", result.Data.Id);
+                            appcan.locStorage.setVal("UserId", result.Data.Id);
+                            appcan.locStorage.setVal("LoginDate", result.Data.LastLoginDate);
+
+                            for (key in result.Data) {
+
+                                if (key == 'Avatar') {
+                                    localStorage.setItem(key, gerImgThumbUrl(result.Data[key]));
+                                } else {
+                                    localStorage.setItem(key, result.Data[key]);
+                                }
+
+                            }
+
+                            uexWindow.evaluateScript("person", 0, "changeNew()");
+                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                            uexWindow.evaluatePopoverScript("market", "content", "Refresh()");
+                            uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+
+                            uexWindow.evaluateScript('login', 0, 'colseWindow()');
+                        } else {
+                            appcan.locStorage.setVal('type', "0");
+                            appcan.locStorage.setVal('accessToken', accessToken);
+                            appcan.locStorage.setVal('openId', openId);
+                            appcan.openWinWithUrl('regbind', 'regbind.html');
+                        }
+                    });
+                }
+            }
+            //weixin 授权回调
+            uexWeiXin.cbRegisterApp = function(opCode, dataType, data) {
+                // 微信登录
+                uexWeiXin.weiXinLogin('snsapi_userinfo,snsapi_base', 'wechat_sdk_demo_test');
+                //登录
+            }
+            //weixin 登录回调
+            uexWeiXin.cbWeiXinLogin = function(opId, dataType, data) {
+                if (data == 0) {
+                    uexWeiXin.getWeiXinLoginAccessToken(app_serectWX, 'authorization_code');
+                }
+            };
+
+            //weixin 获取access回调
+            uexWeiXin.cbGetWeiXinLoginAccessToken = function(opCode, dataType, data) {
+                var newData = JSON.parse(data);
+
+                uexWeiXin.getWeiXinLoginUnionID(newData.access_token, newData.openid);
+            }
+
+            uexWeiXin.cbGetWeiXinLoginUnionID = function(opCode, dataType, data) {
+                var newData = JSON.parse(data);
+
+                var avatar = newData.headimgurl;
+                var nickname = newData.nickname;
+                var openId = newData.openid;
+
+                getRequestAjax2(getUrl("common/CheckConnect"), {
+                    type : 1,
+                    openId : openId
+                }, function(result) {
+                    if (result.Success) {
+                        appcan.locStorage.setVal("Token", result.Data.Id);
+                        appcan.locStorage.setVal("UserId", result.Data.Id);
+                        appcan.locStorage.setVal("LoginDate", result.Data.LastLoginDate);
+
+                        for (key in result.Data) {
+
+                            if (key == 'Avatar') {
+                                localStorage.setItem(key, gerImgThumbUrl(result.Data[key]));
+                            } else {
+                                localStorage.setItem(key, result.Data[key]);
+                            }
+
+                        }
+
+                        uexWindow.evaluateScript("person", 0, "changeNew()");
+                        uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                        uexWindow.evaluatePopoverScript("market", "content", "Refresh()");
+                        uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+
+                        uexWindow.evaluateScript('login', 0, 'colseWindow()');
+                    } else {
+                        appcan.locStorage.setVal('type', "1");
+                        appcan.locStorage.setVal('avatar', avatar);
+                        appcan.locStorage.setVal('nickname', nickname);
+                        appcan.locStorage.setVal('openId', openId);
+                        appcan.openWinWithUrl('regbind', 'regbind.html');
+                    }
+                });
+            }
+        })
+
+        $("form").on('submit', function() {
+
+            appcan.request.postForm($("form"), function(data) {
+                var result = eval("(" + data + ")");
+
+                if (result.Success) {
+
+                    if (localStorage) {
+                        Token = result.Data.Token;
+                        localStorage.setItem("Token", Token);
+                        localStorage.setItem("UserId", result.Data.UserId);
+                        localStorage.setItem("LoginDate", result.Data.LoginDate);
+                    }
+
+                    var getUserUrl = getUrl("user/getuser");
+
+                    var data = {
+                        token : Token
+                    }
+
+                    function callback(result) {
+                        uexWindow.evaluatePopoverScript("identify-list", "content", "unsee()")
+                        for (key in result.Data) {
+
+                            if (key == 'Avatar') {
+                                localStorage.setItem(key, gerImgThumbUrl(result.Data[key]));
+                            } else {
+                                localStorage.setItem(key, result.Data[key]);
+                            }
+
+                        }
+
+                        uexWindow.evaluateScript("person", 0, "changeNew()");
+                        uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                        uexWindow.evaluatePopoverScript("market", "content", "Refresh()");
+                        uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+
+                        uexWindow.evaluateScript('login', 0, 'colseWindow()');
+
+                    }
+
+                    getRequestAjax(getUserUrl, data, callback);
+
+                } else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+            }, function(err) {
+
+            });
+            return false;
+
+        });
+
+        $("#weixin").click(function() {
+
+            uexWeiXin.registerApp(appIdWX);
+            //注册appid
+
+        })
+
+        $("#QQ").click(function() {
+            uexQQ.login(appIdQQ);
+
+        })
+
+        appcan.button(".reg", "ani-act", function() {
+            appcan.openWinWithUrl("reg", "reg.html");
+        })
+
+        appcan.button(".forget", "ani-act", function() {
+            appcan.openWinWithUrl("forget", "forget.html");
+        })
+
+        appcan.button("#submit", "ani-act", function() {
+            $("form").submit();
+        })
+
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+
+    </script>
+</html>

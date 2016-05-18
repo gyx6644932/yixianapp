@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" id="orderC" ontouchstart>
+       
+        <div id="allTypeDiv" >
+  
+          
+        </div>
+       
+       
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+   <script src="../js/appcan.listview.js"></script>
+   <script src="../js/common.js"></script>
+ </body>
+    <script>
+        var pageIndex='';
+        var endFlag='';
+        var readyIn='';
+        var orderTypeVal='';
+        var arrayOrder=[];
+        
+        var orderType= appcan.locStorage.val('orderType');
+        appcan.ready(function() {
+            
+            changeDiv(orderType,true,1,false)  
+          
+            function actionTop(){
+                readyIn=true;
+                var nowPageIndex=1;
+                nowEndFlag=false;  
+                changeDiv(orderTypeVal,readyIn,nowPageIndex,nowEndFlag);
+                return ;
+            }
+           
+            function actionBottom(){
+                var newPageIndex2 = pageIndex + 1;
+                if(!endFlag){
+                     readyIn=false;
+                     changeDiv(orderTypeVal,readyIn,nowPageIndex2,endFlag);
+                }else{
+                     return ;  
+                } 
+            }
+            initBounce(actionTop,actionBottom); 
+        });
+     
+  
+        function changeDiv(orderType,readyIn,nowPageIndex,nowEndFlag){
+            orderTypeVal=orderType;
+            pageIndex=nowPageIndex;
+            endFlag=nowEndFlag;
+            if(typeof endFlag !="boolean"){
+                endFlag = (endFlag == "true");
+            }
+            var getSellOrderListUrl=getUrl('auction/GetSellOrderList');
+            var data={
+                pageindex : pageIndex,
+                pagesize :'10',
+                Token : getToken()
+            };
+            
+            if(orderType == 'allOrder'){
+               // data['type']= ;
+            }else if(orderType == 'sellOrderWait'){
+                data['status']='0';
+            }else if(orderType == 'sellOrderNoSend'){
+                data['status']= '1';
+            }else if(orderType == 'sellOrderSend'){
+               data['status']='2' ;
+            }else if(orderType == 'sellOrderComplete'){
+                data['status']='3';
+            }
+            
+            function callback(result){
+                
+                if(result.Success){
+                    var data=result.Data
+                    var str='';
+                    if(data.length !=0){
+                        for(var i=0;i<data.length;i++){
+                            str+=templateDiv(data[i],i);
+                        }
+                        if(data.length < 10){
+                            endFlag=true;
+                            str+=templateDivEnd();
+                        }
+                    }else{
+                        
+                        if(endFlag){
+                            endFlag=true;
+                            str=templateDivEnd();
+                        }else{
+                            endFlag=true;
+                            str=templateDivEmpty('无卖家订单')
+                        }
+                    }
+                
+                    if(readyIn){
+                        $('#allTypeDiv').html(str);
+                    }else{
+                        $('#allTypeDiv').append(str); 
+                    }
+                }else {
+                    uexWindow.toast("0", "5", result.Message, "2000");
+                }
+
+            }
+           
+           
+            getRequestAjax(getSellOrderListUrl,data,callback);
+        }
+        
+        function templateDiv(dataJson,i){
+            var statuVal='';
+            bottomStr='';
+            var str='';
+            arrayOrder[i]=dataJson
+            var avatar=getImgNormalUrl(dataJson.Avatar);
+            var thumb=gerImgThumbUrl(dataJson.Thumb);
+            if(dataJson.Status == 0){
+                statuVal='待付款';
+               
+                 var str='<div class="ub ub-ac ub-pc ub-ver" style="width:100%;background-color:#ffffff;margin-top:1em;">'
+                                +'<div class="ub ub-pc" style="width:95%;margin-top:0.5em;">'
+                                   +'<div class="ub ub-img1">'
+                                      +'<img src='+thumb+' >'
+                                   +'</div>'
+                                   +'<div class="ub ub-f1" style="margin:0em 0.5em;">'
+                                      +dataJson.Content
+                                   +'</div>'
+                                   +'<div class="ub  ub-pc" style="color:red;">'
+                                       +statuVal
+                                   +'</div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pj" style="width:95%;margin:0.5em 0em;">'
+                                    +' <div >共<font class="blod"> 1 </font>件</div>'
+                                    +' <div >￥<font class="blod">'+dataJson.Price+'</font></div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;border-bottom:0.1em solid #dcdcdc;">'
+                                    +'<div class="ub ub-ac ub-pc">实付:￥<p class="blod" style="color:red;">'+dataJson.Price+'</p></div>'
+                                +'</div>'
+                                 
+                        +'</div>';
+                  
+            }else if(dataJson.Status == 1){
+                
+                statuVal='待发货';
+                 var str='<div class="ub ub-ac ub-pc ub-ver" style="width:100%;background-color:#ffffff;margin-top:1em;">'
+                                +'<div class="ub ub-pc" style="width:95%;margin-top:0.5em;">'
+                                   +'<div class="ub ub-img1">'
+                                      +'<img src='+thumb+' >'
+                                   +'</div>'
+                                   +'<div class="ub ub-f1" style="margin:0em 0.5em;">'
+                                      +dataJson.Content
+                                   +'</div>'
+                                   +'<div class="ub  ub-pc" style="color:red;">'
+                                       +statuVal
+                                   +'</div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pj" style="width:95%;margin:0.5em 0em;">'
+                                    +' <div >共<font class="blod"> 1 </font>件</div>'
+                                    +' <div >￥<font class="blod">'+dataJson.Price+'</font></div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;border-bottom:0.1em solid #dcdcdc;">'
+                                    +'<div class="ub ub-ac ub-pc">实付:￥<p class="blod" style="color:red;">'+dataJson.Price+'</p></div>'
+                                +'</div>'
+                                 +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;">'
+                                    +'<div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2 confirmGoodsBtn" onclick="addressBtn('+i+')"  style="margin-left: 0.5em;">买家地址</div>'
+                                 +'<div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2 confirmGoodsBtn" onclick="sendGoods('+i+')"  style="margin-left: 0.5em;">确认发货</div>'
+                                +'</div>'
+                        +'</div>'
+                        
+                
+            }else if(dataJson.Status == 2){
+                statuVal='待收货';
+                 var href="http://m.kuaidi100.com/index_all.html?type="+dataJson.ExpressCode+"&postid="+dataJson.ExpressNumber;
+                 var str='<div class="ub ub-ac ub-pc ub-ver" style="width:100%;background-color:#ffffff;margin-top:1em;">'
+                                +'<div class="ub ub-pc" style="width:95%;margin-top:0.5em;">'
+                                   +'<div class="ub ub-img1">'
+                                      +'<img src='+thumb+' >'
+                                   +'</div>'
+                                   +'<div class="ub ub-f1" style="margin:0em 0.5em;">'
+                                      +dataJson.Content
+                                   +'</div>'
+                                   +'<div class="ub  ub-pc" style="color:red;">'
+                                       +statuVal
+                                   +'</div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pj" style="width:95%;margin:0.5em 0em;">'
+                                    +' <div >共<font class="blod"> 1 </font>件</div>'
+                                    +' <div >￥<font class="blod">'+dataJson.Price+'</font></div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;border-bottom:0.1em solid #dcdcdc;">'
+                                    +'<div class="ub ub-ac ub-pc">实付:￥<p class="blod" style="color:red;">'+dataJson.Price+'</p></div>'
+                                +'</div>'
+                                 +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;">'
+                                       +'<div class="btn bc-btn6 ub ub-ac ub-pc  uc-a1 ulev-1 bc-text2 " onclick="checkLogistics('+i+')"  style="margin-left: 0.5em;">查看物流</div>'
+
+                                +'</div>'
+                                
+                        +'</div>'
+            }else if(dataJson.Status == 3){
+                statuVal='完成订单'
+                  var str='<div class="ub ub-ac ub-pc ub-ver" style="width:100%;background-color:#ffffff;margin-top:1em;">'
+                                +'<div class="ub ub-pc" style="width:95%;margin-top:0.5em;">'
+                                   +'<div class="ub ub-img1">'
+                                      +'<img src='+thumb+' >'
+                                   +'</div>'
+                                   +'<div class="ub ub-f1" style="margin:0em 0.5em;">'
+                                      +dataJson.Content
+                                   +'</div>'
+                                   +'<div class="ub  ub-pc" style="color:red;">'
+                                       +statuVal
+                                   +'</div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pj" style="width:95%;margin:0.5em 0em;">'
+                                    +' <div >共<font class="blod"> 1 </font>件</div>'
+                                    +' <div >￥<font class="blod">'+dataJson.Price+'</font></div>'
+                                +'</div>'
+                                +'<div class="ub ub-ac ub-pe" style="width:95%;margin:0.5em 0em;border-bottom:0.1em solid #dcdcdc;">'
+                                    +'<div class="ub ub-ac ub-pc">实付:￥<p class="blod" style="color:red;">'+dataJson.Price+'</p></div>'
+                                +'</div>'
+                        +'</div>';
+            }
+            var avatar=getImgNormalUrl(dataJson.Avatar);
+            
+            var thumb=gerImgThumbUrl(dataJson.Thumb);
+            
+               return str; 
+        }
+            
+        function sendGoods(i){
+            var id=arrayOrder[i].Id
+            appcan.locStorage.val('orderSendId',id);
+            appcan.locStorage.val('pageName','orderSend');
+            uexWindow.open("push", "0", "push.html", "", 0, 0, 0, 0, '', "0", 0);
+
+        }
+       
+        
+        function addressBtn(i){
+            var id=arrayOrder[i].Id
+            appcan.locStorage.val('orderId',id);
+           
+            appcan.openWinWithUrl('order_buy_address','../common/order_buy_address.html');
+        }
+        
+         function checkLogistics(i){
+            var dataJson=arrayOrder[i];
+            var orderId=dataJson.Id;
+            appcan.locStorage.val('orderId',orderId);
+            appcan.openWinWithUrl("order_logistics","../common/order_logistics.html");
+        }
+      
+       
+   
+ </script>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+         <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="uh">
+               <div class="bc-text-head ub bc-head">  
+                   <div class="nav-btn" id="nav-left">
+                     <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">卖家订单</h1>
+                <div class="nav-btn nav-bt" id="nav-right"></div>
+               </div>
+               <div class="ub ub-ac ub-pc" style="padding:0.5em 0em 0em;border-bottom: 0.1em solid #DADADA;width:100%;" id="checkList">   
+                    <div class="div-noChecked" id="allOrder">全部</div>
+                    <div class="div-noChecked" id="sellOrderWait">待付款</div>
+                    <div class="div-noChecked" id="sellOrderNoSend">待发货</div>
+                    <div class="div-noChecked" id="sellOrderSend">待收货</div>
+                    <div class="div-noChecked" id="sellOrderComplete">完成订单</div>
+              </div> 
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l">
+
+            </div>
+            <!--content结束-->
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+    </body>
+    <script>
+        var orderType= appcan.locStorage.val('orderType');
+        
+        appcan.ready(function() {
+            var titHeight = $('#header').offset().height;
+            appcan.frame.open("content", "order_seller_content.html", 0, titHeight);
+            window.onorientationchange = window.onresize = function() {
+                appcan.frame.resize("content", 0, titHeight);
+            }
+             //接收person页面传递过来的值 
+            changeCheckList(orderType);
+        });
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+        
+         //订单导航栏的效果切换
+        $("#checkList").click(function(){
+              var currentObj=event.target;
+              if(currentObj.id != 'checkList'){
+                  
+                  
+                   orderType=currentObj.id;
+                   changeCheckList(orderType);
+              }
+              
+         })
+         
+         function changeCheckList(orderType){
+             $("#checkList").children().each(function(){
+                   if(this.className == 'div-checked'){
+                       $(this).removeClass('div-checked').addClass('div-noChecked');
+                   }
+              });
+              var obj=$('#'+orderType +'');
+              obj.removeClass('div-noChecked').addClass('div-checked');
+              
+             var readyIn=true;
+             var nowPageIndex=1;
+             var nowEndFlag=false;
+             uexWindow.evaluatePopoverScript('order_seller',"content","changeDiv('"+orderType+"','"+readyIn+"','"+nowPageIndex+"','"+nowEndFlag+"')")
+         }
+         
+       
+         
+
+    </script>
+</html>

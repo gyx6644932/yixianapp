@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+       <div id="content">
+           
+       </div>
+       <div class="ub ubt bc-border bc-bg  umar-t" >
+
+                <div class="deleteaddress ub  ub-ac uinn red textb" >
+                                                                          删除收货地址
+                </div>
+
+       </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    
+    </body>
+    <script>
+       var addressId= appcan.locStorage.val('addressId');
+        appcan.ready(function() {
+            getaddress ()
+        });
+        
+         function getaddress () {
+                 var getUserUrl=getUrl("user/getaddress");
+             
+                     var data = {
+                         id : addressId,
+                         token : getToken()
+                         }
+                    function callback(result){
+                      if (result.Success) {
+                  
+                            var str =''
+                            var data=result.Data;
+                    
+                            str += "<div class='ub ubt bc-border bc-bg  umar-t ' >";
+                            str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>收货人</div>";
+                            str += "<div class=' ub ub-f4 ub-ac uinn bold'>" + data.Name + "</div></div>";
+                            str += "<div class='ub ubt bc-border bc-bg'>";
+                            str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>手机号码</div>";
+                            str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Mobile+"</div> </div>";
+                            str += "<div class='ub ubt bc-border bc-bg  ' >";
+                            str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'> 邮政编码</div>";
+                            str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.ZipCode+"</div></div>";
+                            str += " <div class='ub ubt bc-border bc-bg  ' >";
+                            str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>所在地区</div>";
+                            str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Area+"</div></div>";
+                           // str += "<div class='ub ubt bc-border bc-bg  ' >";
+                           // str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>街道 </div>";
+                           // str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Street+"</div> </div>";
+                            str += "<div class='ub ubt bc-border bc-bg  ' >";
+                            str += "<div class=' ub  ub-ac uinn gery' style='width: 5em;'>详细地址</div>";
+                            str += " <div class=' ub ub-f4 ub-ac uinn bold'>"+data.Detail+"</div></div>";
+                            
+                            $("#content").html(str); 
+                        }
+             }
+                getRequestAjax(getUserUrl,data,callback);
+         }
+
+        
+        //设置默认地址
+        function updateDefaultAddress(){
+            
+            var updateDefaultAddressUrl=getUrl('user/UpdateDefaultAddress');
+            var data = {
+                         id : addressId,
+                         token : getToken()
+             }
+             
+             function callback(result){
+                 if(result.Success){
+                     uexWindow.toast("0", "5", result.Message, "2000");
+                     uexWindow.evaluateScript('address_edit',0,'close()');
+                     var readyIn=true;
+                     var pageIndex=1;
+                     var endFlag=false;
+                     var firstInfo=true;
+                     uexWindow.evaluatePopoverScript('address_list','content','getaddresslist("'+readyIn+'","'+pageIndex+'","'+endFlag+'","'+firstInfo+'")');  
+                 }else{
+                     uexWindow.toast("0", "5", result.Message, "2000");
+                     
+                 }
+             }
+             getRequestAjax(updateDefaultAddressUrl,data,callback);
+            
+        }
+        
+        $(".deleteaddress").click(function(){
+            appcan.window.alert({
+                  title : "提示",
+                  content : "您是否确认删除该收货地址?",
+                  buttons : ['确定', '取消'],
+                  callback : function(err, data, dataType, optId) {
+                      if(data==0){
+                             var getUserUrl=getUrl("user/deleteaddress");
+                             var data = {
+                                     id : addressId,
+                                     token : getToken()
+                                 }
+                            function callback(result){
+                                 uexWindow.evaluateScript('address_edit',0,'close()');
+                                  var readyIn=true;
+                                  var pageIndex=1;
+                                  var endFlag=false;
+                                  
+                                  var firstInfo=true;
+                                  uexWindow.evaluatePopoverScript('address_list','content','getaddresslist("'+readyIn+'","'+pageIndex+'","'+endFlag+'","'+firstInfo+'")');  
+                                 uexWindow.toast("0", "5", '成功删除地址', "2000");
+                                
+                            }
+                            getRequestAjax(getUserUrl,data,callback);
+                           
+                      }else if(data == 1){
+                          return ;
+                      }
+          
+                  }
+            }); 
+        
+        })
+
+    </script>
+</html>

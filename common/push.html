@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <style type="text/css">
+     
+    </style>
+    
+    <body class="um-vp" style="background-color:rgba(0, 0, 0, 0.3);" ontouchstart>
+        <div id="close" class="close ub ub-fv ub-fh urel  ub-pc "></div>
+         <div class="ub" id="pushBody" style="position: absolute;top:30%;width:100%;">
+             
+         </div>
+         <div class="ub ub-ver bc-bg2" style="bottom: 0%;position: absolute;width: 100%;margin: 0 auto;" id="templetaDiv">
+                  
+         </div>
+      
+
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        
+      appcan.ready(function() {
+          
+          
+           $('#close').click(function(){
+                 appcan.window.close(-1);          
+           })
+           
+           
+           var templetaDiv=$("#templetaDiv")
+           templetaDiv.empty();  
+           pageName=appcan.locStorage.getVal('pageName');
+           
+           if(pageName == 'reply3_push'){
+               
+               var str='<div class="market ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;">推送到市场</div>'
+               +'<div class="auction ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;">推送到拍卖</div>' 
+               +'<div class="ub ub-ac ub-pc uinn bc-bg" style="margin-top: .4em;" onclick="closepop()">取消 </div>';
+               templetaDiv.html(str);  
+              $(".market").click(function(){
+                   alert('功能尚未开放')
+               })
+                $(".auction").click(function(){
+                   alert('功能尚未开放')
+               })    
+           }else if(pageName == 'auction_ticket'){
+              auctionTicket();
+             
+           } else if(pageName == 'reply3_share'){
+                          var str='<div class="ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;">鎺ㄩ�鍒板競鍦�/div>'
+                          +'<div class="ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;">鎺ㄩ�鍒版媿鍗�/div>' 
+                          +'<div class="ub ub-ac ub-pc uinn bc-bg" style="margin-top: .4em;" onclick="closepop()">鍙栨秷 </div>';
+
+                          templetaDiv.html(str);
+                          
+
+               templetaDiv.html(str);
+               
+       
+
+           }else if(pageName == 'order_content'){
+               orderContent();
+               
+           }else if(pageName == 'auction_bidding'){
+               auction_bidding();
+           }else if(pageName == 'confirm'){
+             var str='<div class="ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;" onclick="pConfirm()">确定</div>'
+               +'<div class="ub ub-ac ub-pc uinn bc-bg" style="margin-top: .4em;" onclick="closepop()">取消 </div>';
+
+               templetaDiv.html(str);
+           }else if(pageName == 'csex'){
+            var str='<div class="ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;color: rgb(11, 135, 250);" onclick="cboy()">男</div>'
+               +'<div class="ub ub-ac ub-pc uinn ubb bc-border bc-bg" style="padding: 1em;color: rgb(11, 135, 250);" onclick="cgirl()">女</div>' 
+               +'<div class="ub ub-ac ub-pc uinn bc-bg" style="margin-top: .4em;color: rgb(11, 135, 250);" onclick="closepop()">取消 </div>';
+               
+               templetaDiv.html(str);
+            }else if(pageName == 'orderSend'){
+                orderSend();
+            }
+     
+   })
+
+  
+    function closepop() {
+            appcan.window.close(-1);
+        }
+
+
+   
+   
+   function pConfirm() {
+             Id = appcan.locStorage.getVal('addressId');
+             var Token='';
+             Token = getToken();   
+             var getUserUrl=getUrl("user/deleteaddress");
+                      
+                     var data = {
+                        id : Id,
+                         token : Token
+                         }
+                    function callback(result){
+                       uexWindow.toast("0", "5", '成功删除地址', "2000");
+                      
+                        appcan.closePopover("push");
+                    }
+                     getRequestAjax(getUserUrl,data,callback);
+        
+        }
+      function cboy() {
+             var Token='';
+             Token = getToken();   
+             var getUserUrl=getUrl("user/updatesex");
+                      
+                     var data = {
+                         sex : 0,
+                         token : Token
+                         }
+                    function callback(result){
+                       uexWindow.toast("0", "5", '设置成功', "2000");
+                       appcan.locStorage.setVal('Sex', '0');
+                       uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                       uexWindow.evaluatePopoverScript('person_infor', 'content', 'Refresh()');
+                        appcan.window.close(-1);
+
+                    }
+                     getRequestAjax(getUserUrl,data,callback);
+        
+        }
+       function cgirl() {
+             var Token='';
+             Token = getToken();   
+             var getUserUrl=getUrl("user/updatesex");
+                      
+                     var data = {
+                         sex: 1,
+                         token : Token
+                         }
+                    function callback(result){
+                       uexWindow.toast("0", "5", '设置成功', "2000");
+                       appcan.locStorage.setVal('Sex', '1');
+                       uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                       uexWindow.evaluatePopoverScript('person_infor', 'content', 'Refresh()');
+                        appcan.window.close(-1);
+                    }
+                     getRequestAjax(getUserUrl,data,callback);
+        
+        }
+        
+        
+        function auctionTicket(){
+              
+              var albumTicket=getLocalStorageParme('AlbumTicket');
+              var strAlbumTicket='<div class="ub ub-ac ub-pc" style="height:3em;width:50%;background-color:red;color:#ffffff;" id="ticketBtn">门票进入</div>';
+              if(albumTicket == null){
+                    albumTicket =0;
+                    strAlbumTicket='<div class="ub ub-ac ub-pc" style="height:3em;width:50%;background-color:#BEBEBE;color:#ffffff;" id="ticketBtn">门票进入</div>';
+              }
+                  
+              var str="<div class='ub ub-ac ub-ver popWindow' style='border:0.1em solid #E0E0E0'>"
+                                   
+                                   +"<div class='ub ub-ac ub-ver' style='width:100%;'>"
+                                             +'<div class="ub ub-ac ub-pc ub-pc" style="height:4em;width:100%;" >我的场次票有:&nbsp;&nbsp;<font color="red">'+albumTicket+'</font>&nbsp;&nbsp;张'     
+                                             +'</div>'
+                                             
+                                   +"</div>"
+                                    +"<div class='ub ub-ac ub-pj' style='width:90%;margin:2em auto;'>"
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn1' id='ticketBtn'>使用门票</div>"
+                                      
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn2' id='ticketBuy' >购买门票</div>"
+                                   +"</div>"
+                       +"</div>";
+                     
+               $("#pushBody").html(str);
+              
+               $("#ticketBtn").click(function(){
+                   var type='0';
+                   var albumId=appcan.locStorage.val('albumId');
+                   var data={
+                       type : type,
+                       albumId :albumId,
+                       Token  : getToken()
+                   }
+                   var useTicketUrl =getUrl('auction/useticket');
+                   function callback(result){
+                       if(result.Success){
+                           var albumTicket=result.Data;
+                           setLocalStorageParme('AlbumTicket',albumTicket);
+                           
+                            uexWindow.evaluateScript('auction_list',0,'hasTicket(true)');
+                            
+                            var selectDate=appcan.locStorage.val('auctionStartDay');
+                            var albumTypeId=appcan.locStorage.val('albumTypeId');
+                            var readyIn=true;
+                            var nowPageIndex=1;
+                            var nowEndFlag=false;
+                            uexWindow.evaluatePopoverScript('auction_index','content','getAlbumList("'+selectDate+'","'+readyIn+'","'+nowPageIndex+'","'+nowEndFlag+'","'+albumTypeId+'")');
+                                           
+                            auction_bidding();
+                       }else{
+                           uexWindow.toast("0", "5", result.Message, "2000");
+                          
+                       }
+                   }
+                   getRequestAjax(useTicketUrl,data,callback);
+               })
+               
+               $("#ticketBuy").click(function(){
+                    appcan.window.close(-1);
+                    appcan.openWinWithUrl("buy_ticket","../common/buy_ticket.html");
+               })        
+               
+        }
+
+
+      
+  
+ 
+ function  auction_bidding(){
+            var detailContent=appcan.locStorage.val('auction_detailContent');
+            var auction_detailcurrentP=appcan.locStorage.val('auction_detailcurrentP');
+            var auctionInCrement=appcan.locStorage.val('auctionInCrement'); 
+            var minPrice=auction_detailcurrentP*1+auctionInCrement*1;
+            var warnPrice=auction_detailcurrentP*1+auctionInCrement*5;  
+            var str_minPrice="您出的最低价为：￥" +minPrice;                                          
+            var str="<div class='ub ub-ac ub-ver  popWindow' style='position:absolute;width:96%;left:2%;'>"
+                                  
+                                   +"<div class='ub ub-ac ub-pc ub-ver' style='width:100%;'>"
+                                       +"<div class='ub ub-ac ub-pc' style='width:100%;background-color:#E55847;color:#ffffff;'>"
+                                           +"<div class='ub ub-ac ub-pc' style='padding:1em 1.5em;'>当前价格："
+                                              +"￥<font id='bidding'>"+auction_detailcurrentP+"</font>"
+                                           +"</div>"
+                                        //   +"<div class='ub ub-ac ub-pc' style='padding:1em 1.5em;'>默认出价："
+                                        //      +"￥<font id='bidding'>"+auction_detailcurrentP+"</font>"
+                                        //   +"</div>"
+                                       +"</div>"
+                                       +"<div class='ub ub-ac ub-pc' style='margin: 1em 0em;width:55%;border-bottom:0.1em solid #E2E2E2'>"
+                                               +"<input type='number'  class='ub input' id='writeBidding'  placeholder="+str_minPrice+">"
+                                       +"</div>"
+                                       +"<div class='ub ub-ac ub-pc' id='warn' style='margin: 0.2em 0em;width:100%;color:#CCCCCC'>"
+                                              
+                                       +"</div>"     
+                                   +"</div>"
+                                   +"<div class='ub ub-ac ub-pj' style='width:60%;margin:1em auto 2em;'>"
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn1' style='padding:0.7em 2em;' id='biddingBtn'>确认</div>"
+                                       +"<div class='ub ub-ac ub-pc uc-a pushBtn2' style='padding:0.7em 2em;' onclick='closepop()' >取消</div>"
+                                   +"</div>"
+                       +"</div>";
+                       
+             $("#pushBody").html(str);
+             
+            
+              $('#writeBidding').focus();
+               $("#writeBidding").on('input',function(){
+                    var writeVal=$(this).val();
+                    var str='';
+                    if(writeVal >= warnPrice){
+                        
+                        $("#warn").html("已超过加价幅度的5倍");
+                        $("#warn").css('color','red');
+                        $(this).css('color','red');  
+                    }else{
+                        
+                        $("#warn").html("");
+                        $(this).css('color','#000000');  
+                         
+                    }
+                    
+                    
+                    
+                })
+               
+               $("#biddingBtn").click(function(){
+                   
+                    var r =/^[0-9]*[1-9][0-9]*$/   //正整数 
+                    if(!r.test($('#writeBidding').val())){
+                        uexWindow.toast("0", "5", '请以整数出价！', "2000");
+                        $('#writeBidding').val("");
+                        return;
+                    }
+                    
+                    
+                    if($('#writeBidding').val() < minPrice){
+                        uexWindow.toast("0", "5", '不能小于最低加价幅度！', "2000");
+                        $('#writeBidding').val("");
+                         return;   
+                    }
+                   
+                    
+                    var addBidUrl=getUrl('auction/addbid');
+                    var data={
+                        price : $('#writeBidding').val(),
+                        auctionid : appcan.locStorage.val('auctionId'),
+                        Token :getToken()
+                    }
+                    function callback(result){
+                        
+                       uexWindow.toast("0", "5", result.Message, "2000");
+                       if(result.Success){
+                            var auctionId=appcan.locStorage.val('auctionid');
+                       
+                            var readyIn=true;
+                            var pageIndex=1;
+                            var endFlag=false;
+                            uexWindow.evaluatePopoverScript("auction_list","content","getAuctionList('"+readyIn+"','"+pageIndex+"','"+endFlag+"')");
+                            uexWindow.evaluatePopoverScript("auction_details","content","start()");
+                            appcan.window.close(-1);
+                       } else {
+                       }
+                    }
+                     getRequestAjax(addBidUrl,data,callback);
+               })  
+   }
+   
+     
+
+ </script>
+</html>

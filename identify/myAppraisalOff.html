@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
+            <!--header开始-->
+            <div id="header" class="ubb bc-border uh bc-text-head ub bc-head">
+                <div class="nav-btn" id="nav-left">
+                    <div class="fa fa-angle-left fa-2x"></div>
+                </div>
+                <h1 class="ut ub-f1 ulev-3 ut-s tx-c" tabindex="0">
+                <p>
+                    线下鉴定
+                </p></h1>
+                <div class="nav-btn nav-bt" id="nav-right"></div>
+            </div>
+            <!--header结束--><!--content开始-->
+            <div id="content" class="ub-f1 tx-l umar-t">
+
+                <div id="expertList" class="ub-f1 tx-l"></div>
+            </div>
+            <!--content结束-->
+
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+
+    <script>
+        var flag = 0;
+        var Token = '';
+        var Token = getToken();
+        
+        function paySuccess(status, des) {
+            if (status == 0) {
+                appcan.openWinWithUrl("myAppraisal", 'myAppraisal.html');
+            }
+            document.getElementById('re').innerHTML = status + ' - ' + des;
+        }
+        
+        appcan.ready(function() {
+            loadData();
+            
+            uexAliPay.onStatus = paySuccess;
+        });
+
+        function closepop() {
+            appcan.closePopover("reply3");
+        }
+
+        function loadData() {
+
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "identify/GetOfflineIdentifyList",
+                data : {
+                    Token : Token,
+                    pageindex : 1,
+                    pagesize : 10
+                },
+                dataType : 'json',
+                timeout : 300,
+                beforeSend : function(xhr, settings) {
+                    uexWindow.toast("1", "5", "数据加载中...", "0");
+                },
+                success : function(result) {
+                    uexWindow.closeToast();
+
+                    if (result.Success == true) {
+
+                        $("#expertList").html("");
+
+                        if (result.Data != null) {
+                            var arrData = [];
+
+                            $.each(result.Data, function(index, row) {
+                                arrData.push({
+                                    "Id" : row.Id,
+                                    "ExpertAvatar" : imgThumbUrl + row.ExpertAvatar,
+                                    "Content" : row.Content,
+                                    "status" : row.Status,
+                                    "Price" : row.Price,
+                                    "Type" : row.Type
+
+                                });
+                            });
+                            str = "";
+                            for (var i = 0; i < arrData.length; i++) {
+                                zt = '';
+                                var display = "none";
+                                
+                                var typeStr = arrData[i].Type == 0 ? "个人申请":"微场申请";
+                                
+                                if (arrData[i].status == 0) {
+                                    zt = '待审核';
+                                } else if (arrData[i].status == 1) {
+                                    zt = '待付款';
+                                    display= "block";
+                                } else if (arrData[i].status == 2) {
+                                    zt = '进行中';
+                                } else if (arrData[i].status == 3) {
+                                    zt = '已完成';
+                                }
+                                str += "<div class='umar-a'><div class='ub' > <div class='ub '>";
+                                str += "<img src='../img/goods2.png' style='width: 4.2em;height: 4.2em;'/></div>";
+                                str += " <div class='ub ub-ver ub-f2 uinn textb2' > " + arrData[i].Content + "";
+                                str += "<div class='ub' > 鉴定状态：<a  class='red' >" + zt + "</a></div>";
+                                str += "<div class='ub' > 鉴定类型：<a >" + typeStr + "</a></div></div>";
+                                str += " <div class='ub-f1 ub ub-ac '>";
+                                str += "<a price="+ arrData[i].Price+" data="+ arrData[i].Type+" class='pay uinn' style='background: #F51313;color: #fff;display:"+display+";' id="+ arrData[i].Id +">付款</a></div></div> </div>";
+
+                                $("#expertList").html(str);
+                                
+                                $('.pay').click(function() {
+                   
+                                    if ($(this).attr("data") == 0) {
+                                        setInfo(5, this.id);
+                                         pay("个人鉴定申请", $(this).attr("price"));
+                                    } else {
+                                        setInfo(6, this.id);
+                                         pay("微场鉴定申请", $(this).attr("price"));
+                                    }
+                                })
+                            }
+
+                            var fee = '';
+                            function setInfo(Des, Data) {
+                                var partner = "2088911273341072";
+                                var seller = "alzxt20150301@zhengxitang.com";
+                                var rsaPrivate = 'MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMRLy4Ur574yCpfp0sc5rMlsQvzTBBmesJ3NoNS6gyfgKMlxy9Jf6Yz75R7Jk8aXuasz2fzI4qeEmlsdv1kctu3ncYDTLnhnX7gRWtrXLsc8ABWwlFVVJNqdZ0UBwU7tRGPkcYRC6BIKQQmWKoO1bpnSQ2XQyVhVtMiY+jAHXGrDAgMBAAECgYAjugfYvRz4qPL0o0IRsJWaM3IdwepFH3TVw8856JhmcY363BNUvtArMM2KxPV4d7T7S/yo3YcjJidR3iAtf+RrJtLAGREbUYgluysw/syoa1+YFexhCc0T+qcDiXgoju56aE8xzHuT2Uufv8EODiS6XtJMVvk8Gahtx0wTTYi9wQJBAOEHDC7yy8+7h/9ijl140yRoQ6ZQxkCzWBTQYhctgbVvvklbFOMcttOdWQHRLD7HOkikS0l0z33Cc6HNEz+hO20CQQDfUGGAUpZjBxnZojByNNquK7+4yKVwg2n8l5yuk2orJVDQR36/fF5e/95ZnIWqyjd0vvitU8gjOW0uQEljB7DvAkAq4rb1s5wYKPtQNq4/Lim/RIewCLDf384nmVc4Z5nSxEsVm+AtMGm/hrtR11WBWWLIOVeH1lU8+HQlH/pNJCM5AkEA2U2hozo6ZyC40eOWmvu9tHCT/t8YxhTK5OYvrF18mYGVUyfPOcxvFKiNmMvL8ncWYb+Xwypc/ZHbIX+jKf+I9wJAOW5itkP1z03Xab/4NelSQeubh/JwKIiszOLgikuplr+8z8ymbUa1mkxpyY2TLBv6SPtQDHcStnwdfLmt3SQUKg==';
+                                var rsaPublic = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDES8uFK+e+MgqX6dLHOazJbEL80wQZnrCdzaDUuoMn4CjJccvSX+mM++UeyZPGl7mrM9n8yOKnhJpbHb9ZHLbt53GA0y54Z1+4EVra1y7HPAAVsJRVVSTanWdFAcFO7URj5HGEQugSCkEJliqDtW6Z0kNl0MlYVbTImPowB1xqwwIDAQAB";
+                                var notifyUrl = 'http://www.yx-app.cn/common/paycallback?Type=' + Des + '&orderId=' + Data + '';
+
+                                uexAliPay.setPayInfo(partner, seller, rsaPrivate, rsaPublic, notifyUrl);
+
+                            }
+
+                            function pay(str, price) {
+                                var subject = str;
+                                var body = str;
+                                fee = price;
+                                var date = new Date();
+                                var num = Token + date.getTime();
+                        
+                                uexAliPay.pay(num, subject, body, fee);
+                            }
+
+                        } else {
+                            uexWindow.toast("0", "5", "没有数据！", "2000");
+                        }
+                    } else {
+                        uexWindow.toast("0", "5", result.Data, "2000");
+                    }

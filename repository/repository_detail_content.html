@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/main1.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart>
+        <div class="uinput ub ub-f1">
+            <div id="slider" class="slider"></div>
+        </div>
+        <div id="addressSite"></div>
+        <div id='ReplyTitle' class='open uinn gery bc-bg  bc-border umar-t ' style="display: none;text-align: center">
+            专家鉴定报告
+        </div>
+        <div id='ReplyItem' class='ubt bc-border bc-bg' style="display: none;">
+            <div id='replyShow' class="bc-bg uinn textb2">
+                <div id="ReplyExpertWay" class="ub ub-ac ub-f1 umar-a " >
+                    <div class='ub ub-ac ub-f1'>
+                        方式：<span id="ExpertWay"></span>
+                    </div>
+                </div>
+                <div id="ReplyNicenamePanel" class='ub ub-ac ub-f1 umar-a  ' >
+                    <div class='ub-f1 ' >
+                        专家：<span id="ReplyExpert" ></span>
+                    </div>
+                    <div class='expertDetail' >
+                        <img src="../img/identify/exp.png" style="width: 1.2em;height: 1.2em;"/>
+                    </div>
+                </div>
+                <!--  <div id="ReplyIdPanel" class='ub ub-ac ub-f1 uinn' >
+                藏品分类：<span id="ReplyId" ><div id="ReplyBig"></div>/<div id="ReplySmall"></div></span>
+
+                </div>-->
+
+                <div id="ReplyNamePanel" class="ub ub-pc umar-a" >
+                    <div class='ub ub-ac ub-f1 ' >
+                        名称：<span id="ReplyName"></span>
+
+                    </div>
+                </div>
+                <div id="ReplyYearPanel" class="ub ub-ac ub-f1 umar-a ">
+                    <div class='ub ub-ac ub-f1'>
+                        年代：<span id="ReplyYear"></span>
+
+                    </div>
+                </div>
+                <div id="ReplyPricePanel" class="ub ub-ac ub-f1 umar-a " >
+                    <div class='ub ub-ac ub-f1'>
+                        估价：<span id="ReplyPrice"></span>
+
+                    </div>
+                </div>
+                <div id="ReplyDescPanel" class="ub ub-ac ub-f1 umar-a " >
+                    <div class='ub'>
+                        <div class='ub'>
+                            评述：
+                        </div><div id="ReplyDesc" class="ub-f1" style="word-wrap:break-word; width:21em;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    <script>
+        var Token = '';
+        Token = getToken();
+        var tempData = [];
+        var IdentifyId = '';
+        var repositoryId = appcan.locStorage.getVal('repositoryId');
+        appcan.ready(function() {
+            getRepository();
+            uexAliPay.onStatus = paySuccess;
+        });
+        function getRepository() {
+            var getUserUrl = getUrl("Repository/GetRepository");
+            var data = {
+                repositoryId : repositoryId,
+                Token : Token
+            }
+            function callback(result) {
+                if (result.Success) {
+                    tempData = [];
+
+                    var data = result.Data;
+                    iconArr = result.Data.Icon;
+                    var iconData = [];
+                    for (var i = 0; i < iconArr.length; i++) {
+                        iconData.push({
+                            img : imgNormalUrl + iconArr[i]
+                        });
+                        tempData.push(imgNormalUrl + iconArr[i]);
+                    }
+                    var slider = appcan.slider({
+                        selector : '#slider',
+                        aspectRatio : 6 / 16,
+                        hasLabel : true,
+                        index : 0,
+                        aspectRatio : 0.8,
+                        auto : 4000
+                    });
+                    slider.set(iconData);
+                    slider.on("clickItem", function(index, data) {
+                    });
+                    $("#slider").click(function() {
+                        appcan.locStorage.val('showimage', tempData.join('|'));
+                        appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                    });
+                    var str = '';
+                    var categoryTitle = '';
+                    var categoryPrice = '';
+                    var categoryContent = '';
+                    var categoryName = '';
+                    var parentCategoryName = '';
+                    if (data.Title == null || data.Title == '') {
+                        categoryTitle = '<a>您的宝贝暂无名称</a>'
+                    } else {
+                        categoryTitle = data.Title;
+                    }
+                    if (data.Price == null || data.Price == '') {
+                        categoryPrice = '<a>您的宝贝暂无价格</a>'
+                    } else {
+                        categoryPrice = data.Price;
+                    }
+                    if (data.Content == null || data.Content == '') {
+                        categoryContent = '<a>您的宝贝暂无描述</a>'
+                    } else {
+                        categoryContent = data.Content;
+                    }
+                    if (data.CategoryName == null || data.CategoryName == '') {
+                        categoryName = '<a>您的宝贝暂无分类</a>'
+                    } else {
+                        categoryName = "/" + data.CategoryName;
+                        parentCategoryName = data.ParentCategoryName;
+
+                    }
+                    str += "<div class='ub  bc-bg  umar-t ' >";
+                    str += "<div id='title' class='ub ub-f4 ub-ac uinn '>" + categoryTitle + "</div></div>";
+                    str += "<div class='ub  bc-bg'>";
+                    str += "<div id='CategoryName' class='ub ub-f4 ub-ac uinn '>" + parentCategoryName + categoryName + "</div><div id='HaveCategory' style='display:none'>" + data.HaveCategory + "</div></div>";
+                    str += "<div class='ub  bc-bg  ' >";
+                    str += "<div id='Price' class='ub ub-f4 ub-ac uinn '>" + categoryPrice + "</div></div>";
+                    str += "<div class='ub  bc-bg  ' >";
+                    str += "<div id='ContentDesc' class='ub ub-f4 ub-ac uinn '>" + categoryContent + "</div> </div>";
+                    str += "<div class='ub ubt bc-border bc-bg'>";
+                    $("#addressSite").html(str);
+
+                    Identify = data.Identify;
+
+                    if (Identify != null) {
+                        IdentifyId = Identify.Id;
+                    }
+
+                    if (Identify != null && Identify.ReplyDesc != null) {
+                        $("#ReplyTitle").css('display', 'block');
+                        $("#ReplyItem").css('display', 'block');
+                        appcan.locStorage.val('RepositoryIdentify', Identify.id);
+                        if (Identify.ReplyName == null) {
+                            $("#ExpertWay").html('随机专家鉴定');
+                            $("#ReplyNamePanel").removeClass("ub").hide();
+                            $("#ReplyYearPanel").removeClass("ub").hide();
+                            $("#ReplyPricePanel").removeClass("ub").hide();
+                            $("#ReplyIdPanel").removeClass("ub").hide();
+                            $("#ReplyNicenamePanel").removeClass("ub").hide();
+                        } else {
+                            $("#ExpertWay").html('指定专家鉴定');
+                            $("#ReplyName").html(Identify.ReplyName);
+                            $("#ReplyExpert").html(Identify.ExpertName);
+                            $("#ReplyYear").html(Identify.ReplyYear);
+                            if (Identify.ReplyPrice == null || Identify.ReplyPrice == '') {
+                                $("#ReplyPricePanel").removeClass("ub").hide();
+                            } else {
+                                $("#ReplyPrice").html(Identify.ReplyPrice);
+                            }
+                            appcan.locStorage.setVal("userId", Identify.ExpertId);
+                        }
+                        $("#ReplyBig").html(Identify.ParentCategoryName);
+                        $("#ReplySmall").html(Identify.CategoryName);
+                        $("#ReplyDesc").html(Identify.ReplyDesc);
+                    } else {
+                        appcan.locStorage.val('RepositoryIdentify', '');
+                        $("#ReplyNicenamePanel").removeClass("ub").hide();
+                        $("#ReplyExpertWay").removeClass("ub").hide();
+                        $("#ReplyNamePanel").removeClass("ub").hide();
+                        $("#ReplyYearPanel").removeClass("ub").hide();
+                        $("#ReplyPricePanel").removeClass("ub").hide();
+                        $("#ReplyIdPanel").removeClass("ub").hide();
+                        $("#ReplyDescPanel").removeClass("ub").hide();
+                    }
+                }
+            }
+
+            getRequestAjax(getUserUrl, data, callback);
+        }
+
+
+        $(".expertDetail").click(function() {
+            uexWindow.open("expertDetail", "0", "../identify/expertDetail.html", "", 0, 0, 0, 0, '', "0", 0);
+        })
+        appcan.button(".nav-left", "btn-act", function() {
+            appcan.window.close(-1);
+
+        })
+        function repository() {
+            appcan.locStorage.val('RepositoryCategoryId', $('#CategoryId').text());
+            appcan.openWinWithUrl('repository_edit', 'repository_edit.html');
+        }
+
+        function sendAunction() {
+            appcan.window.alert({
+                title : "提示",
+                content : "发布到拍卖，审核费用1元?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "repository/ToAuction",
+                            data : {
+                                token : getToken(),
+                                repositoryId : repositoryId
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    uexWindow.toast("0", "5", '正在跳转,请稍后...', "4000");
+                                    appcan.locStorage.val('fee', 1);
+                                    appcan.locStorage.val('realFee', 1);
+                                    appcan.locStorage.val('orderId', result.Data);
+                                    appcan.locStorage.val('payType', 'payAddAuctionRepository');
+                                    appcan.openWinWithUrl('select_pay', '../common/select_pay.html');
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+        }
+
+        function sendMarket() {
+            appcan.window.alert({
+                title : "提示",
+                content : "确定要发布到市场?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        var HaveCategory = $('#HaveCategory').html();
+                        if (HaveCategory == "false") {
+                            uexWindow.toast("0", "5", "请完善藏品信息后再发布！", "2000");
+                            return;
+                        }
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "repository/ToProduct",
+                            data : {
+                                token : getToken(),
+                                repositoryId : repositoryId
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    uexWindow.toast("0", "5", '成功发布', "2000");
+                                    uexWindow.evaluatePopoverScript("person_product", "content", "Refresh()");
+                                    uexWindow.open("person_product", "0", "../user/person_product.html", "", 0, 0, 0, 0, '', "0", 0);
+                                    uexWindow.evaluateScript("repository_detail", 0, "closeWindow()");
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新加载!', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+        }
+
+        function sendIdentify() {
+            appcan.locStorage.setVal('Appraisal', 'rand');
+            appcan.locStorage.setVal('payType', 'payIdentifyRepository');
+            appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+        }
+
+
+        $(".delete").on("click", function() {
+            appcan.window.alert({
+                title : "提示",
+                content : "您是否要删除该藏品?",
+                buttons : ['确定', '取消'],
+                callback : function(err, data, dataType, optId) {
+                    if (!err & data == "0") {
+                        Token = getToken();
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "Repository/deleteRepository",
+                            data : {
+                                Repositoryid : repositoryId,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    appcan.window.alert({
+                                        title : "提示",
+                                        content : "删除成功"
+                                    });
+                                    uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                                    appcan.window.close(-1);
+                                    return;
+
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '您网络不给力,请重新尝试', "2000");
+                            },
+                            offline : false
+                        });
+                    } else {false
+
+                    }
+                }
+            });
+
+        });
+
+        function Refresh() {
+            getRepository();
+            return;
+        }
+    </script>
+</html>

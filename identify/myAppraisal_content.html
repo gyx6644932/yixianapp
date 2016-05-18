@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp " ontouchstart>
+        <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0"></div>
+        <div id="content" class="ub-f1 tx-l bc-bg2">
+            <div class="">
+                <div id="expertList" class="ub-f1 tx-l"></div>
+            </div>
+        </div>
+        </div>
+        <script src="../js/appcan.js"></script>
+        <script src="../js/appcan.control.js"></script>
+        <script src="../js/appcan.listview.js"></script>
+        <script src="../js/appcan.tab.js"></script>
+        <script src="../js/common.js"></script>
+    </body>
+
+    <script>
+        var tempData = [];
+        var clickFlag = false;
+        var flag = 0;
+        var Token = getToken();
+        var myAppraisalIndex = 0;
+        var product = appcan.locStorage.getVal('myYN');
+        appcan.ready(function() {
+            pageindex = 1;
+            myAppraisalIndex = appcan.locStorage.val('myAppraisalIndex');
+            Status = myAppraisalIndex;
+            if (Status == null) {
+                loadData(0, product);
+            } else {
+                loadData(Status, product);
+            }
+            uexWindow.setBounce(1);
+            initBounce(mes1);
+        });
+        function mes1(Status) {
+            load = true;
+            flag = false;
+            myAppraisalIndex = appcan.locStorage.getVal('myAppraisalIndex');
+            var Status = myAppraisalIndex;
+            loadData(Status, product);
+            return;
+        }
+
+        function loadData(Status, product) {
+            var loadDataUrl = getUrl('identify/GetUserIdentifyList');
+            var data;
+            data = {
+                Token : Token,
+                Status : Status,
+                product : product,
+                pageindex : pageindex,
+                pagesize : 100
+            }
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success) {
+                    $("#expertList").html("");
+                    var data = result.Data;
+
+                    var str = '';
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+
+                            str += templateDiv(data[i]);
+                        }
+
+                    } else {
+                        str = templateDivEmpty();
+                    }
+
+                    $('#expertList').html(str);
+
+                    $(".checkDetail").on("click", function() {
+                        appcan.locStorage.setVal('appraisalId', this.id);
+                        uexWindow.open("replyMy", "0", "replyMy.html", "", 0, 0, 0, 0, '', "0", 0);
+                    });
+
+                    $(".checkDetail2").on("click", function() {
+                        var product = appcan.locStorage.getVal('myYN');
+                        if (product == 'true') {
+                            appcan.locStorage.setVal('appraisalProduct', 1);
+                        } else if (product == 'false') {
+                            appcan.locStorage.setVal('appraisalProduct', 0);
+                        }
+                        var identifyType = $(this).attr('identifyType');
+                        appcan.locStorage.setVal('identifyType', identifyType);
+                        appcan.locStorage.setVal('appraisalId', this.id);
+                        uexWindow.open("checkReply", "0", "checkReply.html", "", 0, 0, 0, 0, '', "0", 0);
+                    });
+                    $(".checkDetail3").on("click", function() {
+                        appcan.locStorage.setVal('appraisalId', this.id);
+                        appcan.locStorage.setVal('appraisalreplyMy', 1);
+                        uexWindow.open("replyMy", "0", "replyMy.html", "", 0, 0, 0, 0, '', "0", 0);
+                    });
+                    $(".checkDetail4").on("click", function() {
+                        appcan.locStorage.setVal('appraisalId', this.id);
+                        appcan.locStorage.setVal('appraisalreplyMy', 2);
+                        uexWindow.open("replyMy", "0", "replyMy.html", "", 0, 0, 0, 0, '', "0", 0);
+                    });
+                    $(".sendAgin1").on("click", function() {
+                        var identifyId = this.id;
+                        var identifyType = $(this).attr('identifyType');
+                        appcan.locStorage.setVal('appraisalId', identifyId);
+                        if (identifyType == 0) {
+                            appcan.locStorage.setVal('Appraisal', 'rand');
+                        } else if (identifyType == 1) {
+                            appcan.locStorage.setVal('Appraisal', 'exp');
+                        }
+                        appcan.locStorage.setVal('payType','payIdentifyWaitpay');
+                        appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+                    });
+                    $(".sendAgin2").on("click", function() {
+                        appcan.openWinWithUrl('market_details', '../product/market_details.html');
+                        appcan.locStorage.setVal('productId', this.id);
+
+                    })
+                    $(".down").on("click", function() {
+                        identifyId = this.id
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "identify/ToRepository",
+                            data : {
+                                identifyId : identifyId,
+                                token : getToken()
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    appcan.window.alert({
+                                        title : "提示",
+                                        content : "入库成功"
+                                    });
+                                    appcan.locStorage.setVal('identifyYN', 'false');
+                                    uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                                    uexWindow.open("repository_index", "0", "../repository/repository_index.html", "", 0, 0, 0, 0, '', "0", 0);
+                                    var product = appcan.locStorage.getVal('myYN');
+                                    myAppraisalIndex = appcan.locStorage.getVal('myAppraisalIndex');
+                                    var Status = myAppraisalIndex;
+                                    loadData(Status, product);
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '网络异常!', "2000");
+                            },
+                            offline : false
+                        });
+
+                    });
+                    $(".down2").on("click", function() {
+
+                        identifyId = this.id
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "identify/ToRepository",
+                            data : {
+                                identifyId : identifyId,
+                                token : getToken()
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    appcan.window.alert({
+                                        title : "提示",
+                                        content : "入库成功"
+                                    });
+                                    appcan.locStorage.setVal('identifyYN', 'true');
+                                    uexWindow.open("repository_index", "0", "../repository/repository_index.html", "", 0, 0, 0, 0, '', "0", 0);
+                                    uexWindow.evaluatePopoverScript("repository_index", "content", "Refresh()");
+                                    var product = appcan.locStorage.getVal('myYN');
+                                    myAppraisalIndex = appcan.locStorage.getVal('myAppraisalIndex');
+                                    var Status = myAppraisalIndex;
+                                    loadData(Status, product);
+                                    return;
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '网络异常!', "2000");
+                            },
+                            offline : false
+                        });
+
+                    });
+
+                    $(".delete").on("click", function() {
+                        var identifyId = this.id;
+                        clickFlag = true;
+                        Token = getToken();
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "identify/deleteidentify",
+                            data : {
+                                identifyId : identifyId,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    appcan.window.alert({
+                                        title : "提示",
+                                        content : "删除成功"
+                                    });
+                                    var product = appcan.locStorage.getVal('myYN');
+                                    myAppraisalIndex = appcan.locStorage.getVal('myAppraisalIndex');
+                                    var Status = myAppraisalIndex;
+                                    loadData(Status, product);
+                                    return;
+
+                                } else {
+                                    uexWindow.toast("0", "5", result.Message, "2000");
+                                }
+                            },
+                            error : function(xhr, type) {
+                                uexWindow.toast("0", "5", '网络异常，请重试!', "2000");
+                            },
+                            offline : false
+                        });
+
+                    });
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    $('#expertList').html(str);
+                    $("#error").click(function() {
+                        Refresh();
+                    });
+                }
+            };
+            getRequestAjax(loadDataUrl, data, callback);
+        };
+
+        function templateDiv(dataJson) {
+            var product = 'false';
+            product = appcan.locStorage.getVal('myYN');
+            var w = $(document).width() * 9 / 20 + 'px';
+            var iconArr = dataJson.Icon;
+            var iconData = [];
+            var arr = [];
+            for (var j = 0; j < iconArr.length; j++) {
+                iconData.push({
+                    img : iconArr[j]
+                });
+                tempData.push(iconArr[j]);
+                arr = tempData.join('|')
+            }
+
+            var icon = gerImgThumbUrl(dataJson.Thumb);
+            var oldDate = new Date(formatDate(dataJson.SendCheckDate));
+            oldtime = oldDate.format("yyyy-MM-dd hh:mm:ss");
+            var WaitDate = new Date(formatDate(dataJson.CheckExpireDate));
+            Waittime = WaitDate.format("yyyy-MM-dd hh:mm:ss");
+            var CheckDate = new Date(formatDate(dataJson.CheckDate));
+             Checktime = CheckDate.format("yyyy-MM-dd");
+            var btnDiv1 = "",
+                btnDiv2 = "",
+                btnDiv3 = "",
+                fee = "",
+                IdentifyTitle1 = "",
+                IdentifyTitle2 = "",
+                IdentifyTitle3 = "",
+                IdentifyWay1 = "",
+                IdentifyWay2 = "",
+                IdentifyWay3 = "";
+            if (dataJson.Status == 0) {
+                IdentifyTitle1 = "<div class='bc-bg'><div id=" + dataJson.Id + " identifyType=" + dataJson.Type + " identifyStatus=" + 0 + " class='sendAgin1 ub-f  ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                btnDiv1 = "<div class='white'>过期时间：" + dataJson.PayRemainDateStr + "</div>";
+                if (product == 'false') {
+                    IdentifyWay1 = "<div class='ub umar-a7 bc-bg' style='height:2em;top: -1.7em;'>";
+                    IdentifyWay1 += "<div class='sendAgin1 ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubl red' id=" + dataJson.Id + " identifyStatus=" + 0 + "  identifyType=" + dataJson.Type + ">付款</div>";
+                    IdentifyWay1 += "<div id=" + dataJson.Id + " class='down ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubr ubl red'>入库</div></div>";
+                } else if (product == 'true') {
+                    IdentifyWay1 = "<div class='ub umar-a7 bc-bg' style='height:2em;top: -1.7em;'>";
+                    IdentifyWay1 += "<div class='sendAgin2 ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubl red' id=" + dataJson.ProductId + "  identifyType=" + dataJson.Type + ">鉴定</div>";
+                    IdentifyWay1 += "<div id=" + dataJson.Id + " class='delete ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubr ubl red'>删除</div></div>";
+                }
+            } else if (dataJson.Status == 1) {
+                IdentifyTitle2 = "<div class='bc-bg'><div id=" + dataJson.Id + "  class='checkDetail3 ub-f  ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                btnDiv2 = "<div class='white'>鉴定过期:" + dataJson.CheckRemainDateStr + "</div>";
+                //IdentifyWay2 = "<div class='ub umar-a7 bc-bg' style='height:2em;top: -1.7em;'>";
+                //IdentifyWay2 += "<div class='ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubr ubl red'>提醒专家</div></div>";
+            } else if (dataJson.Status == 2) {
+                IdentifyTitle2 = "<div class='bc-bg'><div id=" + dataJson.Id + "  class='checkDetail ub-f   ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                fee = "<div class='white'>退款中(￥" + dataJson.Price + ")</div>";
+
+            } else if (dataJson.Status == 6) {
+                IdentifyTitle2 = "<div class='bc-bg'><div id=" + dataJson.Id + "  class='checkDetail ub-f  ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                fee = "<div class='white'>退款审核中￥(" + dataJson.Price + ")</div>";
+
+            } else if (dataJson.Status == 3) {
+                IdentifyTitle2 = "<div class='bc-bg'><div id=" + dataJson.Id + "  class='checkDetail4 ub-f ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                fee = "<div class='white'>已退金额：￥" + dataJson.Price + "<a></div>";
+
+            } else if (dataJson.Status == 4) {
+                IdentifyTitle3 = "<div class='bc-bg'><div id=" + dataJson.Id + " identifyType=" + dataJson.Type + "  class='checkDetail2  ub-f  ub-fh ub ub-ac ub-pc'><img style='width:" + w + ";' src='" + icon + "'/>"
+                btnDiv3 = "<div class='white'>鉴定时间：" +Checktime+ "</div>";
+                if (product == 'false') {
+                    IdentifyWay3 = "<div class='ub umar-a7 bc-bg' style='height:2em;top: -1.7em;'>";
+                    IdentifyWay3 += "<div id=" + dataJson.Id + " class='down2 ub-f1 textb2 ub ub-ac ub-pc bc-border ubb ubr ubl red'>入库</div></div>";
+                }
+            }
+
+            str = "";
+            str += "<div class='ub uinn-ele3 floatl w-half' ><div class='ub ub-ver ub-f1'>";
+            str += IdentifyTitle1 + IdentifyTitle2 + IdentifyTitle3;
+            str += "</div>";
+            str += "<div class='ub umar-a7 b-black2 white' style='height: 1.5em;top: -1.7em;'>";
+            str += "<div class='ub-f1 textb2 ub ub-ac ub-pc '>" + btnDiv1 + fee + btnDiv2+btnDiv3+  "</div></div>";
+            str += IdentifyWay1 + IdentifyWay2 + IdentifyWay3;
+            str += "</div></div></div>";
+            return str;
+        }
+
+        function templateDivEmpty() {
+            var str = '<div class="ub ub-ac ub-pc" style="position:absolute;top:10em;width:100%;">' + '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-img1">' + ' <img src="../img/img1/logo.png" style="width:8em;height:8em;">' + '</div> ' + '<div class="ub gery uinn">' + '我们为您提供专业的鉴定服务' + '</div></div>' + '</div>'
+            return str
+        }
+
+        function templateDivEnd() {
+            var strEnd = '<div class="ub ub-ac ub-pc ub-ver">' + '<div class="ub ub-ac ub-pc" style="color:#d3d3d3;margin:0.5em;">没有更多' + '</div>' + '</div>';
+            return strEnd;
+        }
+
+        function Refresh() {
+            var product = appcan.locStorage.getVal('myYN');
+            myAppraisalIndex = appcan.locStorage.getVal('myAppraisalIndex');
+            var Status = myAppraisalIndex;
+            loadData(Status, product);
+            return;
+        }
+
+
+        appcan.button(".nav-btn", "btn-act", function() {
+            appcan.window.close(-1);
+        })
+
+    </script>
+</html>

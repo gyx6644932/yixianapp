@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2"  ontouchstart>
+        <div id="down" class="white uinn" style="background: #747575;position: fixed;width: 100%;z-index: 99;text-align: center;display: none;">
+            藏品已经下架
+        </div>
+        <div id="contentDivError" style="display: none"></div>
+        <div id="contentDiv" style="display: none">
+            <!--<div id="back" class="ub " style="position: fixed;top: 1em;left:.4em;z-index: 99;width: 4em;height: 4em;">
+            <div class="round  ub  ub-ac ub-pc" >
+            <div class="fa fa-angle-left fa-2x" style="color: #746E6E;margin-right:.1em;"></div>
+            </div>
+            </div>-->
+            <div class="uinput ub ub-f1">
+                <div id="slider" class="slider"></div>
+
+            </div>
+            <div class="ub uinn bc-bg ub-ac" id='showTitle'>
+                <div class="ub-f1 ub ub-pc ub-ac uh-de2 textb2 bold" id='Title'>
+
+                </div>
+
+            </div>
+            <div class="uinn bc-bg ub-ac uinn" id='showDec'>
+                <div class="ub-f1 ub ub-pc textb2  w-full " style="line-height: 1;display:block;word-break: break-all;word-wrap: break-word;" id='Content'>
+                    暂无描述
+                </div>
+            </div>
+            <div class="ub  ub-pc ub-ver bc-bg ubb bc-border" >
+                <div class="ub-f1 ub ub-ac ub-pc">
+                    <div class="ub-f1 ub ub-ac  ub-pc">
+                        <a id='showPrice' class="t-red1" style="font-size: 1em;">￥</a><font class="textbs t-red1" style="font-size: 1.3em;" id='Price'></font>
+                    </div>
+                </div>
+
+                <div class="ub ub-ac ulev-4 gery umar-ll" style="margin: 2em 1em;">
+                    <div class=" ub ub-f1">
+                        <div class="uinn umar-ll" id='talk'>
+                            <i class="fa fa-comment-o" style="font-size: 1.5em;"><a style="font-size: .9em;"> 私聊</a></a></i>
+                        </div>
+                    </div>
+                    <div class="ub ub-f1 ub-pc">
+                        <div class="uinn  umar-ll" id='share' >
+                            <i class="fa fa-share-alt" style="font-size: 1.5em;"><a  style="font-size: .9em;"> 分享</a></i>
+                        </div>
+                    </div>
+                    <div class="ub ub-f1 ub-pc">
+                        <div class="uinn  umar-ll">
+                            <div class='addFollow p-star fa fa-plus' style='width:4em;font-size: 1.2em;text-align: center;color:#686B6D;'>
+                                关注
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id='ReplyTitle' class='open  uinn gery bc-bg  ubb bc-border umar-t ' style="display: none;">
+                <div class="makertOrder umar-ll umar-rr">
+                    <img src="../img/marketOrder.png"/>
+                </div>
+                <div class="ub-f1 ub ub-ac">
+                    查看鉴定报告
+                </div>
+
+            </div>
+            <div id='userMes' class='ub open  uinn gery bc-bg  ubb bc-border umar-t'>
+                <div id='' class="makertUserPic makertUser ub ub-pc umar-ll umar-rr">
+
+                </div>
+                <div class="ub ub-f1 ub-ver textb2">
+                    <div class="ub ub-f1" >
+                        <a  id='niceName'  style='width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'></a>
+                    </div>
+                    <div class="ub ub-f1">
+                        <div class="ub-f1">
+                            粉丝：<a id='followMe'>22</a>
+                        </div>
+                    </div>
+                </div>
+                <div id='FollowMaster' class="p-star ub-ac ub-f1 ub-pe textb4 gery " style="display: none">
+                    <div class="add-per uba bc-border umar-rr red1">
+                        <img  class='addFollowPer p-star' style='padding:.2em 1.3em .1em 1.3em;color:red;' src='../img/per_unadd.png'/>
+                    </div>
+                </div>
+            </div>
+            <div  class='ub ub-ver open  uinn gery bc-bg  ubb bc-border umar-t'>
+
+                <div id='likeList' class="ub ub-f1 umar-b umar-t  ubb bc-border1" style="padding-left: 1em;padding-bottom: .5em;">
+                    <a id="likeNum"></a>人喜欢了
+                    <div class="ub-f1 ub ub-pe">
+                        <i class="fa fa-angle-right"></i>
+                    </div>
+                </div>
+                <div id="likeCont"></div>
+            </div>
+
+            <div id='' class='ub ub-ver open uinn gery bc-bg  ubb bc-border umar-t'>
+
+                <div class="ub-f1 umar-b umar-ll">
+                    <i class="fa fa-comment-o"></i> 评论（<a id="commentCount"></a>）
+                </div>
+                <div id="commentCont"></div>
+            </div>
+            <div id="sendContent"></div>
+        </div>
+
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    <script src="../js/common.js"></script>
+    </body>
+    <script>
+        var Token = '';
+        Token = getToken();
+        var closeFlag = false;
+        var tempData = [];
+        var productId = appcan.locStorage.getVal('productId');
+        appcan.ready(function() {
+            getRely();
+            loadcommentCont();
+            loadsendContent();
+            loadLikeCont();
+        });
+        function loadCon(id) {
+            var getValidateFollowUrl = getUrl('user/ValidateFollow');
+            var data = {
+                type : 2,
+                foreignId : id,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    $('.addFollowPer').attr("src", '../img/per_add.png').removeClass('p-star').addClass('p-staring');
+                }
+            }
+
+            getRequestAjax2(getValidateFollowUrl, data, callback);
+        }
+
+        function loadCon2() {
+            var getValidateFollowUrl = getUrl('user/ValidateFollow');
+            var data = {
+                type : 0,
+                foreignId : productId,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    $('.addFollow').css("color", "red").addClass('p-staring').removeClass('p-star').removeClass('fa-plus').html(" 已关注");
+                }
+            }
+
+            getRequestAjax2(getValidateFollowUrl, data, callback);
+        }
+
+        function getRely() {
+            var getRelyUrl = getUrl('product/GetProduct');
+            var data = {
+                productId : productId
+            };
+
+            function callback(result) {
+                if (result.Success) {
+                    $('#contentDiv').css('display', 'block');
+                    var data = result.Data;
+                    var followCount = data.FollowCount;
+                    var view = data.View;
+                    var niceName = data.Nicename;
+                    var followMe = data.FollowMe;
+                    var commentCount = data.CommentCount;
+                    var avatar = gerImgThumbUrl(data.Avatar);
+                    var id = data.UserId;
+                    var deleted = data.Deleted;
+                    loadCon(id);
+                    loadCon2(id);
+                    if (deleted == true) {
+                        $('#down').css('display', 'block');
+                    }
+                    if (getToken() != id) {
+                        $("#FollowMaster").addClass('ub').css('display', 'none')
+                    }
+                    $('#likeNum').html(followCount);
+                    $('#views').html(view);
+                    $(".makertUserPic").attr('id', id).html(' <img src="' + avatar + '"/>');
+
+                    $(".addFollowPer").attr('id', id);
+                    $(".addFollow").attr('id', id);
+                    $("#talk").attr('userId', id);
+
+                    $("#commentCount").html(commentCount);
+                    $("#niceName").html(niceName);
+                    $("#followMe").html(followMe);
+                    if (data.Title != '') {
+                        $("#Title").html('【' + data.Title + '】');
+                    } else {
+                        $("#Title").removeClass('ub').css('display', 'none');
+                    }
+
+                    if (data.Content != '') {
+                        $("#Content").html(data.Content);
+                    } else {
+                        $("#showDec").hide();
+                    }
+
+                    $("#view").html(data.View);
+                    if (data.Price != 0) {
+                        $("#Price").html(data.Price);
+                    } else {
+                        $("#showPrice").css("display", "none !important");
+                    }
+
+                    $('#talk').click(function() {
+                        if (getToken() == id) {
+                            uexWindow.toast("0", "5", "您不能和自己聊天", "2000");
+                            return;
+                        }
+                        if (getToken() != null) {
+                            var talkProductId = productId;
+                            var talkUserId = $(this).attr('userId');
+                            getmessage(talkUserId, 'product', talkProductId);
+                            appcan.openWinWithUrl('talk', '../common/talk.html');
+                        } else {
+                            uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $('.makertUser').click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', '../user/person.html');
+                        } else {
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluateScript("market_details", 0, "userinfo()");
+                        }
+
+                    })
+                    $('.addFollow').click(function() {
+                        if (getToken() == id) {
+                            uexWindow.toast("0", "5", "您不能关注自己", "2000");
+                            return;
+                        }
+                        var Token = getToken();
+                        if (Token != null) {
+                            productId = appcan.locStorage.getVal('productId');
+                            var CNArray = this.classList;
+                            for (var i = 0; i < CNArray.length; i++) {
+                                if (CNArray[i] == 'p-star') {
+                                    var addFollowUrl = getUrl('user/addfollow');
+                                    var data = {
+                                        type : 0,
+                                        foreignId : productId,
+                                        token : Token
+                                    }
+                                    function callback(result) {
+                                        if (result.Success) {
+                                            $('.addFollow').css("color", "red").addClass('p-staring').removeClass('p-star').removeClass('fa-plus');
+                                            $('.addFollow').html(" 已关注");
+                                            uexWindow.toast("0", "5", "关注成功", "2000");
+                                            appcan.locStorage.val('loadWay', 'careList');
+                                            uexWindow.evaluateScript("index", 0, "Refresh()");
+                                            uexWindow.evaluateScript("root", 0, "Refresh()");
+                                            uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                                            uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+                                            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                            uexWindow.evaluatePopoverScript("market", "content", "Refresh()");
+
+                                            var selectVal = 'followProduct';
+                                            var readyIn = true;
+                                            var nowPageIndex = 1;
+                                            var nowEndFlag = false;
+                                            uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                            return;
+                                        } else {
+                                            uexWindow.toast("0", "5", '已下架，喜欢请联系卖家', "4000");
+                                        }
+                                    }
+
+                                    getRequestAjax2(addFollowUrl, data, callback);
+
+                                } else if (CNArray[i] == 'p-staring') {
+                                    appcan.request.ajax({
+                                        type : 'POST',
+                                        url : http + "user/deletefollow",
+                                        data : {
+                                            type : 0,
+                                            foreignId : productId,
+                                            token : Token
+                                        },
+                                        dataType : 'json',
+                                        timeout : 300,
+                                        success : function(result) {
+                                            if (result.Success) {
+                                                $('.addFollow').css("color", "#686B6D").removeClass('p-staring').addClass('p-star').addClass('fa-plus');
+                                                $('.addFollow').html(" 关注");
+                                                uexWindow.toast("0", "5", "取消成功", "2000");
+                                                appcan.locStorage.val('loadWay', 'careList');
+                                                uexWindow.evaluateScript("index", 0, "Refresh()");
+                                                uexWindow.evaluateScript("root", 0, "Refresh()");
+                                                uexWindow.evaluatePopoverScript("root", "content", "Refresh()");
+                                                uexWindow.evaluatePopoverScript("index", "content", "Refresh()");
+                                                uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                                uexWindow.evaluatePopoverScript("market", "content", "Refresh()");
+                                                var selectVal = 'followProduct';
+                                                var readyIn = true;
+                                                var nowPageIndex = 1;
+                                                var nowEndFlag = false;
+                                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                                return;
+                                            } else {
+                                                uexWindow.toast("0", "5", '已下架，喜欢请联系卖家', "4000");
+                                            }
+                                        },
+                                        offline : false
+                                    });
+                                    return;
+                                }
+                            }
+                        } else {
+                            uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                        }
+                    })
+                    $('#ReplyTitle').click(function() {
+                        uexWindow.evaluateScript("market_details", 0, "Reply()");
+                    })
+                    $('#share').click(function() {
+                        uexWindow.evaluateScript("market_details", 0, "share()");
+                    })
+                    $('#report').click(function() {
+                        uexWindow.evaluateScript("market_details", 0, "report()");
+                    })
+                    if (data.Identify != null) {
+                        $('#ReplyTitle').css('display', 'block').addClass('ub');
+                    }
+
+                    var iconArr = result.Data.Icon;
+                    var iconData = [];
+
+                    for (var i = 0; i < iconArr.length; i++) {
+                        iconData.push({
+                            img : imgNormalUrl + iconArr[i]
+                        });
+                        tempData.push(imgNormalUrl + iconArr[i]);
+                    }
+                    if (iconArr.length == 1) {
+                        var slider = appcan.slider({
+                            selector : '#slider',
+                            aspectRatio : 6 / 16,
+                            hasLabel : true,
+                            index : 0,
+                            aspectRatio : 0.8
+                        });
+                    } else {
+                        var slider = appcan.slider({
+                            selector : '#slider',
+                            aspectRatio : 6 / 16,
+                            hasLabel : true,
+                            index : 0,
+                            aspectRatio : 0.8,
+                            auto : 5000
+                        });
+                    }
+                    slider.set(iconData);
+
+                } else {
+                    var str = templateDivError('../img/error.png');
+                    $('#contentDivError').css('display', 'block');
+                    $('#contentDivError').html(str);
+                    $("#error").click(function() {
+                        getRely();
+                        $('#contentDivError').css('display', 'none');
+                        return;
+                    })
+                }
+            }
+
+            getRequestAjax2(getRelyUrl, data, callback);
+        }
+
+        function sendIdentify() {
+            appcan.locStorage.setVal('Appraisal', 'rand');
+            appcan.locStorage.setVal('payType', 'payIdentifyProduct');
+            appcan.openWinWithUrl('pullAddAppraisal', '../common/pullAddAppraisal.html');
+        }
+
+        function loadLikeCont() {
+            var loadLikeContUrl = getUrl('product/getfollowlist');
+            var data = {
+                pageindex : 1,
+                pagesize : 10,
+                productId : productId
+            };
+
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    var str = "";
+                    if (data.length > 0) {
+                        str += "<div class='makertForginUser ub-f1 umar-ll uinn'>";
+                        for (var i = 0; i < data.length; i++) {
+                            str += likeCont(data[i]);
+                        }
+                        str += "</div>";
+
+                    } else {
+                        str = templateDivEnd2();
+                    }
+
+                    $('#likeCont').html(str);
+                    $(".likeUser").click(function() {
+                        if (getToken() == this.id) {
+                            appcan.openWinWithUrl('person', '../user/person.html');
+                        } else {
+                            uexWindow.evaluateScript("market_details", 0, "close()");
+                            var userId = this.id;
+                            appcan.locStorage.setVal('userId', userId);
+                            uexWindow.evaluatePopoverScript('userinfo', 'content', 'Refresh()');
+                            uexWindow.evaluateScript("market_details", 0, "userinfo()");
+                        }
+                    });
+                }
+            };
+            getRequestAjax2(loadLikeContUrl, data, callback);
+        }
+
+        function likeCont(data) {
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var id = data.Id;
+            str = "";
+            str += " <li class='likeUser' id='" + id + "'><img src='" + avatar + "'/></li>";
+            return str;
+        }
+
+        function loadcommentCont() {
+            var loadcommentContUrl = getUrl('product/GetCommentList');
+            var data = {
+                pageindex : 1,
+                pagesize : 10,
+                productId : productId
+            };
+
+            function callback(result) {
+                uexWindow.closeToast();
+                if (result.Success === true) {
+                    data = result.Data;
+                    var str = "";
+                    if (data.length > 0) {
+                        var counter = 0;
+                        for (var i = 0; i < data.length; i++) {
+                            str += commentCont(data[i], '');
+                            if (i >= 9) {
+                                str += templateDivEnd();
+                            }
+                            //var Replys = data[i].Replys;
+
+                            //if (Replys.length > 0) {
+                            // for (var j = 0; j < Replys.length; j++) {
+                            //    str += commentCont(Replys[j], data[i].Nicename);
+                            // }
+                            //}
+
+                        }
+                        $('#commentCont').html(str);
+                        $(".commentUser").click(function() {
+                            //  var id = this.id;
+                            // var nicename = $(this).attr('nicename');
+                            // appcan.locStorage.setVal('commentNicename', nicename);
+                            //  appcan.locStorage.setVal('commentId', id);
+
+                            if (getToken() == this.id) {
+                                appcan.openWinWithUrl('person', '../user/person.html');
+                            } else {
+                                var userId = this.id;
+                                appcan.locStorage.setVal('userId', userId);
+                                uexWindow.evaluateScript("market_details", 0, "userinfo()");
+                            }
+                        });
+                        $("#moreComment").click(function() {
+                            uexWindow.evaluateScript("market_details", 0, "moreComment()");
+                        });
+                    }
+                }
+            };
+            getRequestAjax2(loadcommentContUrl, data, callback);
+        }
+
+        function commentCont(data, mastname) {
+            var dateS,
+                hourS;
+            var avatar = gerImgThumbUrl(data.Avatar);
+            var id = data.UserId;
+            //   用户ID！！
+            var niceName = data.Nicename;
+            var content = data.Content;
+            var GreateDate = new Date(formatDate(data.CreateDate))
+            var oldMonth = GreateDate.format("d");
+            var oldDate = GreateDate.format("M月d日");
+            var oldTime = GreateDate.format("hh:mm");
+            var myDate = new Date();
+            var nowMonth = myDate.getDate();
+            if (oldMonth == nowMonth) {
+                dateS = '今天';
+            } else if (parseInt(oldMonth) + 1 == nowMonth) {
+                dateS = '昨天';
+            } else {
+                dateS = oldDate;
+            }
+            str = "";
+            str += "       <div id='" + id + "' nicename='" + niceName + "' class='commentUser ub open  uinn gery bc-bg  ubt bc-border1  textb2 '>";
+            str += "        <div class='makertUser ub umar-rr umar-ll'>";
+            str += "            <img src='" + avatar + "' />";
+            str += "        </div>";
+            str += "        <div class='ub ub-f1 ub-ver'>";
+            str += "            <div class='ub ub-f1 gery'>";
+            str += "            <div class='ub ub-f1 gery'>";
+            if (mastname == '') {
+                str += "               <a style='width:10em;display:block;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;'>" + niceName + "</a>";
+            } else {
+                str += "                " + mastname + " ";
+            }
+
+            str += "            </div>";
+            str += "        <div class='ub-f1 ub ub-pe gery' style='font-size:.8em;'>";
+            str += "            " + dateS + "  " + oldTime + "";
+            str += "        </div>";
+            str += "            </div>";
+            str += "            <div class='ub-f1 gery2' style='word-wrap:break-word;'>";
+            str += "               " + content + "";
+            str += "            </div>";
+            str += "       </div>";
+            str += "      </div>";
+            return str;
+        }
+
+        function loadsendContent() {
+            str = "";
+            str += "  <div id='' class='ub uinn gery bc-bg textb2' style='padding: 1em 0;'>";
+            str += "   <div class='sc-bg-active uin-input2 ub ub-f1 bRadius ' style='margin-left: 1em;height: 2em;'>";
+            str += "     <input placeholder='说点什么吧~' type='text' class='ub-f1' onfocus='jump()'>";
+            str += "  </div>";
+            str += "  <div style='margin:0 1em;width: 4em;height: 2em;' class='sendContent ub ub-ac ub-pc textb4 uinn uba bc-border5 gery bc-bg'>";
+            str += "       发表";
+            str += "    </div>";
+            str += " </div>";
+            $('#sendContent').html(str);
+            $(".sendContent").click(function() {
+                jump();
+            });
+        }
+
+        function templateDivEnd() {
+            var str = '<div id="moreComment" class="openMore gery  bc-bg uinn bc-border ubt" style="text-align:center;">更多评论</div>';
+            return str;
+        }
+
+        function templateDivEnd2() {
+            var strEnd = '<div class="openMore gery  bc-bg uinn" style="text-align:center;">暂无人喜欢</div>';
+            return strEnd;
+        }
+
+        function Refresh() {
+            getRely();
+            loadcommentCont();
+            loadsendContent();
+            loadLikeCont();
+            return;
+        }
+
+
+        $("#likeList").click(function() {
+            uexWindow.evaluateScript("market_details", 0, "likeList()");
+        });
+
+        $("#back").click(function() {
+            closeFlag = true;
+            appcan.window.close(-1);
+        })
+
+        $("#slider").click(function() {
+            appcan.locStorage.val('showimage', tempData.join('|'));
+            appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+        });
+        $('.addFollowPer').click(function() {
+            Token = getToken();
+            if (Token != null) {
+                userId = this.id;
+                var CNArray = this.classList;
+                for (var i = 0; i < CNArray.length; i++) {
+                    if (CNArray[i] == 'p-star') {
+                        var addFollowUrl = getUrl('user/addfollow');
+                        var data = {
+                            type : 2,
+                            foreignId : userId,
+                            token : Token
+                        }
+                        function callback(result) {
+                            if (result.Success) {
+                                $('.addFollowPer').attr("src", '../img/per_add.png').removeClass('p-star').addClass('p-staring');
+                                uexWindow.toast("0", "5", "关注成功", "2000");
+                                Refresh();
+                                uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+                                var selectVal = 'followUser';
+                                var readyIn = true;
+                                var nowPageIndex = 1;
+                                var nowEndFlag = false;
+                                uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                return;
+                            }
+                        }
+
+                        getRequestAjax2(addFollowUrl, data, callback);
+
+                    } else if (CNArray[i] == 'p-staring') {
+                        appcan.request.ajax({
+                            type : 'POST',
+                            url : http + "user/deletefollow",
+                            data : {
+                                type : 2,
+                                foreignId : userId,
+                                token : Token
+                            },
+                            dataType : 'json',
+                            timeout : 300,
+                            success : function(result) {
+                                if (result.Success) {
+                                    $('.addFollowPer').attr("src", '../img/per_unadd.png').removeClass('p-staring').addClass('p-star');
+                                    uexWindow.toast("0", "5", "取消成功", "2000");
+                                    Refresh();
+                                    uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                                    var selectVal = 'followUser';
+                                    var readyIn = true;
+                                    var nowPageIndex = 1;
+                                    var nowEndFlag = false;
+                                    uexWindow.evaluatePopoverScript('person_follow_objectExpert', "content", "changeDiv('" + selectVal + "','" + readyIn + "','" + nowPageIndex + "','" + nowEndFlag + "')");
+                                    return;
+                                }
+                            },
+                            offline : false
+                        });
+                        return;
+                    }
+                }
+            } else {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+        })
+        function jump() {
+            appcan.locStorage.setVal('commentNicename', '');
+            appcan.locStorage.setVal('commentId', '');
+            uexWindow.evaluateScript("market_details", 0, "comment()");
+            loadsendContent();
+            return;
+        }
+    </script>
+</html>

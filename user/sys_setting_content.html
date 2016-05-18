@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main.css">
+    </head>
+    <body class="um-vp bc-bg2" ontouchstart >
+        <div id="personContet" class="ubb bc-border uinn bc-bg" >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <i class="fa fa-user fa-1x gery"  style="margin-left: .5em;"></i>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac">
+                    个人资料
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pe per-infor" >
+                    <i class="fa fa-angle-right ulev2 sc-text ub ub-ac" ></i>
+                </div>
+
+            </div>
+        </div>
+        <div id="accoutSafe" class="ubb bc-border uinn bc-bg" >
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <i class="fa fa-tasks fa-1x gery"  style="margin-left: .4em;"></i>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac" >
+                    账户安全
+                </div>
+                <div class="ub-f1 ub ub-ac ub-pe per-infor" >
+                    <i class="fa fa-angle-right ulev2 sc-text ub ub-ac" ></i>
+                </div>
+            </div>
+        </div>
+        <div id="onOffList" class="ubb bc-border uinn-a7 bc-bg" style="display: none;">
+            <div class="ub" >
+                <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                    <i class="fa fa-search fa-1x gery"  style="margin-left: .4em;"></i>
+                </div>
+                <div class="ub-f1 uinn-a1 ub ub-ac">
+                    鉴定状态： <a id="onOff">关闭</a>
+                </div>
+                <div class="ub-f1 uinn-a1 ub  ub-pe">
+                    <div id="switch" class="switch uba bc-border switch-mini">
+                        <div class="switch-btn sc-bg-active"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="c-wh umar-at2">
+            <div id="about" class="ubb bc-border uinn bc-bg" >
+                <div class="ub" >
+                    <div class="onoff ub ub-ac ub-pc" style="width: 3em;">
+                        <i class="fa fa-qrcode fa-1x gery"  style="margin-left: .4em;"></i>
+                    </div>
+                    <div class="ub-f1 uinn-a1 ub ub-ac">
+                        关于一线
+                    </div>
+                    <div class="ub-f1 ub ub-ac ub-pe per-infor" >
+                        <i class="fa fa-angle-right ulev2 sc-text ub ub-ac" ></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uinn">
+            <div id="quit" class="btn ub ub-ac bc-text2 ub-pc bc-btn uc-a1" >
+                退出当前账户
+            </div>
+        </div>
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+
+    </body>
+    <script>
+        appcan.ready(function() {
+            loadOnoff();
+        });
+        function loadOnoff() {
+            var IsExpert = '';
+            IsExpert = appcan.locStorage.getVal('IsExpert');
+            if (IsExpert == "true") {
+                $("#onOffList").css('display', 'block');
+                Identify = appcan.locStorage.getVal('Identify');
+                if (Identify == 'true') {
+                    $("#switch").addClass('exswitch');
+                    $('#onOff').text('打开');
+                }
+            } else {
+                $("#onOffList").css('display', 'none');
+            }
+            uexWindow.evaluatePopoverScript("person", "content", "setUserState()");
+            //setTimeout("unsee()", 1000);
+        }
+
+
+        $("#personContet").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+
+            appcan.openWinWithUrl('person_infor', 'person_infor.html');
+        })
+        $("#accoutSafe").click(function() {
+            var Token = getToken();
+
+            if (Token == null) {
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+                return;
+            }
+
+            appcan.openWinWithUrl('accout_safe', 'accout_safe.html');
+        })
+
+        $("#switch").click(function() {
+            Token = getToken();
+            appcan.request.ajax({
+                type : 'POST',
+                url : http + "user/SwitchIdentify",
+                data : {
+                    token : Token
+                },
+                dataType : 'json',
+                timeout : 3000,
+                success : function(result) {
+                    if (result.Success) {
+                        if(result.Data === true) {
+                            $("#switch").addClass('exswitch');
+                            $('#onOff').text('打开');
+                        } else {
+                            $("#switch").removeClass('exswitch');
+                            $('#onOff').text('关闭');
+                        }
+                        appcan.locStorage.val('Identify', result.Data);
+                        return;
+                    } else {
+                        appcan.window.alert({
+                            title : "提示",
+                            content : result.Message
+                        });
+                    }
+                },
+                offline : false
+            });
+        });
+
+        $("#about").click(function() {
+            appcan.openWinWithUrl('about', 'about.html');
+        })
+
+        $("#quit").on("click", function() {
+            // localStorage.removeItem("sessionId");
+            // localStorage.removeItem("memberId");
+            // localStorage.removeItem("realName");
+            // localStorage.removeItem("avatar");
+            // localStorage.removeItem("loginDate");
+            var localStorage = window.localStorage;
+            localStorage.clear();
+            uexWindow.evaluatePopoverScript("person", "content", "setUserState()")
+            appcan.openWinWithUrl("person", 'person.html');
+            uexWindow.evaluateScript("sys_setting", 0, "closeWindow()");
+
+        });
+    </script>
+</html>

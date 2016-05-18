@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="../css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/ui-box.css">
+        <link rel="stylesheet" href="../css/ui-base.css">
+        <link rel="stylesheet" href="../css/ui-color.css">
+        <link rel="stylesheet" href="../css/appcan.icon.css">
+        <link rel="stylesheet" href="../css/appcan.control.css">
+        <link rel="stylesheet" href="../css/main1.css">
+        <link rel="stylesheet" href="../css/main.css">
+        <style type="text/css">
+            .followStar {
+                color: red;
+            }
+            #identify{
+                width:100%;
+                border-top:0.5em solid #E2E2E2;
+                padding:0.3em 0em;
+            }
+        </style>
+    </head>
+    <body class="um-vp bc-bg" id="bodyContent"  ontouchstart>
+        <div class="ub ub-ac ub-pc" id="titleDiv" style="position:fixed;top:0em;z-index:100;width:100%;">
+            
+        </div>
+        <div class="ub ub-ac ub-pc" style="width:100%;">
+            <!-- <img class="ub ub-img" id='icon' > -->
+            <div id="slider" class="slider">
+
+            </div>
+
+        </div>
+        <div class="ub ub-ac ub-ver">
+            <div class="ub ub-ac ub-ver" style="width:100%;" id="TT">
+                
+            </div>
+            
+            
+            
+            
+            <div class="ub ub-ac ub-pj" style="width:95%;padding:0.5em 0em;">
+               <div class="ub ub-ac ub-pc">
+                        <font class="ulev-4 t-gra5"> 当前价 </font><font class="ulev2 t-red1" >￥<font id="currentPrice"></font></font>
+               </div>
+               <div class="ub ub-ac ub-ver " id='followAction' style="margin-top: 0.5em;width:20%;">
+                        <div id="starTag" class="ub fa fa-star-half-o" ></div>
+                        <div id="starTagText" class="ub ub-pc texts">
+                                                                                          收藏
+                        </div>
+                 </div>
+            </div>
+            
+            
+
+        </div>
+
+        <div class="ub ub-pc ub-ver ulev-4 t-gra5" style="width:95%;">
+            <div class="ub ub-ac uinn2">
+                 <div class="ub" style="width:50%;">
+                                    出价次数：&nbsp;&nbsp;<font class="bidCount"></font>
+                 </div>
+                <div class="ub" style="width:50%;">
+                                               人围观：&nbsp;&nbsp;<font id="view"></font>
+                </div>
+            </div>
+            
+            <div class="ub ub-ac uinn2">
+                 <div class="ub" style="width:50%;">
+                                    起拍价：&nbsp;&nbsp;<font id="price"></font>元
+                 </div>
+                <div class="ub" style="width:50%;">
+                                               加价幅度：&nbsp;&nbsp;<font id="inCrement"></font>元/次
+                </div>
+               
+            </div>
+            <div class="ub ub-ac uinn2">
+                <div class="ub" style="width:50%;">
+                    拍卖佣金：&nbsp;&nbsp;<font>无</font>
+                </div>
+                <div class="ub" style="width:50%;">
+                    保留价：&nbsp;&nbsp;<font>无</font>
+                </div>
+            </div>
+            <div class="ub ub-ac uinn2">
+
+                <div class="ub" style="width:50%;">
+                    延时周期：&nbsp;&nbsp;<font>5分钟/次</font>
+                </div>
+                <div class="ub" style="width:50%;">
+                    运费：&nbsp;&nbsp;<font>买家承担</font>
+                </div>
+
+            </div>
+        </div>
+
+        
+            <div class="ub ub-ac ub-ver" style="width:100%;border-top:0.5em solid #E2E2E2;">
+                <div class="ub" style="width:100%;">
+                    <div class="ub-f1 ulev0 uinn" >
+                        出价记录&nbsp;&nbsp;(<font class="bidCount"> </font>)
+                    </div>
+                    <div class="ub-f1 ulev0 uinn tx-r" id="ADPrice">
+                        全部
+                        <div class="fa fa-angle-right ulev2 sc-text"></div>
+                    </div>
+                </div>
+                <div class="ub" style="width:100%;" id="BidListDiv">
+
+                </div>
+
+            </div>
+         <div id="identifyDiv">
+              
+         </div>
+        
+
+        <div style="height:0.5em;background-color: #DADADA"></div>
+        <div class="ub ub-ac ub-ver" id="arrIcon" style="width:100%;margin:0.5em 0em;">
+
+        </div>
+
+    </body>
+    <script src="../js/appcan.js"></script>
+    <script src="../js/appcan.control.js"></script>
+    <script src="../js/appcan.listview.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/appcan.slider.js"></script>
+    </body>
+    <script>
+        var auctionId = appcan.locStorage.val('auctionId');
+        var currentPrice,Content,userId;
+        appcan.ready(function() {
+
+            start();
+            
+
+            initBounce(actionTop, 0);
+            function actionTop() {
+                start();
+            }
+
+        });
+        
+        function start(){
+            getAuction();
+            getBidList();
+            validateFollow();
+           
+        }
+
+        function getAuction() {
+            var getAuctionUrl = getUrl('auction/getauction');
+            var data = {
+                auctionid : auctionId
+            }
+            function callback(result) {
+                var data = result.Data;
+               
+                if (data != null) {
+                    userId=data.UserId;
+                    var TTstr='';
+                    if(data.Title.length !=0){
+                        TTstr='<div class="ulev1" id="title" style="width:95%;padding:0.5em 0em 0em;text-align:center;word-wrap:break-word;">'
+                                        
+                                                +'【'+data.Title+'】'
+                                               
+                               +'</div>'
+                    }
+                    
+                    if(data.Content.length !=0){
+                        TTstr+='<div class="t-gra5" id="content" style="width:95%;padding:0.5em 0em 0em;font-size:1em;text-align:center;word-wrap:break-word;">'
+                                    
+                                         +data.Content
+                                    
+                              +'</div>'            
+    
+                    }
+                    
+                    $("#TT").html(TTstr);
+                   // $("#content").html();
+                   // $("#title").html('【'+data.Title+'】');
+                    
+                    
+                    var endDate_str = formatDate(data.EndDate);
+                    var endDateTime = new Date(endDate_str).getTime();
+
+                    var startDate_str = formatDate(data.StartDate);
+                    var startDateTime = new Date(startDate_str).getTime();
+
+                    var nowTime = new Date().getTime();
+
+                    var biddingAction = false;
+                    var titleStr='';
+                    if(endDateTime <= nowTime){
+                        if(data.CurrentPrice == 0){
+                                                 str='<div class="ub bc-bg-opacity7" style="width:100%;height:2em;">'
+                                                       +'<div class="ub-f1 ub-ac paimaiD" style="background-color:#8C8C8C">'
+                                                             +'<div style="margin-top:-0.7em;">已结束</div>'
+                                                       +'</div>'  
+                                                       +'<div class="ub-f3 ub-ac ub-pc" style="padding:0.3em 0em 0em 2em;">'                                               
+                                                             +'<font>拍品流拍</font>'
+                                                       +'</div>'
+                                                  +'</div>' 
+                        }else{
+                            str='<div class="ub bc-bg-opacity7" style="width:100%;height:2em;">'
+                                                       +'<div class="ub-f1 ub-ac paimaiD" style="background-color:#8C8C8C">'
+                                                             +'<div style="margin-top:-0.7em;">已结束</div>'
+                                                       +'</div>'  
+                                                       +'<div class="ub-f3 ub-ac ub-pc" style="padding:0.3em 0em 0em 2em;">'                                               
+                                                             +'<font>拍品已成交</font>'
+                                                       +'</div>'
+                                                  +'</div>' 
+                        }
+                    }else if(nowTime <= startDateTime){
+                        var startDate = new Date(startDate_str).format("yyyy-MM-dd hh:mm:ss");
+                        str='<div class="ub bc-bg-opacity7" style="width:100%;height:2em;">'
+                                                       +'<div class="ub-f1 ub-ac paimaiD" style="background-color:#8C8C8C">'
+                                                             +'<div style="margin-top:-0.7em;">开拍时间：</div>'
+                                                       +'</div>'  
+                                                       +'<div class="ub-f3 ub-ac ub-pc" style="padding:0.3em 0em 0em 2em;">'                                               
+                                                              +'<font >'+startDate+'</font>开始'
+                                                       +'</div>'
+                       +'</div>' 
+                        
+                    }else{
+                      var endDate = new Date(endDate_str).format("yyyy-MM-dd hh:mm:ss");
+                      str='<div class="ub bc-bg-opacity7" style="width:100%;height:2em;">'
+                               +'<div class="ub-f1 ub-ac paimaiD">'
+                                     +'<div style="margin-top:-0.7em;">正在进行</div>'
+                               +'</div>'  
+                               +'<div class="ub-f3 ub-ac ub-pc" style="padding:0.3em 0em 0em 2em;">'                                               
+                                     +'<font >'+endDate+'</font>结束'
+                               +'</div>'
+                          +'</div>'
+                        biddingAction = true;
+                    }
+                    $("#titleDiv").html(str);
+                    
+                    uexWindow.evaluateScript('auction_details', 0, 'setBiddingAction("' + biddingAction + '")')
+                    appcan.locStorage.val('auction_detailContent', data.Content);
+                    appcan.locStorage.val('auction_detailcurrentP', data.CurrentPrice);
+                    appcan.locStorage.val('auctionUserId', data.UserId);
+                   
+                   
+                   
+                   
+                   
+                    if (data.Identify != null) {
+                        
+                        var str='<div id="identify" identifyId='+data.Identify.Id+' class="ub ub-ac ub-pc gery" >'
+                                    +' <div class="makertOrder umar-ll umar-rr"><img src="../img/marketOrder.png"/> </div>'
+                                    +'<div class="ub-f1 ub ub-ac"> 查看鉴定报告</div>'
+                                +'</div>'
+                        $("#identifyDiv").html(str);
+                        $("#identify").click(function(){
+                            var id=$(this).attr('identifyId');
+                            appcan.locStorage.val('identifyId',id);
+                            appcan.openWinWithUrl('auction_details_identify', 'auction_details_identify.html');
+                        })
+                       // $("#identify").attr('style','display:block !important;')
+                    }
+
+                    appcan.locStorage.val('auctionInCrement', data.Increment);
+                   
+                    appcan.locStorage.val('auctionDetailsContent', data.Content);
+                    $("#view").text(data.View);
+                    $(".bidCount").each(function() {
+                        $(this).text(data.BidCount);
+                    })
+                    $("#price").text(data.Price);
+                    $("#currentPrice").text(data.CurrentPrice);
+                    $("#inCrement").text(data.Increment);
+
+                    var arrIcon = data.Icon;
+                    $("#arrIcon").empty();
+                    var tempData = [];
+                    var sliderArray = [];
+                    for (var i = 0; i < arrIcon.length; i++) {
+                        
+                        src = getImgNormalUrl(arrIcon[i]);
+                        sliderArray.push({
+                            img : src
+                        });
+                        var str = '<div class="ub ub-pc ub-ac zoom"   style="width:100%;margin:0.5em 0em;">' + '<img class="ub ub-img" width="100%" src=' + src + '>' + '</div>';
+                        $("#arrIcon").append(str);
+                        tempData.push(imgNormalUrl + arrIcon[i]);
+                        
+                    }
+                    var slider = '';
+                    if (arrIcon.length == 1) {
+                        slider = appcan.slider({
+                            selector : '#slider',
+                            aspectRatio : 6 / 16,
+                            hasLabel : true,
+                            index : 0,
+                            aspectRatio : 0.8
+                        });
+                    } else {
+                        slider = appcan.slider({
+                            selector : '#slider',
+                            aspectRatio : 6 / 16,
+                            hasLabel : true,
+                            index : 0,
+                            aspectRatio : 0.8,
+                            auto : 2000
+                        });
+                    }
+
+                    slider.set(sliderArray);
+                    slider.on("clickItem", function(index, data) {
+                        appcan.locStorage.val('showimage', tempData.join('|'));
+                        appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                    })
+                    var imgSrc = getImgNormalUrl(data.Icon);
+                    $("#icon2").css('background-image', 'url(' + imgSrc + ')');
+                    
+                    $('.zoom').click(function() {
+                        appcan.locStorage.val('showimage', tempData.join('|'));
+                        appcan.openWinWithUrl('showimage', '../shared/showimage.html');
+                    })
+                }
+            }
+
+            getRequestAjax2(getAuctionUrl, data, callback);
+        }
+
+        function getBidList() {
+            var getBidListUrl = getUrl('auction/GetBidList');
+            var data = {
+                pageindex : '1',
+                pagesize : '3',
+                auctionid : auctionId
+            }
+            function callback(result) {
+                
+                if(result.Success){
+                    var str = '';
+                    var data = result.Data;
+                    for (var i = 0; i < data.length; i++) {
+                        if (i == 0) {
+                            $("#currentPrice").text(data[i].Price);
+                            appcan.locStorage.val('currentPrice', data[i].Price);
+                        }
+                        str += templateDiv(i, data[i]);
+                    }
+                    getbidcount();
+                    
+                }
+                $("#BidListDiv").html(str);
+            }
+            getRequestAjax2(getBidListUrl, data, callback);
+        }
+
+        function templateDiv(i, dataJson) {
+            var str = ''
+            var len = dataJson.Nicename.length;
+            var name = dataJson.Nicename.substring(0, 1) + '**' + dataJson.Nicename.substring(len - 1, len);
+
+            if (i == '0') {
+                str = '<div class="ub paimaiD-div-checked" style="width:27%;height:2.3em;">' + '<div class="ub-f1 firstDiv">领先</div>' + '<div class="ub-f4 tx-r" >' + '<p>' + name + '</p>' + '<p class="ulev1">￥' + dataJson.Price + '</p>' + '</div>' + '</div>';
+            } else {
+                str = '<div class="ub paimaiD-div" style="width:27%;height:2.3em;">' + '<div class="ub-f1 twoDiv">出局</div>' + '<div class="ub-f4 tx-r">' + '<p>' + name + '</p>' + '<p class="ulev1">￥' + dataJson.Price + '</p>' + '</div>' + '</div>';
+            }
+            return str;
+        }
+
+        var ADNObj = {};
+
+        $("#ADPrice").click(function() {
+            appcan.openWinWithUrl('auction_details_price', 'auction_details_price.html')
+
+        })
+
+        $('#followAction').click(function() {
+
+            if (getToken() != null) {
+                if(getLocalStorageParme('Id') == userId){
+                    uexWindow.toast("0", "5", '您不能关注自己', "2000");
+                    return ;
+                }
+                
+                if ($('#starTag').hasClass('followStar')) {
+                    var deleteFollowUrl = getUrl('user/deletefollow');
+                    var data = {
+                        type : 1,
+                        foreignId : auctionId,
+                        token : getToken()
+                    }
+                    function deleteCallback(result) {
+                        if (result.Success) {
+                            uexWindow.toast("0", "5", '取消收藏', "2000");
+                            $('#starTag').removeClass('followStar');
+                            $('#starTagText').html('收藏');
+                            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                            uexWindow.evaluatePopoverScript('person_follow_auction', 'content', 'getFollowList(1)');
+                        } else {
+                            uexWindow.toast("0", "5", '取消收藏失败', "2000");
+                        }
+                    }
+
+                    getRequestAjax2(deleteFollowUrl, data, deleteCallback);
+                } else {
+                    var addFollowUrl = getUrl('user/addfollow');
+                    var data = {
+                        type : 1,
+                        foreignId : auctionId,
+                        token : getToken()
+                    }
+                    function addCallback(result) {
+                        if (result.Success) {
+                            uexWindow.toast("0", "5", '收藏成功', "2000");
+                            $('#starTag').addClass('followStar');
+                            $('#starTagText').html('取消收藏');
+                            uexWindow.evaluatePopoverScript('person', 'content', 'setUserState()');
+                            uexWindow.evaluatePopoverScript('person_follow_auction', 'content', 'getFollowList(1)');
+                        } else {
+                            uexWindow.toast("0", "5", '收藏失败', "2000");
+                        }
+                    }
+
+                    getRequestAjax2(addFollowUrl, data, addCallback);
+                }
+            } else {
+                
+                uexWindow.open("login", "0", "../user/login.html", "", 0, 0, 0, 0, '', "0", 0);
+            }
+
+        })
+        
+        function validateFollow() {
+            if (getToken() == null) {
+                return;
+            }
+            var validateFollowUrl = getUrl('user/ValidateFollow');
+            var data = {
+                type : 1,
+                foreignId : auctionId,
+                token : getToken()
+            }
+            function callback(result) {
+                if (result.Success) {
+                    $("#starTag").addClass('followStar');
+                    $("#starTagText").html('取消收藏');
+
+                }
+            }
+
+            getRequestAjax2(validateFollowUrl, data, callback);
+
+        }
+        
+        //刷竞拍价
+        function getbidcount(){
+            var getbidcountUrl = getUrl('auction/getbidcount');
+            var data = {
+
+                auctionId : auctionId
+               
+            }
+            function callback(result) {
+                if (result.Success) {
+                    var bidCount=result.Data;
+                     $(".bidCount").each(function() {
+                        $(this).text(bidCount);
+                    })
+                    setTimeout('getBidList()', 4000);
+                }
+            }
+
+            getRequestAjax2(getbidcountUrl, data, callback);
+        }
+
+    </script>
+</html>
